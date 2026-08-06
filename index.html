@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RunZones · Alvaro</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6;
+    --series-2: #eb6834;
+    --series-3: #1baf7a;
+    --seq-200: #9ec5f4;
+    --seq-450: #2a78d6;
+    --good: #0ca30c;
+    --good-text: #006300;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --chip-bg: #f0efec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+      --seq-200: #184f95;
+      --seq-450: #3987e5;
+      --good: #0ca30c;
+      --good-text: #0ca30c;
+      --chip-bg: #383835;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page); color: var(--text-primary);
+    line-height: 1.45;
+  }
+  header {
+    padding: 20px 24px 0; max-width: 1060px; margin: 0 auto;
+  }
+  header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+  header .sub { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+  nav {
+    display: flex; gap: 4px; margin-top: 16px; border-bottom: 1px solid var(--grid);
+    overflow-x: auto;
+  }
+  nav button {
+    appearance: none; background: none; border: none; cursor: pointer;
+    font: inherit; font-size: 14px; color: var(--text-secondary);
+    padding: 8px 14px; border-bottom: 2px solid transparent; white-space: nowrap;
+  }
+  nav button.active { color: var(--text-primary); font-weight: 600; border-bottom-color: var(--series-1); }
+  main { max-width: 1060px; margin: 0 auto; padding: 20px 24px 60px; }
+  section.tab { display: none; }
+  section.tab.active { display: block; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .card .k { font-size: 12px; color: var(--text-secondary); }
+  .card .v { font-size: 26px; font-weight: 700; margin-top: 2px; letter-spacing: -0.02em; }
+  .card .d { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .card .v .unit { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
+
+  .panel {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px; margin-bottom: 20px;
+  }
+  .panel h2 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .panel .hint { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 14px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; color: var(--muted); font-weight: 500; font-size: 12px; padding: 6px 10px; border-bottom: 1px solid var(--grid); }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; }
+
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 2px 9px; border-radius: 99px; background: var(--chip-bg); color: var(--text-secondary); }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .sysrow { display: grid; grid-template-columns: 170px 1fr 44px; gap: 12px; align-items: center; padding: 7px 0; }
+  .sysrow .name { font-size: 13.5px; }
+  .sysrow .why { font-size: 11.5px; color: var(--muted); }
+  .sysbar { height: 10px; background: var(--chip-bg); border-radius: 5px; overflow: hidden; }
+  .sysbar > div { height: 100%; border-radius: 5px 4px 4px 5px; background: var(--series-1); }
+  .sysrow .score { font-size: 13.5px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .weekcard { border: 1px solid var(--grid); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+  .weekcard.current { border-color: var(--series-1); }
+  .weekcard .whead { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: 13px; }
+  .weekcard .whead b { font-size: 13.5px; }
+  .weekcard ul { list-style: none; margin-top: 8px; display: grid; gap: 4px; }
+  .weekcard li { font-size: 12.5px; color: var(--text-secondary); padding-left: 14px; position: relative; }
+  .weekcard li::before { content: ""; position: absolute; left: 0; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--baseline); }
+  .weekcard li.key::before { background: var(--series-2); }
+  .phase { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+  .hero { font-size: 44px; font-weight: 700; letter-spacing: -0.02em; }
+  .hero-sub { color: var(--text-secondary); font-size: 13px; }
+
+  #tooltip {
+    position: fixed; pointer-events: none; z-index: 10; display: none;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: 8px 11px; font-size: 12.5px;
+  }
+  #tooltip .t1 { font-weight: 600; }
+  #tooltip .t2 { color: var(--text-secondary); }
+  svg text { font-family: inherit; }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); margin-top: 8px; flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+  @media (max-width: 640px) { .sysrow { grid-template-columns: 120px 1fr 38px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>RunZones <span style="color:var(--muted);font-weight:400">· personal</span></h1>
+  <div class="sub" id="headSub">Marathon build</div>
+  <nav id="nav"></nav>
+</header>
+<main>
+  <section class="tab" id="tab-dashboard"></section>
+  <section class="tab" id="tab-fitness"></section>
+  <section class="tab" id="tab-sessions"></section>
+  <section class="tab" id="tab-plan"></section>
+  <section class="tab" id="tab-race"></section>
+  <section class="tab" id="tab-zones"></section>
+</main>
+<div id="tooltip"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   Seed data (embedded so the app also works when opened as a
+   local file). When hosted, data/*.json overrides this seed —
+   that's what the Strava sync GitHub Action keeps up to date.
+   ============================================================ */
+const SEED_SETTINGS = {
+  "athlete": {
+    "name": "Alvaro",
+    "maxHr": 185,
+    "restingHr": 55,
+    "units": "metric"
+  },
+  "goal": {
+    "raceName": "Marathon",
+    "raceDate": "2027-04-18",
+    "distanceKm": 42.195,
+    "targetTime": "3:59:00",
+    "note": "Sub-4:00 marathon. Race date assumed 2027 (18 April 2026 is in the past) - edit raceDate if different."
+  },
+  "hrZones": [
+    { "zone": "Z1", "name": "Recovery",  "minHr": 111, "maxHr": 129 },
+    { "zone": "Z2", "name": "Easy / Aerobic", "minHr": 130, "maxHr": 148 },
+    { "zone": "Z3", "name": "Steady / Marathon", "minHr": 149, "maxHr": 161 },
+    { "zone": "Z4", "name": "Threshold", "minHr": 162, "maxHr": 172 },
+    { "zone": "Z5", "name": "VO2max", "minHr": 173, "maxHr": 185 }
+  ],
+  "paceZones": [
+    { "zone": "Recovery",  "minSecPerKm": 430, "maxSecPerKm": 520 },
+    { "zone": "Easy",      "minSecPerKm": 375, "maxSecPerKm": 430 },
+    { "zone": "Steady/MP", "minSecPerKm": 330, "maxSecPerKm": 358 },
+    { "zone": "Threshold", "minSecPerKm": 305, "maxSecPerKm": 322 },
+    { "zone": "VO2 Interval", "minSecPerKm": 275, "maxSecPerKm": 295 },
+    { "zone": "Repetition",   "minSecPerKm": 255, "maxSecPerKm": 270 }
+  ],
+  "plan": {
+    "currentWeeklyKm": 20,
+    "peakWeeklyKm": 58,
+    "runsPerWeekStart": 3,
+    "runsPerWeekPeak": 5,
+    "longRunPeakKm": 32,
+    "cutbackEvery": 4,
+    "taperWeeks": 3
+  }
+};
+const SEED_ACTIVITIES = {
+  "lastSync": "2026-08-06T00:00:00Z",
+  "source": "garmin-connect-manual-seed",
+  "activities": [
+    { "id": "g-20260313-1", "date": "2026-03-13", "name": "Vienna Cycling", "type": "ride", "distanceKm": 9.04, "movingTimeS": 2086, "avgSpeedKph": 15.6, "avgHr": null, "ascentM": 51, "source": "garmin" },
+    { "id": "g-20260313-2", "date": "2026-03-13", "name": "Vienna Cycling", "type": "ride", "distanceKm": 8.91, "movingTimeS": 1977, "avgSpeedKph": 16.2, "avgHr": null, "ascentM": 108, "source": "garmin" },
+    { "id": "g-20260316", "date": "2026-03-16", "name": "Gaelic Football", "type": "cross", "distanceKm": 0, "movingTimeS": 3600, "avgHr": null, "source": "garmin" },
+    { "id": "g-20260317", "date": "2026-03-17", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 3376, "avgHr": 79, "source": "garmin" },
+    { "id": "g-20260320", "date": "2026-03-20", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 3960, "avgHr": 84, "source": "garmin" },
+    { "id": "g-20260324", "date": "2026-03-24", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 3352, "avgHr": 92, "source": "garmin" },
+    { "id": "g-20260325", "date": "2026-03-25", "name": "Vienna Running", "type": "run", "distanceKm": 6.19, "movingTimeS": 2184, "paceSecPerKm": 352, "avgHr": 155, "ascentM": 88, "source": "garmin" },
+    { "id": "g-20260326", "date": "2026-03-26", "name": "Climbing", "type": "cross", "distanceKm": 0, "movingTimeS": 2739, "avgHr": 94, "source": "garmin" },
+    { "id": "g-20260328", "date": "2026-03-28", "name": "Gaelic Handball", "type": "cross", "distanceKm": 0, "movingTimeS": 7642, "avgHr": 107, "source": "garmin" },
+    { "id": "g-20260329", "date": "2026-03-29", "name": "Run after drinks", "type": "run", "distanceKm": 10.43, "movingTimeS": 3305, "paceSecPerKm": 317, "avgHr": 162, "ascentM": 62, "source": "garmin" },
+    { "id": "g-20260331", "date": "2026-03-31", "name": "Gym Workout", "type": "strength", "distanceKm": 0, "movingTimeS": 4626, "avgHr": 89, "source": "garmin" },
+    { "id": "g-20260401", "date": "2026-04-01", "name": "Pilates", "type": "cross", "distanceKm": 0, "movingTimeS": 3252, "avgHr": 75, "source": "garmin" },
+    { "id": "g-20260408", "date": "2026-04-08", "name": "Vienna Running", "type": "run", "distanceKm": 8.04, "movingTimeS": 3078, "paceSecPerKm": 383, "avgHr": 136, "ascentM": 68, "source": "garmin" },
+    { "id": "g-20260411", "date": "2026-04-11", "name": "GAA Handball", "type": "cross", "distanceKm": 0, "movingTimeS": 5448, "avgHr": 107, "source": "garmin" },
+    { "id": "g-20260421", "date": "2026-04-21", "name": "Running", "type": "run", "distanceKm": 9.18, "movingTimeS": 4026, "paceSecPerKm": 439, "avgHr": 132, "ascentM": null, "source": "garmin" },
+    { "id": "g-20260508", "date": "2026-05-08", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 2672, "avgHr": 82, "source": "garmin" },
+    { "id": "g-20260726", "date": "2026-07-26", "name": "Warsaw Laufen", "type": "run", "distanceKm": 15.27, "movingTimeS": 5295, "paceSecPerKm": 347, "avgHr": 156, "ascentM": 80, "source": "garmin" },
+    { "id": "g-20260802-1", "date": "2026-08-02", "name": "Wien - Einstufungslauf", "type": "run", "distanceKm": 1.84, "movingTimeS": 540, "paceSecPerKm": 294, "avgHr": 149, "ascentM": 24, "source": "garmin" },
+    { "id": "g-20260802-2", "date": "2026-08-02", "name": "Wien Radfahren", "type": "ride", "distanceKm": 14.78, "movingTimeS": 4672, "avgSpeedKph": 11.4, "avgHr": null, "ascentM": 319, "source": "garmin" },
+    { "id": "g-20260804", "date": "2026-08-04", "name": "Wien - Locker laufen", "type": "run", "distanceKm": 4.6, "movingTimeS": 1800, "paceSecPerKm": 391, "avgHr": 143, "ascentM": 123, "source": "garmin" }
+  ]
+};
+
+let S = SEED_SETTINGS;          // settings
+let DB = SEED_ACTIVITIES;       // activity store
+
+/* ---------- utils ---------- */
+const $ = (sel) => document.querySelector(sel);
+const fmtPace = (s) => s == null ? "–" : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}/km`;
+const fmtDur = (s) => {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+  return h ? `${h}:${String(m).padStart(2, "0")} h` : `${m} min`;
+};
+const fmtTime = (s) => {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = Math.round(s % 60);
+  return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+};
+const fmtKm = (v) => (Math.round(v * 10) / 10).toLocaleString("en-GB");
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const parseISO = (d) => new Date(d + "T12:00:00");
+const dayMs = 86400000;
+const mondayOf = (d) => { const x = new Date(d); const wd = (x.getDay() + 6) % 7; x.setDate(x.getDate() - wd); x.setHours(0,0,0,0); return x; };
+const isoDate = (d) => d.toISOString().slice(0, 10);
+const scoreColor = (v) => v >= 85 ? "var(--good)" : v >= 70 ? "var(--warning)" : v >= 50 ? "var(--serious)" : "var(--critical)";
+const scoreWord = (v) => v >= 85 ? "Excellent" : v >= 70 ? "Good" : v >= 50 ? "Fair" : "Needs work";
+
+const runs = () => DB.activities.filter(a => a.type === "run" && a.distanceKm > 0).sort((a, b) => a.date < b.date ? -1 : 1);
+const goalPaceSec = () => {
+  const [h, m, sec] = S.goal.targetTime.split(":").map(Number);
+  return Math.round((h * 3600 + m * 60 + (sec || 0)) / S.goal.distanceKm);
+};
+
+/* ---------- analytics ---------- */
+function weeklyAgg(nWeeks) {
+  const now = new Date();
+  const thisMonday = mondayOf(now);
+  const weeks = [];
+  for (let i = nWeeks - 1; i >= 0; i--) {
+    const start = new Date(thisMonday.getTime() - i * 7 * dayMs);
+    const end = new Date(start.getTime() + 7 * dayMs);
+    const inWeek = runs().filter(r => { const d = parseISO(r.date); return d >= start && d < end; });
+    weeks.push({
+      start, label: `${start.getDate()}.${start.getMonth() + 1}.`,
+      km: inWeek.reduce((s, r) => s + r.distanceKm, 0),
+      time: inWeek.reduce((s, r) => s + r.movingTimeS, 0),
+      count: inWeek.length,
+      current: i === 0,
+    });
+  }
+  return weeks;
+}
+
+function hrZoneOf(hr) {
+  if (hr == null) return null;
+  for (let i = S.hrZones.length - 1; i >= 0; i--) if (hr >= S.hrZones[i].minHr) return i + 1;
+  return 1;
+}
+
+/* Riegel race prediction from the best recent long effort */
+function racePrediction() {
+  const candidates = runs().filter(r => r.distanceKm >= 8);
+  if (!candidates.length) return null;
+  let best = null;
+  for (const r of candidates) {
+    const t = r.movingTimeS * Math.pow(S.goal.distanceKm / r.distanceKm, 1.06);
+    if (!best || t < best.predictedS) best = { from: r, predictedS: t };
+  }
+  return best;
+}
+
+/* Infer intended session type, then score execution against it */
+function classifySession(r) {
+  const n = (r.name || "").toLowerCase();
+  if (/locker|easy|recovery|regener/.test(n)) return "easy";
+  if (/einstufung|test|race|wettkampf|5k|10k/.test(n)) return "test";
+  if (/tempo|threshold|schwelle/.test(n)) return "threshold";
+  if (/interval|vo2|track/.test(n)) return "interval";
+  if (r.distanceKm >= 13) return "long";
+  return "aerobic";
+}
+const SESSION_TARGETS = () => ({
+  easy:      { label: "Easy run",       pace: [S.paceZones[1].minSecPerKm, S.paceZones[0].maxSecPerKm], hr: [1, 2] },
+  aerobic:   { label: "Aerobic run",    pace: [S.paceZones[1].minSecPerKm - 20, S.paceZones[1].maxSecPerKm], hr: [2, 3] },
+  long:      { label: "Long run",       pace: [S.paceZones[1].minSecPerKm - 15, S.paceZones[0].maxSecPerKm], hr: [2, 3] },
+  threshold: { label: "Threshold",      pace: [S.paceZones[3].minSecPerKm, S.paceZones[3].maxSecPerKm], hr: [4, 4] },
+  interval:  { label: "VO2 intervals",  pace: [S.paceZones[4].minSecPerKm, S.paceZones[4].maxSecPerKm], hr: [4, 5] },
+  test:      { label: "Test / race",    pace: [S.paceZones[4].minSecPerKm, S.paceZones[2].maxSecPerKm], hr: [3, 5] },
+});
+function scoreExecution(r) {
+  const kind = classifySession(r);
+  const t = SESSION_TARGETS()[kind];
+  let score = 100; const notes = [];
+  if (r.paceSecPerKm != null) {
+    const [lo, hi] = t.pace;
+    if (r.paceSecPerKm < lo) { const over = lo - r.paceSecPerKm; score -= Math.min(45, over * 0.55); notes.push(`${Math.round(over)}s/km too fast`); }
+    else if (r.paceSecPerKm > hi) { const under = r.paceSecPerKm - hi; score -= Math.min(35, under * 0.35); notes.push(`${Math.round(under)}s/km slower than target`); }
+  }
+  const z = hrZoneOf(r.avgHr);
+  if (z != null) {
+    const [zlo, zhi] = t.hr;
+    if (z > zhi) { score -= (z - zhi) * 14; notes.push(`HR drifted to Z${z}`); }
+    else if (z < zlo) { score -= (zlo - z) * 8; notes.push(`HR below Z${zlo}`); }
+  }
+  return { kind, target: t, score: Math.round(clamp(score, 0, 100)), notes };
+}
+
+/* ---- the eight physiological systems (RunZones-style profile) ---- */
+function fitnessProfile() {
+  const rs = runs();
+  const now = new Date();
+  const last8w = rs.filter(r => now - parseISO(r.date) < 56 * dayMs);
+  const last6w = rs.filter(r => now - parseISO(r.date) < 42 * dayMs);
+  const weeks = weeklyAgg(8);
+  const avgWeeklyKm = weeks.reduce((s, w) => s + w.km, 0) / 8;
+  const activeWeeks = weeks.filter(w => w.count > 0).length;
+
+  const longRun = Math.max(0, ...last6w.map(r => r.distanceKm), ...rs.slice(-6).map(r => r.distanceKm));
+  const sustained = rs.filter(r => r.distanceKm >= 5 && r.paceSecPerKm);
+  const bestSustainedPace = sustained.length ? Math.min(...sustained.map(r => r.paceSecPerKm)) : null;
+  const bestShortPace = rs.filter(r => r.paceSecPerKm).length ? Math.min(...rs.filter(r => r.paceSecPerKm).map(r => r.paceSecPerKm)) : null;
+
+  const easyRuns = rs.filter(r => r.avgHr && r.paceSecPerKm && hrZoneOf(r.avgHr) <= 2);
+  let economy = null;
+  if (easyRuns.length) {
+    const eff = easyRuns.map(r => (1000 / r.paceSecPerKm) * 60 / r.avgHr); // m per min per bpm
+    economy = eff.reduce((a, b) => a + b, 0) / eff.length;
+  }
+  const easyShare = (() => {
+    const withHr = last8w.filter(r => r.avgHr);
+    if (!withHr.length) return null;
+    const easyT = withHr.filter(r => hrZoneOf(r.avgHr) <= 2).reduce((s, r) => s + r.movingTimeS, 0);
+    const totT = withHr.reduce((s, r) => s + r.movingTimeS, 0);
+    return easyT / totT;
+  })();
+
+  const map = (v, lo, hi) => v == null ? 20 : Math.round(clamp((v - lo) / (hi - lo) * 100, 4, 100));
+  const mapInv = (v, best, worst) => v == null ? 20 : Math.round(clamp((worst - v) / (worst - best) * 100, 4, 100));
+
+  return [
+    { name: "Aerobic base", score: map(avgWeeklyKm, 0, 55), why: `${fmtKm(avgWeeklyKm)} km/week avg (8w) — marathon-ready ≈ 45–55` },
+    { name: "Durability", score: map(longRun, 0, 30), why: `Longest recent run ${fmtKm(longRun)} km — build toward 30–32` },
+    { name: "Threshold control", score: mapInv(bestSustainedPace, 310, 430), why: bestSustainedPace ? `Best sustained pace ${fmtPace(bestSustainedPace)} vs threshold target ${fmtPace(S.paceZones[3].maxSecPerKm)}` : "No sustained efforts yet" },
+    { name: "VO2 capacity", score: mapInv(bestShortPace, 265, 400), why: bestShortPace ? `Fastest pace ${fmtPace(bestShortPace)}` : "No fast efforts yet" },
+    { name: "Speed", score: mapInv(bestShortPace, 240, 380), why: "Top-end pace from short efforts" },
+    { name: "Running economy", score: map(economy, 0.85, 1.45), why: economy ? `${economy.toFixed(2)} m/min per bpm on easy runs` : "Need easy runs with HR" },
+    { name: "Consistency", score: Math.round(clamp(activeWeeks / 8 * 100 * (Math.min(weeks.at(-1).count + weeks.at(-2).count, 6) / 6 * 0.5 + 0.5), 4, 100)), why: `${activeWeeks}/8 recent weeks with running` },
+    { name: "Recovery discipline", score: easyShare == null ? 20 : Math.round(clamp(100 - Math.abs(0.8 - easyShare) * 220, 4, 100)), why: easyShare != null ? `${Math.round(easyShare * 100)}% of run time easy (target ≈ 80%)` : "Need HR data" },
+  ];
+}
+
+/* ---------- adaptive plan ---------- */
+function buildPlan() {
+  const raceDay = parseISO(S.goal.raceDate);
+  const raceMonday = mondayOf(raceDay);
+  const thisMonday = mondayOf(new Date());
+  const totalWeeks = Math.max(1, Math.round((raceMonday - thisMonday) / (7 * dayMs)) + 1);
+  const p = S.plan;
+  const taper = Math.min(p.taperWeeks, totalWeeks - 1);
+  const rampWeeks = totalWeeks - taper;
+
+  // current fitness feeds the starting volume: avg of last 3 weeks, floored at plan start value
+  const recent = weeklyAgg(3);
+  const startKm = Math.max(p.currentWeeklyKm * 0.6, recent.reduce((s, w) => s + w.km, 0) / 3, 8);
+
+  const weeks = [];
+  for (let i = 0; i < totalWeeks; i++) {
+    const start = new Date(thisMonday.getTime() + i * 7 * dayMs);
+    const isRace = i === totalWeeks - 1;
+    let phase, km;
+    const frac = rampWeeks <= 1 ? 1 : i / (rampWeeks - 1);
+    if (i >= rampWeeks) {
+      phase = "Taper";
+      const tIdx = i - rampWeeks; // 0..taper-1
+      km = p.peakWeeklyKm * [0.7, 0.5, 0.35][Math.min(tIdx, 2)];
+    } else {
+      km = startKm + (p.peakWeeklyKm - startKm) * Math.pow(frac, 0.85);
+      if ((i + 1) % p.cutbackEvery === 0 && !isRace) km *= 0.68;
+      phase = frac < 0.45 ? "Base" : frac < 0.8 ? "Build" : "Peak";
+    }
+    if (isRace) { phase = "Race week"; km = Math.min(km, p.peakWeeklyKm * 0.3); }
+
+    const runsN = Math.round(p.runsPerWeekStart + (p.runsPerWeekPeak - p.runsPerWeekStart) * Math.min(1, i / Math.max(1, rampWeeks * 0.6)));
+    const longKm = isRace ? S.goal.distanceKm : clamp(km * 0.4, 8, p.longRunPeakKm) * (phase === "Taper" ? 0.7 : 1);
+    const gp = goalPaceSec();
+    const sessions = [];
+    if (isRace) {
+      sessions.push({ key: true, txt: `RACE DAY — ${S.goal.raceName}, ${fmtKm(S.goal.distanceKm)} km @ ${fmtPace(gp)} → ${S.goal.targetTime}` });
+      sessions.push({ txt: `2–3 short shakeout runs with strides` });
+    } else {
+      sessions.push({ key: true, txt: `Long run ${fmtKm(longKm)} km @ ${fmtPace(S.paceZones[1].minSecPerKm)}–${fmtPace(S.paceZones[0].maxSecPerKm)} (Z2)` + (phase === "Peak" ? `, last ${fmtKm(longKm * 0.3)} km @ MP ${fmtPace(gp)}` : "") });
+      if (phase === "Base") {
+        sessions.push({ txt: `${runsN - 1}× easy run (${fmtKm((km - longKm) / (runsN - 1))} km each, Z2) — one with 6×20s strides` });
+      } else if (phase === "Build") {
+        sessions.push({ key: true, txt: `Threshold: 3–4×8 min @ ${fmtPace(S.paceZones[3].minSecPerKm)}–${fmtPace(S.paceZones[3].maxSecPerKm)} (Z4), 2 min jog` });
+        sessions.push({ txt: `${runsN - 2}× easy run (Z2), one with strides` });
+      } else if (phase === "Peak") {
+        sessions.push({ key: true, txt: `Marathon-pace: 2×5–6 km @ ${fmtPace(gp)} inside a medium run` });
+        sessions.push({ txt: `VO2: 5×3 min @ ${fmtPace(S.paceZones[4].minSecPerKm)}–${fmtPace(S.paceZones[4].maxSecPerKm)} (Z5), 3 min jog` });
+        sessions.push({ txt: `${Math.max(1, runsN - 3)}× easy run (Z2)` });
+      } else { // Taper
+        sessions.push({ key: true, txt: `MP touch: 3–4 km @ ${fmtPace(gp)} mid-week` });
+        sessions.push({ txt: `Short easy runs only, full rest 2 days before race` });
+      }
+    }
+    weeks.push({ idx: i + 1, start, phase, km: Math.round(km), longKm: Math.round(longKm), runsN, sessions, isRace, current: i === 0 });
+  }
+  return weeks;
+}
+
+/* ---------- rendering ---------- */
+const TABS = [["dashboard", "Dashboard"], ["fitness", "Fitness profile"], ["sessions", "Sessions"], ["plan", "Plan"], ["race", "Race recipe"], ["zones", "Zones"]];
+
+function renderNav() {
+  const nav = $("#nav");
+  nav.innerHTML = "";
+  for (const [id, label] of TABS) {
+    const b = document.createElement("button");
+    b.textContent = label;
+    b.onclick = () => activate(id);
+    b.dataset.tab = id;
+    nav.appendChild(b);
+  }
+}
+function activate(id) {
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
+  document.querySelectorAll("section.tab").forEach(s => s.classList.toggle("active", s.id === "tab-" + id));
+}
+
+/* --- weekly volume chart (SVG bars + planned line of sight) --- */
+function volumeChartSVG(weeks) {
+  const W = 960, H = 240, padL = 44, padR = 12, padT = 16, padB = 30;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const maxKm = Math.max(10, ...weeks.map(w => w.km)) * 1.15;
+  const bw = iw / weeks.length;
+  const y = (v) => padT + ih - (v / maxKm) * ih;
+
+  let g = "";
+  const ticks = 4;
+  for (let i = 0; i <= ticks; i++) {
+    const v = maxKm / ticks * i, yy = y(v);
+    g += `<line x1="${padL}" y1="${yy}" x2="${W - padR}" y2="${yy}" stroke="var(--grid)" stroke-width="1"/>`;
+    g += `<text x="${padL - 8}" y="${yy + 4}" text-anchor="end" font-size="11" fill="var(--muted)" style="font-variant-numeric:tabular-nums">${Math.round(v)}</text>`;
+  }
+  let bars = "";
+  weeks.forEach((w, i) => {
+    const x = padL + i * bw + bw * 0.22, wd = bw * 0.56;
+    const h = Math.max(w.km > 0 ? 3 : 0, ih * (w.km / maxKm));
+    const fill = w.current ? "var(--series-2)" : "var(--series-1)";
+    bars += `<path d="M${x},${padT + ih} v${-(h - 4)} q0,-4 4,-4 h${wd - 8} q4,0 4,4 v${h - 4} z"
+      fill="${fill}" data-tip="Week of ${w.label}|${fmtKm(w.km)} km · ${w.count} run${w.count === 1 ? "" : "s"} · ${fmtDur(w.time)}" class="hit"/>`;
+    if (w.km > 0 && (w.current || w.km === Math.max(...weeks.map(q => q.km))))
+      bars += `<text x="${x + wd / 2}" y="${y(w.km) - 6}" text-anchor="middle" font-size="11" fill="var(--text-secondary)">${fmtKm(w.km)}</text>`;
+    bars += `<text x="${x + wd / 2}" y="${H - 10}" text-anchor="middle" font-size="10.5" fill="var(--muted)">${w.label}</text>`;
+  });
+  g += `<line x1="${padL}" y1="${padT + ih}" x2="${W - padR}" y2="${padT + ih}" stroke="var(--baseline)" stroke-width="1"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Weekly running volume, kilometres per week" style="width:100%;height:auto">${g}${bars}</svg>`;
+}
+
+function renderDashboard() {
+  const el = $("#tab-dashboard");
+  const raceDay = parseISO(S.goal.raceDate);
+  const days = Math.max(0, Math.round((raceDay - new Date()) / dayMs));
+  const weeks = weeklyAgg(12);
+  const thisWeek = weeks.at(-1);
+  const pred = racePrediction();
+  const profile = fitnessProfile();
+  const readiness = Math.round(profile.reduce((s, p) => s + p.score, 0) / profile.length);
+  const rs = runs();
+  const recent = rs.slice(-6).reverse();
+
+  $("#headSub").textContent = `${S.goal.raceName} · ${raceDay.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · goal ${S.goal.targetTime.replace(/^0/, "").slice(0, 4)} (sub-4)`;
+
+  el.innerHTML = `
+    <div class="cards">
+      <div class="card"><div class="k">Days to race</div><div class="v">${days}</div><div class="d">${Math.floor(days / 7)} weeks</div></div>
+      <div class="card"><div class="k">Readiness</div><div class="v" style="color:${scoreColor(readiness)}">${readiness}<span class="unit">/100</span></div><div class="d">${scoreWord(readiness)} — avg of 8 systems</div></div>
+      <div class="card"><div class="k">This week</div><div class="v">${fmtKm(thisWeek.km)}<span class="unit"> km</span></div><div class="d">${thisWeek.count} run${thisWeek.count === 1 ? "" : "s"}</div></div>
+      <div class="card"><div class="k">Predicted marathon</div><div class="v">${pred ? fmtTime(pred.predictedS) : "–"}</div><div class="d">${pred ? "from " + fmtKm(pred.from.distanceKm) + " km @ " + fmtPace(pred.from.paceSecPerKm) : "need a run ≥ 8 km"}</div></div>
+      <div class="card"><div class="k">Goal pace</div><div class="v">${fmtPace(goalPaceSec()).replace("/km", "")}<span class="unit">/km</span></div><div class="d">for ${S.goal.targetTime}</div></div>
+    </div>
+    <div class="panel">
+      <h2>Weekly volume</h2>
+      <div class="hint">Last 12 weeks of running. Hover a bar for detail.</div>
+      ${volumeChartSVG(weeks)}
+      <div class="legend"><span><i style="background:var(--series-1)"></i>Completed weeks</span><span><i style="background:var(--series-2)"></i>Current week</span></div>
+    </div>
+    <div class="panel">
+      <h2>Recent runs</h2>
+      <div class="hint">Latest activities with execution score (how well the run matched its intended session).</div>
+      <table>
+        <thead><tr><th>Date</th><th>Run</th><th>Session</th><th class="num">Km</th><th class="num">Pace</th><th class="num">HR</th><th class="num">Execution</th></tr></thead>
+        <tbody>${recent.map(r => {
+          const ex = scoreExecution(r);
+          return `<tr><td>${parseISO(r.date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</td>
+            <td>${r.name}</td><td><span class="chip">${ex.target.label}</span></td>
+            <td class="num">${fmtKm(r.distanceKm)}</td><td class="num">${fmtPace(r.paceSecPerKm)}</td>
+            <td class="num">${r.avgHr ?? "–"}${r.avgHr ? ` <span style="color:var(--muted)">Z${hrZoneOf(r.avgHr)}</span>` : ""}</td>
+            <td class="num"><span class="chip"><span class="dot" style="background:${scoreColor(ex.score)}"></span>${ex.score}</span></td></tr>`;
+        }).join("")}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderFitness() {
+  const el = $("#tab-fitness");
+  const profile = fitnessProfile();
+  el.innerHTML = `
+    <div class="panel">
+      <h2>Fitness profile — 8 systems</h2>
+      <div class="hint">Each system is scored 0–100 from your synced training history (last 8 weeks weigh most). Scores are computed by simple transparent formulas — the line under each system shows exactly why.</div>
+      ${profile.map(p => `
+        <div class="sysrow">
+          <div><div class="name">${p.name}</div><div class="why">${p.why}</div></div>
+          <div class="sysbar"><div style="width:${p.score}%;background:${scoreColor(p.score)}"></div></div>
+          <div class="score">${p.score}</div>
+        </div>`).join("")}
+      <div class="note">With only a handful of runs synced, low scores mostly mean "not enough data yet" — they will move quickly once training is regular. Formulas live in index.html and are yours to tune.</div>
+    </div>`;
+}
+
+function renderSessions() {
+  const el = $("#tab-sessions");
+  const rs = runs().slice().reverse();
+  el.innerHTML = `
+    <div class="panel">
+      <h2>Session execution</h2>
+      <div class="hint">Every synced run, classified (from its name, distance and intensity) and scored against the pace/HR target of that session type.</div>
+      <table>
+        <thead><tr><th>Date</th><th>Run</th><th>Classified as</th><th class="num">Km</th><th class="num">Pace</th><th>Target pace</th><th class="num">Score</th><th>Notes</th></tr></thead>
+        <tbody>${rs.map(r => {
+          const ex = scoreExecution(r);
+          return `<tr>
+            <td>${parseISO(r.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}</td>
+            <td>${r.name}</td><td><span class="chip">${ex.target.label}</span></td>
+            <td class="num">${fmtKm(r.distanceKm)}</td><td class="num">${fmtPace(r.paceSecPerKm)}</td>
+            <td>${fmtPace(ex.target.pace[0])}–${fmtPace(ex.target.pace[1])}</td>
+            <td class="num"><span class="chip"><span class="dot" style="background:${scoreColor(ex.score)}"></span>${ex.score} · ${scoreWord(ex.score)}</span></td>
+            <td style="color:var(--text-secondary);font-size:12.5px">${ex.notes.join("; ") || "On target"}</td></tr>`;
+        }).join("")}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderPlan() {
+  const el = $("#tab-plan");
+  const plan = buildPlan();
+  const phases = [...new Set(plan.map(w => w.phase))];
+  el.innerHTML = `
+    <div class="panel">
+      <h2>Adaptive plan to ${S.goal.raceName} (${parseISO(S.goal.raceDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })})</h2>
+      <div class="hint">${plan.length} weeks: ${phases.join(" → ")}. Volume starts from your current 3-week average and ramps to ${S.plan.peakWeeklyKm} km with a cutback every ${S.plan.cutbackEvery}th week. Regenerated live from your synced data — as your training changes, next week's plan follows.</div>
+      ${plan.map(w => `
+        <div class="weekcard${w.current ? " current" : ""}">
+          <div class="whead">
+            <span><b>Week ${w.idx}</b> · ${w.start.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} <span class="phase">· ${w.phase}</span>${w.current ? ' <span class="chip" style="margin-left:6px">this week</span>' : ""}</span>
+            <span>${w.isRace ? "" : `${w.km} km · ${w.runsN} runs · long ${w.longKm} km`}</span>
+          </div>
+          <ul>${w.sessions.map(s => `<li${s.key ? ' class="key"' : ""}>${s.txt}</li>`).join("")}</ul>
+        </div>`).join("")}
+    </div>`;
+}
+
+function renderRace() {
+  const el = $("#tab-race");
+  const pred = racePrediction();
+  const gp = goalPaceSec();
+  const goalS = gp * S.goal.distanceKm;
+  const gapS = pred ? pred.predictedS - goalS : null;
+  const splits = [];
+  for (let k = 5; k <= 40; k += 5) splits.push([k, fmtTime(gp * k)]);
+  splits.push([42.195, fmtTime(Math.round(gp * S.goal.distanceKm))]);
+  el.innerHTML = `
+    <div class="panel">
+      <h2>Race recipe — sub-4:00 marathon</h2>
+      <div class="hint">Where you are now vs what the goal requires, from your best recent efforts.</div>
+      <div class="cards" style="margin-top:8px">
+        <div class="card"><div class="k">Current predicted time</div><div class="v">${pred ? fmtTime(pred.predictedS) : "–"}</div><div class="d">${pred ? `Riegel from ${fmtKm(pred.from.distanceKm)} km @ ${fmtPace(pred.from.paceSecPerKm)} (${pred.from.date})` : "Need a run ≥ 8 km"}</div></div>
+        <div class="card"><div class="k">Goal</div><div class="v">${S.goal.targetTime}</div><div class="d">${fmtPace(gp)} average</div></div>
+        <div class="card"><div class="k">Gap to close</div><div class="v" style="color:${gapS != null && gapS <= 0 ? "var(--good-text)" : "var(--text-primary)"}">${gapS == null ? "–" : (gapS <= 0 ? "On track ✓" : fmtTime(gapS))}</div><div class="d">${gapS != null && gapS > 0 ? `≈ ${Math.round(gapS / S.goal.distanceKm)}s/km of fitness to build` : ""}</div></div>
+      </div>
+      <h2 style="margin-top:10px">The recipe</h2>
+      <ul style="margin:10px 0 0 18px;font-size:13.5px;color:var(--text-secondary);display:grid;gap:6px">
+        <li><b style="color:var(--text-primary)">Volume before speed.</b> The single biggest lever from where you are: get to 40–55 km/week and hold it. The plan tab ramps you there.</li>
+        <li><b style="color:var(--text-primary)">80% easy.</b> Most running in Z2 (${S.hrZones[1].minHr}–${S.hrZones[1].maxHr} bpm / ${fmtPace(S.paceZones[1].minSecPerKm)}–${fmtPace(S.paceZones[0].maxSecPerKm)}). Your Warsaw 15 km at HR 156 was a great effort — but that intensity every run blocks volume growth.</li>
+        <li><b style="color:var(--text-primary)">Long run is sacred.</b> One per week, building to 30–32 km. Marathon pace segments appear in the Peak phase.</li>
+        <li><b style="color:var(--text-primary)">Touch goal pace weekly from Build phase.</b> ${fmtPace(gp)} must feel boring by April.</li>
+        <li><b style="color:var(--text-primary)">Test races.</b> A 10K in autumn and a half marathon ~8 weeks out (target ≈ 1:52–1:55) will recalibrate every number here automatically.</li>
+      </ul>
+      <h2 style="margin-top:18px">Goal splits (even pacing)</h2>
+      <table style="max-width:420px;margin-top:8px">
+        <thead><tr><th>Km</th><th class="num">Elapsed</th></tr></thead>
+        <tbody>${splits.map(([k, t]) => `<tr><td>${k}</td><td class="num">${t}</td></tr>`).join("")}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderZones() {
+  const el = $("#tab-zones");
+  el.innerHTML = `
+    <div class="panel">
+      <h2>Heart-rate zones</h2>
+      <div class="hint">Based on max HR ${S.athlete.maxHr} (highest observed). Update maxHr in data/settings.json after any race or hard test.</div>
+      <table style="max-width:560px">
+        <thead><tr><th>Zone</th><th>Name</th><th class="num">bpm</th><th class="num">% max</th></tr></thead>
+        <tbody>${S.hrZones.map(z => `<tr><td><b>${z.zone}</b></td><td>${z.name}</td><td class="num">${z.minHr}–${z.maxHr}</td><td class="num">${Math.round(z.minHr / S.athlete.maxHr * 100)}–${Math.round(z.maxHr / S.athlete.maxHr * 100)}%</td></tr>`).join("")}</tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <h2>Pace zones</h2>
+      <div class="hint">Calibrated from your recent training (best sustained ~${fmtPace(317)}, long run ${fmtPace(347)}). These tighten automatically in spirit — re-derive after each test race.</div>
+      <table style="max-width:560px">
+        <thead><tr><th>Zone</th><th class="num">Pace</th></tr></thead>
+        <tbody>${S.paceZones.map(z => `<tr><td>${z.zone}</td><td class="num">${fmtPace(z.maxSecPerKm)} – ${fmtPace(z.minSecPerKm)}</td></tr>`).join("")}</tbody>
+      </table>
+      <div class="note">Goal marathon pace ${fmtPace(goalPaceSec())} sits at the top of Steady/MP — exactly where it should be for a realistic goal.</div>
+    </div>`;
+}
+
+/* ---------- tooltip ---------- */
+function wireTooltip() {
+  const tip = $("#tooltip");
+  document.addEventListener("mousemove", (e) => {
+    const t = e.target.closest?.("[data-tip]");
+    if (!t) { tip.style.display = "none"; return; }
+    const [l1, l2] = t.dataset.tip.split("|");
+    tip.innerHTML = `<div class="t1">${l1}</div><div class="t2">${l2 || ""}</div>`;
+    tip.style.display = "block";
+    const x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8);
+    tip.style.left = x + "px";
+    tip.style.top = (e.clientY + 16) + "px";
+  });
+}
+
+/* ---------- boot ---------- */
+async function boot() {
+  // hosted mode: live JSON overrides the embedded seed
+  try {
+    const [s, a] = await Promise.all([
+      fetch("data/settings.json").then(r => r.ok ? r.json() : null),
+      fetch("data/activities.json").then(r => r.ok ? r.json() : null),
+    ]);
+    if (s) S = s;
+    if (a) DB = a;
+  } catch (e) { /* file:// mode — use embedded seed */ }
+  renderNav();
+  renderDashboard();
+  renderFitness();
+  renderSessions();
+  renderPlan();
+  renderRace();
+  renderZones();
+  activate("dashboard");
+  wireTooltip();
+}
+boot();
+</script>
+</body>
+</html>
