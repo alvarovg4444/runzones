@@ -31,9 +31,15 @@
     "currentWeeklyKm": 20,
     "peakWeeklyKm": 58,
     "runsPerWeekStart": 3,
-    "runsPerWeekPeak": 5,
+    "runsPerWeekPeak": 4,
     "longRunPeakKm": 32,
     "cutbackEvery": 4,
     "taperWeeks": 3
+  },
+  "schedule": {
+    "comment": "JS day numbers: 0=Sunday 1=Monday ... 6=Saturday. Wed+Sat are no-run days.",
+    "runDays": [1, 2, 4, 0],
+    "longRunDay": 0,
+    "gymDays": { "3": "Legs", "5": "Back", "6": "Chest" }
   }
 }
