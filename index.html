@@ -131,7 +131,22 @@
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
   .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
-  @media (max-width: 640px) { .sysrow { grid-template-columns: 120px 1fr 38px; } }
+
+  .calweek { border: 1px solid var(--grid); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+  .calweek.current { border-color: var(--series-1); }
+  .daygrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+  .daycard { border: 1px solid var(--grid); border-radius: 8px; padding: 8px 9px; min-height: 64px; background: var(--page); }
+  .daycard.today { outline: 2px solid var(--series-1); outline-offset: -1px; }
+  .dhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .dnum { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .dbadge { font-size: 9.5px; font-weight: 700; letter-spacing: 0.05em; color: #fff; border-radius: 4px; padding: 1px 6px; }
+  .dtitle { font-size: 12.5px; font-weight: 600; line-height: 1.3; }
+  .dtag { font-weight: 500; color: var(--text-secondary); font-size: 11.5px; }
+  .dsteps { list-style: none; margin-top: 6px; display: grid; gap: 3px; }
+  .dsteps li { font-size: 11px; color: var(--text-secondary); line-height: 1.35; padding-left: 10px; position: relative; }
+  .dsteps li::before { content: ""; position: absolute; left: 0; top: 6px; width: 4px; height: 4px; border-radius: 50%; background: var(--baseline); }
+  @media (max-width: 900px) { .daygrid { grid-template-columns: repeat(2, 1fr); } .compactgrid { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 640px) { .sysrow { grid-template-columns: 120px 1fr 38px; } .daygrid { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -142,6 +157,7 @@
 </header>
 <main>
   <section class="tab" id="tab-dashboard"></section>
+  <section class="tab" id="tab-calendar"></section>
   <section class="tab" id="tab-fitness"></section>
   <section class="tab" id="tab-sessions"></section>
   <section class="tab" id="tab-plan"></section>
@@ -190,10 +206,16 @@ const SEED_SETTINGS = {
     "currentWeeklyKm": 20,
     "peakWeeklyKm": 58,
     "runsPerWeekStart": 3,
-    "runsPerWeekPeak": 5,
+    "runsPerWeekPeak": 4,
     "longRunPeakKm": 32,
     "cutbackEvery": 4,
     "taperWeeks": 3
+  },
+  "schedule": {
+    "comment": "JS day numbers: 0=Sunday 1=Monday ... 6=Saturday. Wed+Sat are no-run days.",
+    "runDays": [1, 2, 4, 0],
+    "longRunDay": 0,
+    "gymDays": { "3": "Legs", "5": "Back", "6": "Chest" }
   }
 };
 const SEED_ACTIVITIES = {
@@ -429,8 +451,97 @@ function buildPlan() {
   return weeks;
 }
 
+/* ---------- daily calendar (Garmin-coach-style detail) ---------- */
+const GYM_TEMPLATES = {
+  "Legs": ["Squats 4×8 (or goblet squats)", "Romanian deadlift 3×10", "Walking lunges 3×12/leg", "Calf raises 3×15", "Single-leg glute bridge 3×10/leg", "Plank 3×45s"],
+  "Back": ["Pull-ups or lat pulldown 4×8", "Barbell/dumbbell row 4×10", "Face pulls 3×15", "Reverse fly 3×12", "Farmer's carry 3×40m", "Side plank 3×30s/side"],
+  "Chest": ["Bench press 4×8", "Incline dumbbell press 3×10", "Push-ups 3×max", "Overhead press 3×10", "Dips (assisted ok) 3×8", "Hollow hold 3×30s"],
+};
+const pz = (i) => S.paceZones[i];
+const paceRange = (i) => `${fmtPace(pz(i).maxSecPerKm)}–${fmtPace(pz(i).minSecPerKm)}`;
+const hrRange = (i) => `${S.hrZones[i].minHr}–${S.hrZones[i].maxHr} bpm`;
+
+/* Build the 7 concrete days of a plan week. Schedule: runs Mon/Tue/Thu/Sun, gym Wed/Fri/Sat. */
+function buildWeekDays(w) {
+  const gp = goalPaceSec();
+  const days = [];
+  const easyKmPool = Math.max(0, w.km - w.longKm);
+  const runDays = (S.schedule?.runDays ?? [1, 2, 4, 0]).slice();
+  const gymDays = S.schedule?.gymDays ?? { "3": "Legs", "5": "Back", "6": "Chest" };
+  const longDay = S.schedule?.longRunDay ?? 0;
+  const qualityDay = 2; // Tuesday
+  const midDay = 4;     // Thursday
+  const nRuns = runDays.length;
+  const easyEach = Math.max(3, Math.round(easyKmPool / Math.max(1, nRuns - 1)));
+
+  for (let d = 1; d <= 7; d++) {
+    const dow = d % 7; // Mon(1)..Sat(6),Sun(0)
+    const date = new Date(w.start.getTime() + (d - 1) * dayMs);
+    const day = { date, dow, kind: "rest", title: "Rest", steps: [], tag: "" };
+
+    if (w.isRace && dow === longDay) {
+      day.kind = "race"; day.title = `RACE — ${S.goal.raceName}`; day.tag = "42.2 km";
+      day.steps = [
+        `Warm-up: 10 min easy jog + strides, be at the line relaxed`,
+        `0–30 km: lock ${fmtPace(gp)} — never faster`,
+        `30–42 km: hold form, count down the kms`,
+        `Target: ${S.goal.targetTime} (${fmtPace(gp)})`];
+    } else if (runDays.includes(dow) && !w.isRace) {
+      day.kind = "run";
+      if (dow === longDay) {
+        day.title = "Long run"; day.tag = `${w.longKm} km`;
+        day.steps = [
+          `Warm-up: first 2 km very easy (${fmtPace(pz(0).maxSecPerKm)}+)`,
+          `Main: ${w.longKm} km total @ ${paceRange(1)} (Z2, ${hrRange(1)})`];
+        if (w.phase === "Peak") day.steps.push(`Finish: last ${Math.max(3, Math.round(w.longKm * 0.25))} km @ marathon pace ${fmtPace(gp)}`);
+        day.steps.push("Fuel: gel/carbs every 30–40 min from 60 min on");
+      } else if (dow === qualityDay && (w.phase === "Build" || w.phase === "Peak" || w.phase === "Taper")) {
+        if (w.phase === "Build") {
+          day.title = "Threshold intervals"; day.tag = `≈${easyEach + 3} km`;
+          day.steps = [
+            "Warm-up: 15 min easy + 4×20s strides",
+            `Main: 3×8 min @ ${paceRange(3)} (Z4, ${hrRange(3)}), 2 min jog between`,
+            "Cool-down: 10 min easy"];
+        } else if (w.phase === "Peak") {
+          day.title = "VO2 intervals"; day.tag = `≈${easyEach + 3} km`;
+          day.steps = [
+            "Warm-up: 15 min easy + 4×20s strides",
+            `Main: 5×3 min @ ${paceRange(4)} (Z5, ${hrRange(4)}), 3 min jog between`,
+            "Cool-down: 10 min easy"];
+        } else {
+          day.title = "Marathon-pace touch"; day.tag = "≈6 km";
+          day.steps = ["Warm-up: 10 min easy", `Main: 3 km @ ${fmtPace(gp)} — should feel controlled`, "Cool-down: 10 min easy"];
+        }
+      } else if (dow === midDay && w.phase === "Peak") {
+        day.title = "Marathon-pace run"; day.tag = `≈${easyEach + 4} km`;
+        day.steps = [
+          "Warm-up: 2 km easy",
+          `Main: 2×5 km @ marathon pace ${fmtPace(gp)}, 1 km float between`,
+          "Cool-down: 1 km easy"];
+      } else {
+        day.title = "Easy run"; day.tag = `${easyEach} km`;
+        day.steps = [
+          `${easyEach} km @ ${paceRange(1)} (Z2, ${hrRange(1)})`,
+          "Conversational pace — if in doubt, slower"];
+        if (dow === 1) day.steps.push("Finish with 6×20s strides, full recovery");
+      }
+    } else if (gymDays[String(dow)]) {
+      const g = gymDays[String(dow)];
+      if (w.isRace && (dow === 5 || dow === 6)) {
+        day.kind = "rest"; day.title = "Rest (race week)"; day.steps = ["Legs up, hydrate, carbs"];
+      } else {
+        day.kind = "gym"; day.title = `Gym — ${g}`; day.tag = "45–60 min";
+        day.steps = (GYM_TEMPLATES[g] || []).slice();
+        if (w.phase === "Taper") { day.steps = day.steps.slice(0, 3); day.steps.push("Taper: light weights, stop 2 reps short"); }
+      }
+    }
+    days.push(day);
+  }
+  return days;
+}
+
 /* ---------- rendering ---------- */
-const TABS = [["dashboard", "Dashboard"], ["fitness", "Fitness profile"], ["sessions", "Sessions"], ["plan", "Plan"], ["race", "Race recipe"], ["zones", "Zones"]];
+const TABS = [["dashboard", "Dashboard"], ["calendar", "Calendar"], ["fitness", "Fitness profile"], ["sessions", "Sessions"], ["plan", "Plan"], ["race", "Race recipe"], ["zones", "Zones"]];
 
 function renderNav() {
   const nav = $("#nav");
@@ -616,6 +727,45 @@ function renderRace() {
     </div>`;
 }
 
+function renderCalendar() {
+  const el = $("#tab-calendar");
+  const plan = buildPlan();
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const DETAIL_WEEKS = 6; // full detail for the next 6 weeks, compact after
+
+  const dayCard = (day, compact) => {
+    const isToday = day.date.getTime() === today.getTime();
+    const colors = { run: "var(--series-1)", gym: "var(--series-2)", race: "var(--critical)", rest: "var(--baseline)" };
+    const badge = { run: "RUN", gym: "GYM", race: "RACE", rest: "REST" }[day.kind];
+    return `<div class="daycard${isToday ? " today" : ""}">
+      <div class="dhead"><span class="dnum">${day.date.getDate()}.${day.date.getMonth() + 1}.</span>
+        <span class="dbadge" style="background:${colors[day.kind]}">${badge}</span></div>
+      <div class="dtitle">${day.title}${day.tag ? ` <span class="dtag">${day.tag}</span>` : ""}</div>
+      ${compact || !day.steps.length ? "" : `<ul class="dsteps">${day.steps.map(s => `<li>${s}</li>`).join("")}</ul>`}
+    </div>`;
+  };
+
+  el.innerHTML = `
+    <div class="panel">
+      <h2>Training calendar</h2>
+      <div class="hint">Your week: runs Mon · Tue · Thu · Sun (long run), gym Wed (legs) · Fri (back) · Sat (chest) — Wed &amp; Sat are no-run days. Full day-by-day detail for the next ${DETAIL_WEEKS} weeks, compact after that (it fills in as the weeks approach). Change the schedule in data/settings.json.</div>
+      ${plan.map((w, i) => `
+        <div class="calweek${w.current ? " current" : ""}">
+          <div class="whead" style="margin-bottom:8px">
+            <span><b>Week ${w.idx}</b> · ${w.start.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} <span class="phase">· ${w.phase}</span>${w.current ? ' <span class="chip" style="margin-left:6px">this week</span>' : ""}</span>
+            <span style="color:var(--text-secondary);font-size:12.5px">${w.isRace ? "Race week" : `${w.km} km running · long ${w.longKm} km`}</span>
+          </div>
+          <div class="daygrid${i < DETAIL_WEEKS ? "" : " compactgrid"}">
+            ${buildWeekDays(w).map(d => dayCard(d, i >= DETAIL_WEEKS)).join("")}
+          </div>
+        </div>`).join("")}
+    </div>`;
+  // jump to current week
+  const cur = el.querySelector(".calweek.current");
+  if (cur && location.hash === "#calendar") cur.scrollIntoView({ block: "start" });
+}
+
 function renderZones() {
   const el = $("#tab-zones");
   el.innerHTML = `
@@ -666,6 +816,7 @@ async function boot() {
   } catch (e) { /* file:// mode — use embedded seed */ }
   renderNav();
   renderDashboard();
+  renderCalendar();
   renderFitness();
   renderSessions();
   renderPlan();

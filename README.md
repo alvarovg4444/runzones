@@ -22,45 +22,44 @@ Currently configured for: **Marathon on 2027-04-18, goal sub-4:00** (edit
 > No GitHub? The app also works by just double-clicking `index.html` —
 > it uses the embedded copy of your data. But then nothing syncs.
 
-## 2. Connect Strava (10 min, one time)
+## 2. Getting your runs in — three options (everything on GitHub is free)
 
-Prerequisite: your Garmin is already linked to Strava (Strava app →
-Settings → Applications → Connect Garmin), so every run lands on Strava.
+GitHub costs nothing here: public repos get **free unlimited Actions minutes**
+and **free Pages hosting**. The only paid thing in the original design was
+Strava's API (since June 2026 it requires an active Strava subscription), so
+options A and B avoid Strava entirely.
 
-1. Create an API app at <https://www.strava.com/settings/api>.
-   - Website: your Pages URL. Authorization Callback Domain: `localhost`.
-   - Note the **Client ID** and **Client Secret**.
-2. In your browser, open (replace YOUR_CLIENT_ID):
+### Option A — Garmin CSV, weekly, zero accounts (recommended to start)
 
-   ```
-   https://www.strava.com/oauth/authorize?client_id=YOUR_CLIENT_ID&response_type=code&redirect_uri=http://localhost/exchange&approval_prompt=force&scope=activity:read_all
-   ```
+1. Open <https://connect.garmin.com/app/activities> → **Export CSV** (top right).
+2. In this repo: open the `data/` folder → **Add file → Upload files** →
+   drop the CSV, rename it to `garmin_export.csv` if needed → Commit.
+3. The **Garmin CSV import** Action converts it, merges only new activities
+   into `data/activities.json`, and deletes the CSV. ~1 min of clicking per week.
 
-   Click **Authorize**. The localhost error page is expected — copy the
-   `code=...` value from the address bar.
-3. Run the helper (any machine with Python 3):
+### Option B — intervals.icu, automatic, free
 
-   ```
-   python3 scripts/strava_auth.py CLIENT_ID CLIENT_SECRET CODE
-   ```
+[intervals.icu](https://intervals.icu) is free, syncs automatically from
+Garmin Connect, and gives every user a personal API key.
 
-4. In the repo: **Settings → Secrets and variables → Actions → New repository
-   secret**, add the three values it prints:
-   `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN`.
-5. **Actions** tab → "Strava sync" → **Run workflow** to test. It then runs
-   every 6 hours by itself and commits new runs to `data/activities.json`.
+1. Create an account at intervals.icu and connect Garmin in its settings.
+2. In intervals.icu **Settings → Developer**: copy your **Athlete ID** (i123456)
+   and **API key**.
+3. Repo **Settings → Secrets and variables → Actions**: add
+   `INTERVALS_ATHLETE_ID` and `INTERVALS_API_KEY`.
+4. Done — the **Intervals.icu sync** Action pulls new activities every 6 hours.
+
+### Option C — Strava (only if you already pay for Strava)
+
+Requires an active Strava subscription for API access. See
+`scripts/strava_auth.py` for the one-time token setup; secrets:
+`STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN`.
 
 ## 3. Backfill history (optional)
 
-The repo ships seeded with your recent Garmin activities. For a full history:
-Strava → Settings → My Account → *Download or Delete Your Account* →
-Download Request. Unzip, then:
-
-```
-python3 scripts/backfill_strava_export.py path/to/activities.csv
-```
-
-Commit and push the updated `data/activities.json`.
+Option A also works for history: Garmin's CSV export includes everything shown
+in the activities list. For a Strava bulk export instead, use
+`python3 scripts/backfill_strava_export.py path/to/activities.csv`.
 
 ## How it works
 
