@@ -9,8 +9,10 @@
     "raceName": "Marathon",
     "raceDate": "2027-04-18",
     "distanceKm": 42.195,
-    "targetTime": "3:59:00",
-    "note": "Sub-4:00 marathon. Race date assumed 2027 (18 April 2026 is in the past) - edit raceDate if different."
+    "targetTime": "3:30:00",
+    "bankTime": "3:45:00",
+    "floorTime": "3:59:00",
+    "note": "Strategy: train for 3:30 so that a rough day still banks 3:45 and a bad day stays under 4:00. Race date assumed 2027 - edit if different."
   },
   "hrZones": [
     { "zone": "Z1", "name": "Recovery",  "minHr": 111, "maxHr": 129 },
@@ -20,17 +22,18 @@
     { "zone": "Z5", "name": "VO2max", "minHr": 173, "maxHr": 185 }
   ],
   "paceZones": [
-    { "zone": "Recovery",  "minSecPerKm": 430, "maxSecPerKm": 520 },
-    { "zone": "Easy",      "minSecPerKm": 375, "maxSecPerKm": 430 },
-    { "zone": "Steady/MP", "minSecPerKm": 330, "maxSecPerKm": 358 },
-    { "zone": "Threshold", "minSecPerKm": 305, "maxSecPerKm": 322 },
-    { "zone": "VO2 Interval", "minSecPerKm": 275, "maxSecPerKm": 295 },
-    { "zone": "Repetition",   "minSecPerKm": 255, "maxSecPerKm": 270 }
+    { "zone": "Recovery",  "minSecPerKm": 420, "maxSecPerKm": 500 },
+    { "zone": "Easy",      "minSecPerKm": 360, "maxSecPerKm": 415 },
+    { "zone": "Steady/MP", "minSecPerKm": 310, "maxSecPerKm": 345 },
+    { "zone": "Threshold", "minSecPerKm": 290, "maxSecPerKm": 310 },
+    { "zone": "VO2 Interval", "minSecPerKm": 265, "maxSecPerKm": 285 },
+    { "zone": "Repetition",   "minSecPerKm": 245, "maxSecPerKm": 262 }
   ],
+  "zonesNote": "Zones sit between current fitness (threshold ~5:15/km) and the 3:30 target chain (threshold ~4:50). Re-derived after every test race - Scullion: threshold must FEEL sustainable 50-70 min; if a rep cooks you, it was too fast, back off to the slow end of the band.",
   "plan": {
-    "currentWeeklyKm": 20,
-    "peakWeeklyKm": 58,
-    "runsPerWeekStart": 3,
+    "currentWeeklyKm": 34,
+    "peakWeeklyKm": 62,
+    "runsPerWeekStart": 4,
     "runsPerWeekPeak": 4,
     "longRunPeakKm": 32,
     "cutbackEvery": 4,
