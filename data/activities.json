@@ -1,0 +1,26 @@
+{
+  "lastSync": "2026-08-06T00:00:00Z",
+  "source": "garmin-connect-manual-seed",
+  "activities": [
+    { "id": "g-20260313-1", "date": "2026-03-13", "name": "Vienna Cycling", "type": "ride", "distanceKm": 9.04, "movingTimeS": 2086, "avgSpeedKph": 15.6, "avgHr": null, "ascentM": 51, "source": "garmin" },
+    { "id": "g-20260313-2", "date": "2026-03-13", "name": "Vienna Cycling", "type": "ride", "distanceKm": 8.91, "movingTimeS": 1977, "avgSpeedKph": 16.2, "avgHr": null, "ascentM": 108, "source": "garmin" },
+    { "id": "g-20260316", "date": "2026-03-16", "name": "Gaelic Football", "type": "cross", "distanceKm": 0, "movingTimeS": 3600, "avgHr": null, "source": "garmin" },
+    { "id": "g-20260317", "date": "2026-03-17", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 3376, "avgHr": 79, "source": "garmin" },
+    { "id": "g-20260320", "date": "2026-03-20", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 3960, "avgHr": 84, "source": "garmin" },
+    { "id": "g-20260324", "date": "2026-03-24", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 3352, "avgHr": 92, "source": "garmin" },
+    { "id": "g-20260325", "date": "2026-03-25", "name": "Vienna Running", "type": "run", "distanceKm": 6.19, "movingTimeS": 2184, "paceSecPerKm": 352, "avgHr": 155, "ascentM": 88, "source": "garmin" },
+    { "id": "g-20260326", "date": "2026-03-26", "name": "Climbing", "type": "cross", "distanceKm": 0, "movingTimeS": 2739, "avgHr": 94, "source": "garmin" },
+    { "id": "g-20260328", "date": "2026-03-28", "name": "Gaelic Handball", "type": "cross", "distanceKm": 0, "movingTimeS": 7642, "avgHr": 107, "source": "garmin" },
+    { "id": "g-20260329", "date": "2026-03-29", "name": "Run after drinks", "type": "run", "distanceKm": 10.43, "movingTimeS": 3305, "paceSecPerKm": 317, "avgHr": 162, "ascentM": 62, "source": "garmin" },
+    { "id": "g-20260331", "date": "2026-03-31", "name": "Gym Workout", "type": "strength", "distanceKm": 0, "movingTimeS": 4626, "avgHr": 89, "source": "garmin" },
+    { "id": "g-20260401", "date": "2026-04-01", "name": "Pilates", "type": "cross", "distanceKm": 0, "movingTimeS": 3252, "avgHr": 75, "source": "garmin" },
+    { "id": "g-20260408", "date": "2026-04-08", "name": "Vienna Running", "type": "run", "distanceKm": 8.04, "movingTimeS": 3078, "paceSecPerKm": 383, "avgHr": 136, "ascentM": 68, "source": "garmin" },
+    { "id": "g-20260411", "date": "2026-04-11", "name": "GAA Handball", "type": "cross", "distanceKm": 0, "movingTimeS": 5448, "avgHr": 107, "source": "garmin" },
+    { "id": "g-20260421", "date": "2026-04-21", "name": "Running", "type": "run", "distanceKm": 9.18, "movingTimeS": 4026, "paceSecPerKm": 439, "avgHr": 132, "ascentM": null, "source": "garmin" },
+    { "id": "g-20260508", "date": "2026-05-08", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 2672, "avgHr": 82, "source": "garmin" },
+    { "id": "g-20260726", "date": "2026-07-26", "name": "Warsaw Laufen", "type": "run", "distanceKm": 15.27, "movingTimeS": 5295, "paceSecPerKm": 347, "avgHr": 156, "ascentM": 80, "source": "garmin" },
+    { "id": "g-20260802-1", "date": "2026-08-02", "name": "Wien - Einstufungslauf", "type": "run", "distanceKm": 1.84, "movingTimeS": 540, "paceSecPerKm": 294, "avgHr": 149, "ascentM": 24, "source": "garmin" },
+    { "id": "g-20260802-2", "date": "2026-08-02", "name": "Wien Radfahren", "type": "ride", "distanceKm": 14.78, "movingTimeS": 4672, "avgSpeedKph": 11.4, "avgHr": null, "ascentM": 319, "source": "garmin" },
+    { "id": "g-20260804", "date": "2026-08-04", "name": "Wien - Locker laufen", "type": "run", "distanceKm": 4.6, "movingTimeS": 1800, "paceSecPerKm": 391, "avgHr": 143, "ascentM": 123, "source": "garmin" }
+  ]
+}

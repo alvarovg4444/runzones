@@ -1,0 +1,39 @@
+{
+  "athlete": {
+    "name": "Alvaro",
+    "maxHr": 185,
+    "restingHr": 55,
+    "units": "metric"
+  },
+  "goal": {
+    "raceName": "Marathon",
+    "raceDate": "2027-04-18",
+    "distanceKm": 42.195,
+    "targetTime": "3:59:00",
+    "note": "Sub-4:00 marathon. Race date assumed 2027 (18 April 2026 is in the past) - edit raceDate if different."
+  },
+  "hrZones": [
+    { "zone": "Z1", "name": "Recovery",  "minHr": 111, "maxHr": 129 },
+    { "zone": "Z2", "name": "Easy / Aerobic", "minHr": 130, "maxHr": 148 },
+    { "zone": "Z3", "name": "Steady / Marathon", "minHr": 149, "maxHr": 161 },
+    { "zone": "Z4", "name": "Threshold", "minHr": 162, "maxHr": 172 },
+    { "zone": "Z5", "name": "VO2max", "minHr": 173, "maxHr": 185 }
+  ],
+  "paceZones": [
+    { "zone": "Recovery",  "minSecPerKm": 430, "maxSecPerKm": 520 },
+    { "zone": "Easy",      "minSecPerKm": 375, "maxSecPerKm": 430 },
+    { "zone": "Steady/MP", "minSecPerKm": 330, "maxSecPerKm": 358 },
+    { "zone": "Threshold", "minSecPerKm": 305, "maxSecPerKm": 322 },
+    { "zone": "VO2 Interval", "minSecPerKm": 275, "maxSecPerKm": 295 },
+    { "zone": "Repetition",   "minSecPerKm": 255, "maxSecPerKm": 270 }
+  ],
+  "plan": {
+    "currentWeeklyKm": 20,
+    "peakWeeklyKm": 58,
+    "runsPerWeekStart": 3,
+    "runsPerWeekPeak": 5,
+    "longRunPeakKm": 32,
+    "cutbackEvery": 4,
+    "taperWeeks": 3
+  }
+}
