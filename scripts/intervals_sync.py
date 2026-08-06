@@ -38,6 +38,8 @@ def http_get(url, params, api_key):
     req = urllib.request.Request(f"{url}?{qs}")
     token = base64.b64encode(f"API_KEY:{api_key}".encode()).decode()
     req.add_header("Authorization", f"Basic {token}")
+    req.add_header("User-Agent", "runzones-sync/1.0 (personal training app)")
+    req.add_header("Accept", "application/json")
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.load(r)
 
@@ -81,8 +83,12 @@ def main():
         t = time.strptime(newest, "%Y-%m-%d")
         oldest = time.strftime("%Y-%m-%d", time.localtime(time.mktime(t) - 2 * 86400))
 
-    batch = http_get(f"https://intervals.icu/api/v1/athlete/{athlete}/activities",
-                     {"oldest": oldest, "newest": "2100-01-01"}, api_key)
+    params = {"oldest": oldest, "newest": "2100-01-01"}
+    try:
+        batch = http_get(f"https://intervals.icu/api/v1/athlete/{athlete}/activities", params, api_key)
+    except Exception as e:
+        print(f"Athlete id '{athlete}' failed ({e}); retrying with athlete id 0 (self).")
+        batch = http_get("https://intervals.icu/api/v1/athlete/0/activities", params, api_key)
 
     new_items = []
     for a in batch:
