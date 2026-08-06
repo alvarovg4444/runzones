@@ -1,0 +1,39 @@
+name: Intervals.icu sync
+
+on:
+  schedule:
+    - cron: "41 */6 * * *"   # every 6 hours
+  workflow_dispatch: {}       # manual "Run workflow" button
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    # Runs only when the intervals.icu secrets are configured
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pull new activities from intervals.icu
+        env:
+          INTERVALS_ATHLETE_ID: ${{ secrets.INTERVALS_ATHLETE_ID }}
+          INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
+        run: |
+          if [ -z "$INTERVALS_API_KEY" ]; then
+            echo "INTERVALS_API_KEY secret not set - skipping."
+            exit 0
+          fi
+          python3 scripts/intervals_sync.py
+
+      - name: Commit if changed
+        run: |
+          if ! git diff --quiet data/activities.json; then
+            git config user.name "intervals-sync-bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add data/activities.json
+            git commit -m "Sync activities from intervals.icu"
+            git push
+          else
+            echo "Nothing to commit."
+          fi
