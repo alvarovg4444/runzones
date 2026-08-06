@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RunZones · Alvaro</title>
 <style>
@@ -64,6 +65,7 @@
     overflow-x: auto;
   }
   nav button {
+    flex: 0 0 auto;
     appearance: none; background: none; border: none; cursor: pointer;
     font: inherit; font-size: 14px; color: var(--text-secondary);
     padding: 8px 14px; border-bottom: 2px solid transparent; white-space: nowrap;
@@ -150,7 +152,22 @@
   .dsteps li::before { content: ""; position: absolute; left: 0; top: 6px; width: 4px; height: 4px; border-radius: 50%; background: var(--baseline); }
   @media (max-width: 1100px) { .daygrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   @media (max-width: 900px) { .daygrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .compactgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-  @media (max-width: 640px) { .sysrow { grid-template-columns: 120px 1fr 38px; } .daygrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) {
+    header, main { padding-left: 12px; padding-right: 12px; }
+    .sysrow { grid-template-columns: 96px 1fr 34px; gap: 8px; }
+    .sysrow .why { font-size: 10.5px; }
+    .daygrid, .compactgrid { grid-template-columns: 1fr; }
+    .daycard { min-height: 0; }
+    .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card .v { font-size: 21px; }
+    .panel { padding: 12px; }
+    .whead { flex-direction: column; align-items: flex-start; }
+    table { display: block; overflow-x: auto; white-space: nowrap; font-size: 12px; }
+    #modal { padding: 16px 14px; width: 96vw; max-height: 90vh; }
+    nav button { padding: 8px 10px; font-size: 13px; }
+  }
+  * { min-width: 0; }
+  .panel, .card, .tipcard, .weekcard { overflow-wrap: break-word; word-break: normal; }
 
   /* day detail modal */
   #modalWrap { position: fixed; inset: 0; z-index: 50; display: none; }
@@ -210,35 +227,409 @@
    that's what the Strava sync GitHub Action keeps up to date.
    ============================================================ */
 const SEED_KNOWLEDGE = {
-  "coach": "Stephen Scullion (Olympic marathoner, 2:09)",
-  "extracted": "2026-08-06",
+  "coach": "The Coach (an Olympic marathoner with a 2:09 PB)",
+  "extracted": "2026-08-06 (12 videos)",
   "sources": [
-    { "id": "zones", "title": "The Training Zones That Actually Make You Faster", "url": "https://www.youtube.com/watch?v=OEqmJAVmvAE" },
-    { "id": "spencer", "title": "How a 2:09 Marathoner Would Train a 3 Hour Runner", "url": "https://www.youtube.com/watch?v=VaC2ERGwxpw" },
-    { "id": "lt1", "title": "Improve LT1: Stop Fading in the Final 10K of Your Marathon", "url": "https://www.youtube.com/watch?v=YKYd0ch8x38" },
-    { "id": "pace", "title": "Zone training isn't enough: Coaching 3:00 to 2:45 Marathon", "url": "https://www.youtube.com/watch?v=kt64bjwb-T0" },
-    { "id": "volume", "title": "Why Every Runner Needs More Volume", "url": "https://www.youtube.com/watch?v=Ru8yseDTCjc" }
+    {
+      "id": "zones",
+      "title": "The Training Zones That Actually Make You Faster",
+      "url": "https://www.youtube.com/watch?v=OEqmJAVmvAE"
+    },
+    {
+      "id": "spencer",
+      "title": "How a 2:09 Marathoner Would Train a 3 Hour Runner",
+      "url": "https://www.youtube.com/watch?v=VaC2ERGwxpw"
+    },
+    {
+      "id": "lt1",
+      "title": "Improve LT1: Stop Fading in the Final 10K of Your Marathon",
+      "url": "https://www.youtube.com/watch?v=YKYd0ch8x38"
+    },
+    {
+      "id": "pace",
+      "title": "Zone training isn't enough: Coaching 3:00 to 2:45 Marathon",
+      "url": "https://www.youtube.com/watch?v=kt64bjwb-T0"
+    },
+    {
+      "id": "volume",
+      "title": "Why Every Runner Needs More Volume",
+      "url": "https://www.youtube.com/watch?v=Ru8yseDTCjc"
+    },
+    {
+      "id": "planlen",
+      "title": "How Long Should Your Marathon Training Plan Be?",
+      "url": "https://www.youtube.com/watch?v=HazJJm0CeSI"
+    },
+    {
+      "id": "longrun",
+      "title": "A great MARATHON depends on the long run",
+      "url": "https://www.youtube.com/watch?v=1TYa-9rj30g"
+    },
+    {
+      "id": "fuel",
+      "title": "From Training to Race Day: The Ultimate Marathon Fueling Plan",
+      "url": "https://www.youtube.com/watch?v=MPjuoU8BPd8"
+    },
+    {
+      "id": "fullweek",
+      "title": "Marathon training with a FULL TIME job",
+      "url": "https://www.youtube.com/watch?v=1ZD1T-B1ANE"
+    },
+    {
+      "id": "vo2",
+      "title": "STOP RUNNING EASY | VO2 MAX TRAINING",
+      "url": "https://www.youtube.com/watch?v=zcbml98Gt3M"
+    },
+    {
+      "id": "tempo",
+      "title": "Threshold run breakdown - with a secret finisher!",
+      "url": "https://www.youtube.com/watch?v=Jpd2XtGX8wo"
+    },
+    {
+      "id": "ugly",
+      "title": "Marathon training LONG run | easy or hard?",
+      "url": "https://www.youtube.com/watch?v=UsQX0tK8HHo"
+    }
   ],
   "tips": [
-    { "topic": "The Scully fitness model", "tags": ["general"], "source": "zones", "title": "Build the pyramid — and earn the peak", "insight": "Base = easy running + steady aerobic. Middle = threshold (LT1/LT2). Peak = VO2/aerobic power + race-specific work. You cannot add the peak without the middle: 'you have to earn the peak'. But once you push the peak, everything below it improves with it — threshold gets faster, easy-run HR drops.", "apply": "Your plan phases follow this: Base builds the bottom, Build adds threshold, Peak adds VO2 + marathon-specific work. Don't skip ahead to hard intervals in Base." },
-    { "topic": "The Scully fitness model", "tags": ["general"], "source": "zones", "title": "The correlation chain: VO2 → aerobic power → LT2 → race pace", "insight": "'If your VO2 isn't where it needs to be, your LT2 is not going to get to where it needs to be. There's always a correlation.' Work backwards from the goal: race pace needs LT2 ~10-15s/km faster, which needs aerobic power faster again, which needs VO2 faster again.", "apply": "For a 3:30 marathon (4:58/km): LT2 must reach ~4:45-4:50/km, VO2 reps ~4:15-4:25/km. That's the chain your zones are being pulled toward. Today's chain says ~3:45-3:50 — the gap is the training." },
-    { "topic": "Steady aerobic — his weapon", "tags": ["steady", "easy"], "source": "zones", "title": "Steady aerobic days, not zone-2 dogma", "insight": "'Whenever I've raced well, there's been plenty of work at steady aerobic.' 2-3 runs per week, roughly 25-30% of weekly volume, ~30s/km slower than threshold. The mindset is the point: 'I've decided I'm going to work today' — not a jog. Pace is the priority; physiology follows.", "apply": "Your Thursday steady run is exactly this. Treat it as a work day: get the sweat going, no stopping, hold the pace." },
-    { "topic": "Steady aerobic — his weapon", "tags": ["easy"], "source": "zones", "title": "The luxury run", "insight": "Zone 1 easy jogs: 'Doesn't matter what the pace is, doesn't matter what the pulse is. It's a luxury run. I don't think I'm building fitness, I'm spending time running — and a lot of runners could get a lot better by just spending time running.'", "apply": "Easy days after hard days: zero pressure. If in doubt, slower. These runs buy you the volume that makes everything else work." },
-    { "topic": "Threshold", "tags": ["threshold"], "source": "zones", "title": "Threshold every 3-4 days, and track it weekly", "insight": "'Once every 3-4 days make sure you're doing some LT1 or LT2. Build that middle bit of your pyramid, make it beefy.' Formats are simple: 3×15min at the bottom of threshold, 3×10min or 30min straight at the top end. 'Keep threshold where it needs to be. Track that weekly. Don't let it slip.'", "apply": "Your Tuesday quality slot rotates through these. The real test of threshold: it should FEEL sustainable for 50-70 minutes. If a 'threshold' rep cooks you, it was too fast." },
-    { "topic": "VO2 / aerobic power", "tags": ["vo2"], "source": "zones", "title": "Touch VO2 at least every 10 days or it decays", "insight": "'If I leave it two weeks without training above threshold, it feels harder and it's slower.' Vary the stimulus: 5-6×1k, 15×1min, 10×60s uphill, or a 5k time trial. A time trial has a bonus: 'if you're willing to do a 5k time trial, everything else starts to feel easier — no reps can hurt you after that.'", "apply": "In Build/Peak phases your VO2 day covers this. Every ~6 weeks, swap it for a 5K time trial — it recalibrates all your zones AND toughens you." },
-    { "topic": "Marathon is a fuel race (LT1)", "tags": ["long", "general"], "source": "lt1", "title": "Become a diesel engine", "insight": "The body stores only ~100 minutes of threshold-intensity fuel, but your race lasts 3:30+. So the marathon is raced at LT1, not LT2 — and normal training never exposes a weak LT1. 'You don't find out until race day that your LT1 isn't in a great place.'", "apply": "This is why your plan has so much easy/steady/long running and why the long run stays controlled. You're building fuel efficiency, not just speed." },
-    { "topic": "Marathon is a fuel race (LT1)", "tags": ["steady", "long"], "source": "lt1", "title": "The HR drift test — your monthly check", "insight": "On a steady or long run, let HR stabilise over the first 5k (say 140-145). Over the next 15-20k at the SAME pace, drift should be max 8-10 beats. A 15-20 beat drift = LT1 weak. Improvement looks like: same pace, average HR down ~5 beats month over month, and max HR down too.", "apply": "Your Warsaw 15k (HR 156 avg) is the baseline. Re-run that test monthly at fixed pace ~6:00/km — the app's session scores will show the HR trend." },
-    { "topic": "Long run rules", "tags": ["long"], "source": "lt1", "title": "Keep the long run boring — sexy stuff trains the wrong engine", "insight": "'You can throw intervals in — bloody good long run, but you trained the wrong bloody energy system.' Pushing tempo inside an aerobic long run teaches the body to burn MORE carbs, the opposite of marathon fuel efficiency. Keep pulse 5-10+ beats below marathon HR; at most, progress the last 5-8k slightly.", "apply": "Your Sunday long runs: flat effort, Z2 HR, accept the boredom. MP segments only appear in the Peak phase, where they belong. Seek company if it stops you racing the long run." },
-    { "topic": "Long run rules", "tags": ["long"], "source": "lt1", "title": "Long run every 7-10 days, built patiently", "insight": "Once a week, or every 10 days if injury-prone. Build duration first (80-90 min, then more) at an unremarkable pace — 'this isn't a marathon run yet, it's just a run. There's nothing sexy about this yet.'", "apply": "Your 120-minute Sunday runs at 6:00/km are exactly the right kind of boring. The plan grows them toward 30-32k." },
-    { "topic": "Signature session: alternating tempo", "tags": ["mp", "threshold"], "source": "lt1", "title": "Alternating tempo — pulls LT1 up to LT2", "insight": "From 10-12 weeks out (practice earlier every 10-14 days): 1k at LT2 / 1k float at marathon pace +10-15s. Start at 16k total, grow to 20k, then 6×2k with 1k float, then 5×3k. The LT2 km should feel 'a decent effort', never killing. It teaches lactate clearing and fuel efficiency at speed.", "apply": "This is your Thursday session in the Peak phase. The float is the secret — don't jog it, hold MP+10-15s." },
-    { "topic": "Race-pace calibration", "tags": ["race", "mp"], "source": "pace", "title": "The last 4-6 weeks must look like the goal", "insight": "'If in the last four to five weeks before a race your training doesn't look like the kind of athlete that's going to achieve the goal, it's very unlikely you'll achieve it.' He audits: how many km at goal race pace in the last 8-10 weeks? Zero km at race pace = don't expect it on race day.", "apply": "Before your marathon, the app's Race tab compares your recent paces to the goal. If MP km aren't in the log by Peak phase, the goal gets adjusted — that's the deal." },
-    { "topic": "Race-pace calibration", "tags": ["mp"], "source": "pace", "title": "≥10k per week at race pace in the final 5-6 weeks", "insight": "For a goal half he wants ~10k/week at race-adjacent pace. Can't hold 3k reps at that pace? 'Scale it right back to 1K — but try a 2K rep first.' Manipulate rep length and recovery so pace is achievable.", "apply": "Peak phase: your MP work (alternating tempo + MP finishes in long runs) sums to 10k+/week at 4:58-5:10. If a rep length breaks you, shorten the rep, not the pace." },
-    { "topic": "Race-pace calibration", "tags": ["threshold", "mp", "general"], "source": "pace", "title": "60-70% science, 20-30% just work", "insight": "'Follow the science for 60-70% — run at that LT2 heart rate. But 20-30% of running comes down to just hard work.' Late in a session (last 2 of 5×2k), forget heart rate and run goal pace, even 10-15s/km faster than HR says. 'You earn that privilege by doing the foundation stuff first.'", "apply": "In Base: 100% discipline. From Build onward: finish the last reps of quality sessions at goal pace, HR ignored. Never do this in week 1 of a phase." },
-    { "topic": "Progression reality", "tags": ["general"], "source": "spencer", "title": "Threshold moves ~5s/km per block — plan for it", "insight": "Moving threshold 5s/km in a training block is 'awesome, super achievable'. ~10s/km in a year from running alone. The rest comes from other angles: gym, physio, losing a few kg, shoe choice — 'seconds that don't require the fitness to be better'.", "apply": "Sub-4 needs ~threshold 5:20 (you're near). 3:30 needs ~4:45 — that's a year of blocks, plus the gym you're already doing. This is why we train for 3:30 but bank 3:45." },
-    { "topic": "Progression reality", "tags": ["general"], "source": "spencer", "title": "Progress is stepwise — expect a bad race", "insight": "'You don't really go from 2:57 to 2:45. You run 2:57, then maybe 3:00, then 2:55, then hover at 2:52.' Improvement across marathons comes in steps with setbacks, 4-5 months apart. Amateurs shouldn't copy elite training — the amateur's mountain is sub-hard aerobic efficiency work at 'a really annoying intensity that is just below hard'.", "apply": "If a race or test goes badly, it's a data point, not a verdict. The annoying just-below-hard intensity is your steady runs — respect them." },
-    { "topic": "Volume", "tags": ["general", "easy"], "source": "volume", "title": "Volume protects fitness — and fitness falls as fast as it climbs", "insight": "'Once you build fitness to a good place, you've got to protect it. The easiest way is to get out there and do a bit more — even an evening 5k, even a bike ride or rowing. You almost get tired but you get faster.' Track time-per-week and find the number where you're 'firing' — cross-training minutes count.", "apply": "Your gym days and any cycling count toward weekly load. When fit later in the plan, short second runs or an easy spin protect what you built. The 10% weekly ramp rule is a guideline, not law — but respect tired legs." },
-    { "topic": "Volume", "tags": ["gym"], "source": "volume", "title": "Tightness means gym, not stretching", "insight": "'You think that tightness means you have to stretch. It's got nothing to do with flexibility — you're breaking the muscles down and they're not strong enough.' The fix is the boring basics: calf raises, glute bridges, clams, adductor squeezes, hip control. Plus deliberate carbs and hydration as volume rises.", "apply": "Your 3 gym days already carry this. Add the boring basics as finishers on every gym day — calves and adductors especially, they're cheap injury insurance." },
-    { "topic": "What a good week looks like", "tags": ["general"], "source": "pace", "title": "His 2:09 week, by zone minutes", "insight": "Zone 1: ~1.5h. Zone 2: 3-4h. Zone 3 (steady): ~2h. Zone 4 (threshold): 30-35 min. Zone 5: 5-6 min. The middle is beefy; the top is tiny. Also: the first 4-5 weeks of any program are pure discipline — know why before every session, verify after ('did I run in the zone I was supposed to?').", "apply": "Scaled to your week that's roughly: most km easy/steady, ~30 min of threshold work, a few minutes of VO2. If your hard days are more than ~20% of weekly time, you're racing your training." }
+    {
+      "topic": "The Scully fitness model",
+      "tags": [
+        "general"
+      ],
+      "source": "zones",
+      "title": "Build the pyramid — and earn the peak",
+      "insight": "Base = easy running + steady aerobic. Middle = threshold (LT1/LT2). Peak = VO2/aerobic power + race-specific work. You cannot add the peak without the middle: 'you have to earn the peak'. But once you push the peak, everything below it improves with it — threshold gets faster, easy-run HR drops.",
+      "apply": "Your plan phases follow this: Base builds the bottom, Build adds threshold, Peak adds VO2 + marathon-specific work. Don't skip ahead to hard intervals in Base."
+    },
+    {
+      "topic": "The Scully fitness model",
+      "tags": [
+        "general"
+      ],
+      "source": "zones",
+      "title": "The correlation chain: VO2 → aerobic power → LT2 → race pace",
+      "insight": "'If your VO2 isn't where it needs to be, your LT2 is not going to get to where it needs to be. There's always a correlation.' Work backwards from the goal: race pace needs LT2 ~10-15s/km faster, which needs aerobic power faster again, which needs VO2 faster again.",
+      "apply": "For a 3:30 marathon (4:58/km): LT2 must reach ~4:45-4:50/km, VO2 reps ~4:15-4:25/km. That's the chain your zones are being pulled toward. Today's chain says ~3:45-3:50 — the gap is the training."
+    },
+    {
+      "topic": "Steady aerobic — his weapon",
+      "tags": [
+        "steady",
+        "easy"
+      ],
+      "source": "zones",
+      "title": "Steady aerobic days, not zone-2 dogma",
+      "insight": "'Whenever I've raced well, there's been plenty of work at steady aerobic.' 2-3 runs per week, roughly 25-30% of weekly volume, ~30s/km slower than threshold. The mindset is the point: 'I've decided I'm going to work today' — not a jog. Pace is the priority; physiology follows.",
+      "apply": "Your Thursday steady run is exactly this. Treat it as a work day: get the sweat going, no stopping, hold the pace."
+    },
+    {
+      "topic": "Steady aerobic — his weapon",
+      "tags": [
+        "easy"
+      ],
+      "source": "zones",
+      "title": "The luxury run",
+      "insight": "Zone 1 easy jogs: 'Doesn't matter what the pace is, doesn't matter what the pulse is. It's a luxury run. I don't think I'm building fitness, I'm spending time running — and a lot of runners could get a lot better by just spending time running.'",
+      "apply": "Easy days after hard days: zero pressure. If in doubt, slower. These runs buy you the volume that makes everything else work."
+    },
+    {
+      "topic": "Threshold",
+      "tags": [
+        "threshold"
+      ],
+      "source": "zones",
+      "title": "Threshold every 3-4 days, and track it weekly",
+      "insight": "'Once every 3-4 days make sure you're doing some LT1 or LT2. Build that middle bit of your pyramid, make it beefy.' Formats are simple: 3×15min at the bottom of threshold, 3×10min or 30min straight at the top end. 'Keep threshold where it needs to be. Track that weekly. Don't let it slip.'",
+      "apply": "Your Tuesday quality slot rotates through these. The real test of threshold: it should FEEL sustainable for 50-70 minutes. If a 'threshold' rep cooks you, it was too fast."
+    },
+    {
+      "topic": "VO2 / aerobic power",
+      "tags": [
+        "vo2"
+      ],
+      "source": "zones",
+      "title": "Touch VO2 at least every 10 days or it decays",
+      "insight": "'If I leave it two weeks without training above threshold, it feels harder and it's slower.' Vary the stimulus: 5-6×1k, 15×1min, 10×60s uphill, or a 5k time trial. A time trial has a bonus: 'if you're willing to do a 5k time trial, everything else starts to feel easier — no reps can hurt you after that.'",
+      "apply": "In Build/Peak phases your VO2 day covers this. Every ~6 weeks, swap it for a 5K time trial — it recalibrates all your zones AND toughens you."
+    },
+    {
+      "topic": "Marathon is a fuel race (LT1)",
+      "tags": [
+        "long",
+        "general"
+      ],
+      "source": "lt1",
+      "title": "Become a diesel engine",
+      "insight": "The body stores only ~100 minutes of threshold-intensity fuel, but your race lasts 3:30+. So the marathon is raced at LT1, not LT2 — and normal training never exposes a weak LT1. 'You don't find out until race day that your LT1 isn't in a great place.'",
+      "apply": "This is why your plan has so much easy/steady/long running and why the long run stays controlled. You're building fuel efficiency, not just speed."
+    },
+    {
+      "topic": "Marathon is a fuel race (LT1)",
+      "tags": [
+        "steady",
+        "long"
+      ],
+      "source": "lt1",
+      "title": "The HR drift test — your monthly check",
+      "insight": "On a steady or long run, let HR stabilise over the first 5k (say 140-145). Over the next 15-20k at the SAME pace, drift should be max 8-10 beats. A 15-20 beat drift = LT1 weak. Improvement looks like: same pace, average HR down ~5 beats month over month, and max HR down too.",
+      "apply": "Your Warsaw 15k (HR 156 avg) is the baseline. Re-run that test monthly at fixed pace ~6:00/km — the app's session scores will show the HR trend."
+    },
+    {
+      "topic": "Long run rules",
+      "tags": [
+        "long"
+      ],
+      "source": "lt1",
+      "title": "Keep the long run boring — sexy stuff trains the wrong engine",
+      "insight": "'You can throw intervals in — bloody good long run, but you trained the wrong bloody energy system.' Pushing tempo inside an aerobic long run teaches the body to burn MORE carbs, the opposite of marathon fuel efficiency. Keep pulse 5-10+ beats below marathon HR; at most, progress the last 5-8k slightly.",
+      "apply": "Your Sunday long runs: flat effort, Z2 HR, accept the boredom. MP segments only appear in the Peak phase, where they belong. Seek company if it stops you racing the long run."
+    },
+    {
+      "topic": "Long run rules",
+      "tags": [
+        "long"
+      ],
+      "source": "lt1",
+      "title": "Long run every 7-10 days, built patiently",
+      "insight": "Once a week, or every 10 days if injury-prone. Build duration first (80-90 min, then more) at an unremarkable pace — 'this isn't a marathon run yet, it's just a run. There's nothing sexy about this yet.'",
+      "apply": "Your 120-minute Sunday runs at 6:00/km are exactly the right kind of boring. The plan grows them toward 30-32k."
+    },
+    {
+      "topic": "Signature session: alternating tempo",
+      "tags": [
+        "mp",
+        "threshold"
+      ],
+      "source": "lt1",
+      "title": "Alternating tempo — pulls LT1 up to LT2",
+      "insight": "From 10-12 weeks out (practice earlier every 10-14 days): 1k at LT2 / 1k float at marathon pace +10-15s. Start at 16k total, grow to 20k, then 6×2k with 1k float, then 5×3k. The LT2 km should feel 'a decent effort', never killing. It teaches lactate clearing and fuel efficiency at speed.",
+      "apply": "This is your Thursday session in the Peak phase. The float is the secret — don't jog it, hold MP+10-15s."
+    },
+    {
+      "topic": "Race-pace calibration",
+      "tags": [
+        "race",
+        "mp"
+      ],
+      "source": "pace",
+      "title": "The last 4-6 weeks must look like the goal",
+      "insight": "'If in the last four to five weeks before a race your training doesn't look like the kind of athlete that's going to achieve the goal, it's very unlikely you'll achieve it.' He audits: how many km at goal race pace in the last 8-10 weeks? Zero km at race pace = don't expect it on race day.",
+      "apply": "Before your marathon, the app's Race tab compares your recent paces to the goal. If MP km aren't in the log by Peak phase, the goal gets adjusted — that's the deal."
+    },
+    {
+      "topic": "Race-pace calibration",
+      "tags": [
+        "mp"
+      ],
+      "source": "pace",
+      "title": "≥10k per week at race pace in the final 5-6 weeks",
+      "insight": "For a goal half he wants ~10k/week at race-adjacent pace. Can't hold 3k reps at that pace? 'Scale it right back to 1K — but try a 2K rep first.' Manipulate rep length and recovery so pace is achievable.",
+      "apply": "Peak phase: your MP work (alternating tempo + MP finishes in long runs) sums to 10k+/week at 4:58-5:10. If a rep length breaks you, shorten the rep, not the pace."
+    },
+    {
+      "topic": "Race-pace calibration",
+      "tags": [
+        "threshold",
+        "mp",
+        "general"
+      ],
+      "source": "pace",
+      "title": "60-70% science, 20-30% just work",
+      "insight": "'Follow the science for 60-70% — run at that LT2 heart rate. But 20-30% of running comes down to just hard work.' Late in a session (last 2 of 5×2k), forget heart rate and run goal pace, even 10-15s/km faster than HR says. 'You earn that privilege by doing the foundation stuff first.'",
+      "apply": "In Base: 100% discipline. From Build onward: finish the last reps of quality sessions at goal pace, HR ignored. Never do this in week 1 of a phase."
+    },
+    {
+      "topic": "Progression reality",
+      "tags": [
+        "general"
+      ],
+      "source": "spencer",
+      "title": "Threshold moves ~5s/km per block — plan for it",
+      "insight": "Moving threshold 5s/km in a training block is 'awesome, super achievable'. ~10s/km in a year from running alone. The rest comes from other angles: gym, physio, losing a few kg, shoe choice — 'seconds that don't require the fitness to be better'.",
+      "apply": "Sub-4 needs ~threshold 5:20 (you're near). 3:30 needs ~4:45 — that's a year of blocks, plus the gym you're already doing. This is why we train for 3:30 but bank 3:45."
+    },
+    {
+      "topic": "Progression reality",
+      "tags": [
+        "general"
+      ],
+      "source": "spencer",
+      "title": "Progress is stepwise — expect a bad race",
+      "insight": "'You don't really go from 2:57 to 2:45. You run 2:57, then maybe 3:00, then 2:55, then hover at 2:52.' Improvement across marathons comes in steps with setbacks, 4-5 months apart. Amateurs shouldn't copy elite training — the amateur's mountain is sub-hard aerobic efficiency work at 'a really annoying intensity that is just below hard'.",
+      "apply": "If a race or test goes badly, it's a data point, not a verdict. The annoying just-below-hard intensity is your steady runs — respect them."
+    },
+    {
+      "topic": "Volume",
+      "tags": [
+        "general",
+        "easy"
+      ],
+      "source": "volume",
+      "title": "Volume protects fitness — and fitness falls as fast as it climbs",
+      "insight": "'Once you build fitness to a good place, you've got to protect it. The easiest way is to get out there and do a bit more — even an evening 5k, even a bike ride or rowing. You almost get tired but you get faster.' Track time-per-week and find the number where you're 'firing' — cross-training minutes count.",
+      "apply": "Your gym days and any cycling count toward weekly load. When fit later in the plan, short second runs or an easy spin protect what you built. The 10% weekly ramp rule is a guideline, not law — but respect tired legs."
+    },
+    {
+      "topic": "Volume",
+      "tags": [
+        "gym"
+      ],
+      "source": "volume",
+      "title": "Tightness means gym, not stretching",
+      "insight": "'You think that tightness means you have to stretch. It's got nothing to do with flexibility — you're breaking the muscles down and they're not strong enough.' The fix is the boring basics: calf raises, glute bridges, clams, adductor squeezes, hip control. Plus deliberate carbs and hydration as volume rises.",
+      "apply": "Your 3 gym days already carry this. Add the boring basics as finishers on every gym day — calves and adductors especially, they're cheap injury insurance."
+    },
+    {
+      "topic": "What a good week looks like",
+      "tags": [
+        "general"
+      ],
+      "source": "pace",
+      "title": "His 2:09 week, by zone minutes",
+      "insight": "Zone 1: ~1.5h. Zone 2: 3-4h. Zone 3 (steady): ~2h. Zone 4 (threshold): 30-35 min. Zone 5: 5-6 min. The middle is beefy; the top is tiny. Also: the first 4-5 weeks of any program are pure discipline — know why before every session, verify after ('did I run in the zone I was supposed to?').",
+      "apply": "Scaled to your week that's roughly: most km easy/steady, ~30 min of threshold work, a few minutes of VO2. If your hard days are more than ~20% of weekly time, you're racing your training."
+    },
+    {
+      "topic": "How he structures a marathon build",
+      "tags": [
+        "general"
+      ],
+      "source": "planlen",
+      "title": "The marathon block is 12-16 weeks, in four phases",
+      "insight": "Phase 1: pre-training - get durable, push threshold, build the 5K/10K ceiling (length depends on where you're coming from). Phase 2 (4-5 wks): the marathon plan proper - introduce tempo, build the long run, grow the big sessions (4x3k -> 4x4k -> 4x5k, 3x8k, 3x10k). END IT WITH A TEST: a half marathon, 10K or long MP tempo. Phase 3 (4-5 wks): fix what the test exposed, hold the rest with minimum dose (intervals every 2 weeks is enough to keep the peak). Then taper.",
+      "apply": "Your plan now follows exactly this: Foundation until ~14 weeks out, then Build (ends with a test half), then Specific, then a 3-week taper."
+    },
+    {
+      "topic": "How he structures a marathon build",
+      "tags": [
+        "general",
+        "race"
+      ],
+      "source": "planlen",
+      "title": "Don't race the training in Phase 3",
+      "insight": "'A lot of athletes run their race in the third phase.' If sessions start going better than ever, back off: run the first reps slower and only finish fast - 'all you're doing is saving the big result for race day'. Race result = fitness + preparation + taper, and fitness+preparation matter most.",
+      "apply": "In your Specific phase, when a session feels amazing, that's the signal to bank it, not to push it. The best day of the block must be 18 April."
+    },
+    {
+      "topic": "The four long runs",
+      "tags": [
+        "long"
+      ],
+      "source": "longrun",
+      "title": "Long run type 1 & 2: volume first, then the 'solid day'",
+      "insight": "Build pure volume first (his own 2:09 block started at 15 miles where he was DROPPED, and grew week by week: 15-16-17/18-20). Once volume is there, the long run becomes a 'solid day': warm-up ritual, drinks prepared, race intent, ~20-30s/mile slower than race pace, on an imperfect route, NOT in super shoes - 'why should this day be easy?'",
+      "apply": "Your Foundation/Build Sundays alternate these two. The route should have hills and corners like Vienna will."
+    },
+    {
+      "topic": "The four long runs",
+      "tags": [
+        "long",
+        "mp"
+      ],
+      "source": "longrun",
+      "title": "Long run type 3 & 4: progressive, and race-pace reps",
+      "insight": "Type 3: progressive - start ~2 min/mile slower than race pace, step down every 4 miles, finish the last miles AT race pace. Type 4: first half steady, second half race-pace work inside the run (6x1 mile, 4x2 mile with 3 min jog, or a sustained MP block). 'Even if you're not fit enough for it yet - run at race pace, make the reps shorter if you must.'",
+      "apply": "These appear in your Specific phase Sundays, alternating. They're also how you accumulate your weekly race-pace kilometres."
+    },
+    {
+      "topic": "The four long runs",
+      "tags": [
+        "long",
+        "race"
+      ],
+      "source": "ugly",
+      "title": "The ugly zone: suffer 3-4 times before race day",
+      "insight": "'100% fact: most people fail the marathon because they never trained for the distance.' From ~week 6-7 of the block, 3-4 sessions must reach the place where you want to stop - legs heavy, psychology asking to quit at 16 miles with 2 to go. Formats: 3x4mi w/2min rest, 4x3mi, or 5mi easy + 10mi at marathon effort. And don't stare at the watch mid-rep: 'heart rate tells you how to feel'. That's what makes 'just another Sunday' true on race day.",
+      "apply": "Your Specific phase marks 3-4 days as UGLY ZONE. They are the race rehearsals - fuel them fully, finish them, and remember them at km 32."
+    },
+    {
+      "topic": "Fueling (his system)",
+      "tags": [
+        "long",
+        "mp",
+        "race"
+      ],
+      "source": "fuel",
+      "title": "The nibble strategy - never slam a gel",
+      "insight": "~10g of carbs every 10 minutes, starting 10 minutes BEFORE the session, through the warm-up and the whole run. Slamming 25g at once spikes insulin and dumps your glucose. Nothing to eat in the 2h before training (or exercise-induced hypoglycemia hits); if you can't eat 2h before, eat nothing and nibble from 10min out. Electrolytes pre-session must be sugar-free ('if it tastes delicious it's throwing your glucose around').",
+      "apply": "Every quality and long run day in your calendar now carries fueling steps. Race target: practice up to 60-80g/hour on Sunday runs - the gut is trainable and race day is not the day to find out."
+    },
+    {
+      "topic": "Fueling (his system)",
+      "tags": [
+        "general",
+        "easy"
+      ],
+      "source": "fuel",
+      "title": "When training suddenly feels bad, suspect fuel before fitness",
+      "insight": "'A lot of the downs are going to be linked to nutrition, 100%.' The 20-minute post-session window is non-negotiable: real carbs + protein, not a 180-calorie bar after a 1000-calorie session. Fuel even steady Z2 runs (~40-50g/h) when the goal is a physiology stimulus - 'get in and get out with the least cost possible'.",
+      "apply": "Thursday tired? Check what you ate Tuesday-Wednesday before blaming the plan. Post-run meal within 20 minutes, every time."
+    },
+    {
+      "topic": "VO2 - inject the meat",
+      "tags": [
+        "vo2"
+      ],
+      "source": "vo2",
+      "title": "Every 7-10 days, inject your fitness with something hard",
+      "insight": "'When you work pretty hard, you get better.' Formats: 10x400m, 5x3min (the Norwegian classic), 10x2min aerobic power, hill reps, or a 5K time trial. The payback is fast: 'your next threshold is quicker and bloody easier' - hard work recalibrates your perceived effort. Then like pizza dough, settle it back down with 10 days of base.",
+      "apply": "Foundation phase: a VO2 touch every ~10 days even while base-building, plus a 5K time trial every ~6 weeks that recalibrates your zones."
+    },
+    {
+      "topic": "VO2 - inject the meat",
+      "tags": [
+        "vo2",
+        "general"
+      ],
+      "source": "vo2",
+      "title": "Watch stride length x cadence for hidden fatigue",
+      "insight": "His athlete's stride length dropped 135cm to ~118cm while cadence rose - the body compensating for neuromuscular fatigue, visible weeks before racing felt bad. 'An even easier fix if you were on top of it three, four weeks ago.'",
+      "apply": "Your Garmin records stride length and cadence. If stride shortens while cadence climbs at the same pace over 2-3 weeks: cut intensity, add sleep, and see it as fatigue - not lost fitness."
+    },
+    {
+      "topic": "Tempo execution",
+      "tags": [
+        "threshold",
+        "steady"
+      ],
+      "source": "tempo",
+      "title": "Make the hardest mile the easiest - and the 3-4 word test",
+      "insight": "'If you can't maintain a three to four word conversation, you're not running a tempo.' Mid-session psychology: instead of bracing for mile 3 being hard, consciously decide to make it the EASIEST mile - drop the shoulders, long exhales, effort easier, pace unchanged. That skill is exactly what you'll use at km 30.",
+      "apply": "Use the 3-4 word test on every steady/threshold day. Practice the 'easiest mile' trick on the third rep of every session."
+    },
+    {
+      "topic": "Tempo execution",
+      "tags": [
+        "threshold",
+        "vo2"
+      ],
+      "source": "tempo",
+      "title": "The secret finisher: 15s on / 15s off",
+      "insight": "After a tempo + 2-3 min recovery: 15 seconds hard, stand 15 seconds, repeat for 5 minutes (build to 7.5-10). It depletes the ATP system, keeps real speed in the legs, and 'all races are won by being the quickest'.",
+      "apply": "Bolted onto your Build-phase threshold days. It costs 5 minutes and keeps your top gear alive through marathon training."
+    },
+    {
+      "topic": "The full week (with a job)",
+      "tags": [
+        "gym",
+        "general"
+      ],
+      "source": "fullweek",
+      "title": "Training is the non-negotiable; recovery scaffolds around it",
+      "insight": "A week isn't mileage + sessions. It's: 5-min pre-run activation (calf raises, lunges, crab walks) before EVERY run, post-run stretch/roll, gym 2-3x ('you're not cutting training because your calves get tired - you're adding a calf routine so they don't'), planned meals, hydration, sleep routine, and getting up 20-30 min earlier so sessions aren't rushed - 'give the session the respect it deserves'.",
+      "apply": "Your day modals now include the activation. With your job: prep breakfast the night before quality days, and treat the Sunday review as part of training."
+    },
+    {
+      "topic": "The full week (with a job)",
+      "tags": [
+        "general"
+      ],
+      "source": "fullweek",
+      "title": "The weekly review: write the zero",
+      "insight": "'If you didn't do gym, you have to write zero. You have to make it real.' His weekly review scores the week honestly against what a full week looks like - that acknowledgment is what changes next week. He also swears by goal journaling: 'Are you moving towards your goal or away from it?' - he credits it with making the Olympics.",
+      "apply": "That's exactly our weekly ritual: the app counts your km, the review names what's missing, and next week responds. No judgment - just no pretending."
+    }
   ]
 };
 const SEED_SETTINGS = {
@@ -318,7 +709,7 @@ const SEED_ACTIVITIES = {
 
 let S = SEED_SETTINGS;          // settings
 let DB = SEED_ACTIVITIES;       // activity store
-let KB = SEED_KNOWLEDGE;        // coach knowledge base (Scullion strategies)
+let KB = SEED_KNOWLEDGE;        // coach knowledge base (The Coach strategies)
 
 /* ---------- utils ---------- */
 const $ = (sel) => document.querySelector(sel);
@@ -464,62 +855,82 @@ function fitnessProfile() {
   ];
 }
 
-/* ---------- adaptive plan ---------- */
+/* ---------- The Coach-method plan ----------
+   His structure (from "How Long Should Your Marathon Training Plan Be?"):
+   Foundation (variable) -> marathon block of 12-16 wks:
+   Build ~5wks (tempo in, long run grows, big sessions) ending in a TEST race,
+   Specific ~5wks (fix weaknesses, race pace >=10k/wk, ugly-zone days, minimum dose to hold peak),
+   Taper 3wks. */
 function buildPlan() {
   const raceDay = parseISO(S.goal.raceDate);
   const raceMonday = mondayOf(raceDay);
   const thisMonday = mondayOf(new Date());
   const totalWeeks = Math.max(1, Math.round((raceMonday - thisMonday) / (7 * dayMs)) + 1);
   const p = S.plan;
-  const taper = Math.min(p.taperWeeks, totalWeeks - 1);
-  const rampWeeks = totalWeeks - taper;
+  const gp = goalPaceSec();
 
-  // starting volume: the configured current volume (matched to his Garmin Coach load),
-  // or the real 3-week average if that's higher
+  // marathon block = 14 weeks (his 12-16 band); everything before it is Foundation
+  const TAPER = 3, SPEC = 5, BUILD = 5;
+  const blockWeeks = Math.min(BUILD + SPEC + TAPER + 1, totalWeeks); // +1 race week
+  const foundationWeeks = Math.max(0, totalWeeks - blockWeeks);
+
   const recent = weeklyAgg(3);
   const startKm = Math.max(p.currentWeeklyKm, recent.reduce((s, w) => s + w.km, 0) / 3);
+  const foundationTopKm = Math.min(p.peakWeeklyKm - 8, Math.max(startKm + 14, 50));
 
   const weeks = [];
   for (let i = 0; i < totalWeeks; i++) {
     const start = new Date(thisMonday.getTime() + i * 7 * dayMs);
+    const weeksToGo = totalWeeks - 1 - i;
     const isRace = i === totalWeeks - 1;
-    let phase, km;
-    const frac = rampWeeks <= 1 ? 1 : i / (rampWeeks - 1);
-    if (i >= rampWeeks) {
-      phase = "Taper";
-      const tIdx = i - rampWeeks; // 0..taper-1
-      km = p.peakWeeklyKm * [0.7, 0.5, 0.35][Math.min(tIdx, 2)];
-    } else {
-      km = startKm + (p.peakWeeklyKm - startKm) * Math.pow(frac, 0.85);
-      if ((i + 1) % p.cutbackEvery === 0 && !isRace) km *= 0.68;
-      phase = frac < 0.45 ? "Base" : frac < 0.8 ? "Build" : "Peak";
-    }
-    if (isRace) { phase = "Race week"; km = Math.min(km, p.peakWeeklyKm * 0.3); }
+    let phase, km, flags = {};
 
-    const runsN = Math.round(p.runsPerWeekStart + (p.runsPerWeekPeak - p.runsPerWeekStart) * Math.min(1, i / Math.max(1, rampWeeks * 0.6)));
-    const longKm = isRace ? S.goal.distanceKm : clamp(km * 0.48, 12, p.longRunPeakKm) * (phase === "Taper" ? 0.7 : 1);
-    const gp = goalPaceSec();
+    if (isRace) {
+      phase = "Race week"; km = Math.round(p.peakWeeklyKm * 0.3);
+    } else if (weeksToGo <= TAPER) {
+      phase = "Taper"; km = Math.round(p.peakWeeklyKm * [0.35, 0.5, 0.7][weeksToGo - 1]);
+    } else if (weeksToGo <= TAPER + SPEC) {
+      phase = "Specific";
+      km = Math.round(p.peakWeeklyKm * ((i + 1) % p.cutbackEvery === 0 ? 0.72 : 1));
+      const specIdx = TAPER + SPEC - weeksToGo; // 0..4
+      flags.specIdx = specIdx;
+      flags.ugly = specIdx === 1 || specIdx === 3; // 2 ugly-zone Sundays + their Thu sessions
+    } else if (weeksToGo <= TAPER + SPEC + BUILD) {
+      phase = "Build";
+      const bIdx = TAPER + SPEC + BUILD - weeksToGo; // 0..4
+      flags.buildIdx = bIdx;
+      km = Math.round(foundationTopKm + (p.peakWeeklyKm - foundationTopKm) * (bIdx / (BUILD - 1)));
+      if ((i + 1) % p.cutbackEvery === 0) km = Math.round(km * 0.72);
+      flags.test = bIdx === BUILD - 1; // last Build week ends with the test race
+    } else {
+      phase = "Foundation";
+      const frac = foundationWeeks <= 1 ? 1 : i / (foundationWeeks - 1);
+      km = Math.round(startKm + (foundationTopKm - startKm) * Math.pow(frac, 0.85));
+      if ((i + 1) % p.cutbackEvery === 0) km = Math.round(km * 0.7);
+      flags.vo2Week = i % 2 === 1;          // VO2 injection every ~2nd week (7-14 days)
+      flags.tt5k = i > 0 && i % 6 === 0;    // 5K time trial every ~6 weeks
+    }
+
+    const longKm = isRace ? S.goal.distanceKm
+      : Math.round(clamp(km * 0.48, 12, p.longRunPeakKm) * (phase === "Taper" ? 0.7 : 1));
+    const runsN = 4;
+    const easyEach = Math.max(4, Math.round((km - longKm) / 3));
+
+    // Plan-tab summary lines
     const sessions = [];
     if (isRace) {
-      sessions.push({ key: true, txt: `RACE DAY — ${S.goal.raceName}, ${fmtKm(S.goal.distanceKm)} km @ ${fmtPace(gp)} → ${S.goal.targetTime}` });
-      sessions.push({ txt: `2–3 short shakeout runs with strides` });
+      sessions.push({ key: true, txt: `RACE DAY — ${S.goal.raceName}: ${S.goal.targetTime} target (${fmtPace(gp)}), bank ${S.goal.bankTime}` });
+    } else if (phase === "Taper") {
+      sessions.push({ key: true, txt: `MP touch mid-week, everything else short + easy — save the big day` });
+    } else if (phase === "Specific") {
+      sessions.push({ key: true, txt: `${flags.ugly ? "UGLY-ZONE week: " : ""}Alternating tempo Tue · big MP session Thu · long run with race-pace work Sun` });
+      sessions.push({ txt: `Target: ≥10 km at race pace (${fmtPace(gp + 12)}–${fmtPace(gp - 8)}) across the week` });
+    } else if (phase === "Build") {
+      sessions.push({ key: true, txt: flags.test ? `TEST WEEK — race a half marathon (or 15k @ MP) on Sunday; it decides the Specific phase` : `Threshold + finisher Tue · steady Thu · solid long run Sun (${longKm} km)` });
     } else {
-      sessions.push({ key: true, txt: `Long run ${fmtKm(longKm)} km @ ${fmtPace(S.paceZones[1].minSecPerKm)}–${fmtPace(S.paceZones[0].maxSecPerKm)} (Z2)` + (phase === "Peak" ? `, last ${fmtKm(longKm * 0.3)} km @ MP ${fmtPace(gp)}` : "") });
-      if (phase === "Base") {
-        sessions.push({ txt: `${runsN - 1}× easy run (${fmtKm((km - longKm) / (runsN - 1))} km each, Z2) — one with 6×20s strides` });
-      } else if (phase === "Build") {
-        sessions.push({ key: true, txt: `Threshold: 3–4×8 min @ ${fmtPace(S.paceZones[3].minSecPerKm)}–${fmtPace(S.paceZones[3].maxSecPerKm)} (Z4), 2 min jog` });
-        sessions.push({ txt: `${runsN - 2}× easy run (Z2), one with strides` });
-      } else if (phase === "Peak") {
-        sessions.push({ key: true, txt: `Marathon-pace: 2×5–6 km @ ${fmtPace(gp)} inside a medium run` });
-        sessions.push({ txt: `VO2: 5×3 min @ ${fmtPace(S.paceZones[4].minSecPerKm)}–${fmtPace(S.paceZones[4].maxSecPerKm)} (Z5), 3 min jog` });
-        sessions.push({ txt: `${Math.max(1, runsN - 3)}× easy run (Z2)` });
-      } else { // Taper
-        sessions.push({ key: true, txt: `MP touch: 3–4 km @ ${fmtPace(gp)} mid-week` });
-        sessions.push({ txt: `Short easy runs only, full rest 2 days before race` });
-      }
+      sessions.push({ key: true, txt: flags.tt5k ? `5K TIME TRIAL week — recalibrates every zone` : (flags.vo2Week ? `VO2 injection Tue (every ~10 days)` : `Threshold foundations Tue`) + ` · steady Thu · volume long run Sun` });
     }
-    weeks.push({ idx: i + 1, start, phase, km: Math.round(km), longKm: Math.round(longKm), runsN, sessions, isRace, current: i === 0 });
+    weeks.push({ idx: i + 1, start, phase, km, longKm, runsN, easyEach, sessions, isRace, flags, current: i === 0, weeksToGo });
   }
   return weeks;
 }
@@ -534,108 +945,149 @@ const pz = (i) => S.paceZones[i];
 const paceRange = (i) => `${fmtPace(pz(i).maxSecPerKm)}–${fmtPace(pz(i).minSecPerKm)}`;
 const hrRange = (i) => `${S.hrZones[i].minHr}–${S.hrZones[i].maxHr} bpm`;
 
-/* Build the 7 concrete days of a plan week. Schedule: runs Mon/Tue/Thu/Sun, gym Wed/Fri/Sat. */
+/* Build the 7 concrete days of a plan week — sessions per The Coach's method. */
 function buildWeekDays(w) {
   const gp = goalPaceSec();
   const days = [];
-  const easyKmPool = Math.max(0, w.km - w.longKm);
   const runDays = (S.schedule?.runDays ?? [1, 2, 4, 0]).slice();
   const gymDays = S.schedule?.gymDays ?? { "3": "Legs", "5": "Back", "6": "Chest" };
   const longDay = S.schedule?.longRunDay ?? 0;
-  const qualityDay = 2; // Tuesday
-  const midDay = 4;     // Thursday
-  const nRuns = runDays.length;
-  const easyEach = Math.max(3, Math.round(easyKmPool / Math.max(1, nRuns - 1)));
+  const easyEach = w.easyEach ?? Math.max(4, Math.round((w.km - w.longKm) / 3));
+  const F = w.flags || {};
+  const FUEL = "Fuel: nibble ~10g carbs every 10 min, starting 10 min before";
+  const ACT = "Before: 5-min activation (calf raises, lunges, leg swings)";
+  const mpBand = `${fmtPace(gp + 10)}–${fmtPace(gp - 5)}`;
 
   for (let d = 1; d <= 7; d++) {
-    const dow = d % 7; // Mon(1)..Sat(6),Sun(0)
+    const dow = d % 7;
     const date = new Date(w.start.getTime() + (d - 1) * dayMs);
-    const day = { date, dow, kind: "rest", title: "Rest", steps: [], tag: "" };
+    const day = { date, dow, kind: "rest", arch: "rest", title: "Rest", steps: [], tag: "" };
 
     if (w.isRace && dow === longDay) {
       day.kind = "race"; day.arch = "race"; day.title = `RACE — ${S.goal.raceName}`; day.tag = "42.2 km";
       day.steps = [
-        `Warm-up: 10 min easy jog + strides, be at the line relaxed`,
-        `0–30 km: lock ${fmtPace(gp)} — never faster`,
-        `30–42 km: hold form, count down the kms`,
-        `Target: ${S.goal.targetTime} (${fmtPace(gp)}) — bank ${S.goal.bankTime || ""}`];
+        "Breakfast 2h before; nibble carbs from 10 min before the gun — never slam a gel",
+        `0–30 km: lock ${fmtPace(gp)} — never faster ("it's just another Sunday")`,
+        "Carbs every 30–40 min like every long run since autumn",
+        `30–42 km: the part you rehearsed in the ugly-zone days`,
+        `Target ${S.goal.targetTime} · bank ${S.goal.bankTime} · floor sub-4`];
     } else if (runDays.includes(dow) && !w.isRace) {
       day.kind = "run";
-      const mpFloat = fmtPace(gp + 12);
       if (dow === longDay) {
-        day.arch = "long";
-        day.title = "Long run"; day.tag = `${w.longKm} km`;
-        day.steps = [
-          `Warm-up: first 2 km very easy (${fmtPace(pz(0).maxSecPerKm)}+)`,
-          `Main: ${w.longKm} km total @ ${paceRange(1)} (Z2, ${hrRange(1)}) — keep it boring, no surges`];
-        if (w.phase === "Peak") { day.steps.push(`Finish: last ${Math.max(3, Math.round(w.longKm * 0.25))} km @ marathon pace ${fmtPace(gp)}`); }
-        day.steps.push("Fuel: carbs every 30–40 min from minute 60 — race-day gut training");
-      } else if (dow === qualityDay) {
-        if (w.phase === "Base") {
-          day.arch = "threshold";
-          day.title = "Threshold foundations"; day.tag = `≈${easyEach + 3} km`;
-          day.steps = [
-            "Warm-up: 15 min easy + 4×20s strides",
-            `Main: 3×10 min @ bottom of threshold ${fmtPace(pz(3).maxSecPerKm)} (HR ≤ ${S.hrZones[3].minHr + 4}), 2 min jog between`,
-            "Should feel sustainable-for-an-hour, NOT hard — if it cooks you, slow down",
-            "Cool-down: 10 min easy"];
+        // ---- Sunday: the four long-run types ----
+        if (w.phase === "Foundation") {
+          day.arch = "long"; day.title = "Long run — volume builder"; day.tag = `${w.longKm} km`;
+          day.steps = [ACT,
+            `${w.longKm} km @ ${paceRange(1)} (Z2, ${hrRange(1)}) — just banking time, pace irrelevant`,
+            "Type 1 of 4: build the distance first; nothing sexy",
+            FUEL + " (practice starts NOW, not in the marathon block)"];
         } else if (w.phase === "Build") {
-          day.arch = "threshold";
-          day.title = "Threshold intervals"; day.tag = `≈${easyEach + 4} km`;
-          day.steps = [
-            "Warm-up: 15 min easy + 4×20s strides",
-            `Main: 3×8 min @ ${paceRange(3)} (Z4, ${hrRange(3)}), 2 min jog — or 30 min straight at the bottom end`,
-            "Last rep only: forget HR, finish at goal marathon pace (earned in Build)",
-            "Cool-down: 10 min easy"];
-        } else if (w.phase === "Peak") {
-          day.arch = "vo2";
-          day.title = "VO2 intervals"; day.tag = `≈${easyEach + 4} km`;
-          day.steps = [
-            "Warm-up: 15 min easy + 4×20s strides",
-            `Main: 5×3 min @ ${paceRange(4)} (Z5, ${hrRange(4)}), 3 min jog between`,
-            "Alternative every ~6 weeks: 5K time trial — recalibrates all zones",
-            "Cool-down: 10 min easy"];
-        } else {
-          day.arch = "mp";
-          day.title = "Marathon-pace touch"; day.tag = "≈6 km";
-          day.steps = ["Warm-up: 10 min easy", `Main: 3 km @ ${fmtPace(gp)} — should feel controlled and boring`, "Cool-down: 10 min easy"];
+          if (F.test) {
+            day.arch = "race"; day.title = "TEST — half marathon race"; day.tag = "21.1 km";
+            day.steps = ["The Build phase exam: race a half (or 15 km solo @ MP effort)",
+              `Sub-3:30 shape ≈ 1:38–1:41 half · sub-3:45 ≈ 1:45–1:48`,
+              "Result recalibrates every zone + decides the Specific phase focus",
+              "Full fueling rehearsal: breakfast 2h before, nibble strategy, race shoes"];
+          } else {
+            day.arch = "long"; day.title = "Long run — solid day"; day.tag = `${w.longKm} km`;
+            day.steps = [ACT + " + prepare drinks like race morning",
+              `${w.longKm} km @ MP + 15–20s (${fmtPace(gp + 20)}–${fmtPace(gp + 12)}) — a solid day, race intent`,
+              "Imperfect route (hills, corners), NOT super shoes — 'why should this day be easy?'",
+              FUEL + ", target 50–60g/h"];
+          }
+        } else if (w.phase === "Specific") {
+          if (F.specIdx % 2 === 0) {
+            day.arch = "long"; day.title = "Long run — progressive"; day.tag = `${w.longKm} km`;
+            day.steps = [ACT,
+              `Start @ MP + 1:15/km, step down every 5 km`,
+              `Final 4–5 km AT race pace ${fmtPace(gp)}${F.ugly ? " — UGLY ZONE: keep going 2 km past where you want to stop" : ""}`,
+              "Don't stare at the watch mid-run — check each 2 km, feel the rest",
+              FUEL + ", target 60–80g/h (race dress rehearsal)"];
+          } else {
+            day.arch = "long"; day.title = "Long run — race-pace reps"; day.tag = `${w.longKm} km`;
+            day.steps = [ACT,
+              `First half steady (${fmtPace(pz(2).maxSecPerKm + 15)})`,
+              `Second half: 4×2 km @ ${fmtPace(gp)} with 1 km float${F.ugly ? " — UGLY ZONE week: last rep 3 km" : ""}`,
+              "These km count toward the ≥10 km/week at race pace target",
+              FUEL + ", target 60–80g/h"];
+          }
+        } else { // Taper
+          day.arch = "long"; day.title = "Long run — taper"; day.tag = `${w.longKm} km`;
+          day.steps = [`${w.longKm} km relaxed Z2 — keep the Sunday rhythm, lose the fatigue`,
+            "Still practice fueling at race rate", "Legs should feel better every week now"];
         }
-      } else if (dow === midDay) {
-        if (w.phase === "Peak") {
-          day.arch = "alt";
-          const sets = clamp(Math.round((w.km - w.longKm - 2 * easyEach) / 2), 5, 8);
-          day.title = "Alternating tempo"; day.tag = `${sets * 2 + 3} km`;
-          day.steps = [
-            "Warm-up: 2 km easy",
-            `Main: ${sets}× [1 km @ threshold ${paceRange(3)} → 1 km float @ ${mpFloat} (MP+12s)]`,
-            "The float is the session: do NOT jog it — hold marathon-pace-plus",
-            "Threshold km should feel 'decent effort', never a fight",
-            "Cool-down: 1 km easy"];
+      } else if (dow === 2) {
+        // ---- Tuesday: quality slot ----
+        if (w.phase === "Foundation") {
+          if (F.tt5k) {
+            day.arch = "vo2"; day.title = "5K TIME TRIAL"; day.tag = "≈9 km";
+            day.steps = ["Warm-up: 15 min easy + drills + 4 strides",
+              "5 km all-out, solo, honest — 'after this, no rep can hurt you'",
+              "Recalibrates every zone; log the result", "Cool-down 10 min"];
+          } else if (F.vo2Week) {
+            day.arch = "vo2"; day.title = "VO2 injection"; day.tag = `≈${easyEach + 4} km`;
+            day.steps = [ACT, "Warm-up 15 min + strides",
+              `Pick one: 5×3 min @ ${paceRange(4)} / 10×400m / 10×60s uphill — vary it`,
+              "Inject the meat, then settle back into base for ~10 days", "Cool-down 10 min"];
+          } else {
+            day.arch = "threshold"; day.title = "Threshold foundations"; day.tag = `≈${easyEach + 4} km`;
+            day.steps = [ACT, "Warm-up 15 min + strides",
+              `3×10 min @ bottom of threshold ${fmtPace(pz(3).maxSecPerKm)}, 2 min jog`,
+              "3–4 word conversation test — if you can't, you're over threshold",
+              "Cool-down 10 min"];
+          }
+        } else if (w.phase === "Build") {
+          day.arch = "threshold"; day.title = "Threshold + secret finisher"; day.tag = `≈${easyEach + 5} km`;
+          day.steps = [ACT, "Warm-up 15 min + drills + strides",
+            `Main: 3×8 min @ ${paceRange(3)} (or 4 mile tempo) — make rep 3 the EASIEST: drop shoulders, long exhales`,
+            "Finisher (after 2–3 min): 15s hard / 15s stand, for 5 min — keeps speed alive",
+            FUEL, "Cool-down 10 min"];
+        } else if (w.phase === "Specific") {
+          day.arch = "alt"; day.title = "Alternating tempo"; day.tag = `${10 + Math.min(F.specIdx * 2, 6)} km`;
+          day.steps = [ACT, "Warm-up 2 km",
+            `${5 + Math.min(F.specIdx, 3)}× [1 km @ threshold ${paceRange(3)} → 1 km float @ ${fmtPace(gp + 12)}]`,
+            "The float IS the session — never jog it",
+            "If sessions start feeling too good: slow the early reps, save it for race day",
+            FUEL, "Cool-down 1 km"];
         } else {
-          day.arch = "steady";
-          day.title = "Steady aerobic"; day.tag = `${easyEach + 2} km`;
-          day.steps = [
-            "5–10 min easy to settle",
-            `Main: ${easyEach} km steady @ ${fmtPace(pz(2).maxSecPerKm + 15)}–${fmtPace(pz(2).maxSecPerKm - 5)} (upper Z2/low Z3) — or 2×20 min with 5 min easy between`,
-            "Scullion mindset: 'today I work' — no stops, hold the pace",
-            "Watch HR drift: >10 beats at fixed pace = start easier next time"];
+          day.arch = "mp"; day.title = "Marathon-pace touch"; day.tag = "≈6 km";
+          day.steps = ["Warm-up 10 min", `3 km @ ${fmtPace(gp)} — should feel boring by now`, "Cool-down 10 min"];
+        }
+      } else if (dow === 4) {
+        // ---- Thursday ----
+        if (w.phase === "Specific") {
+          const bigs = ["4×3 km", "4×3 km", "3×4 km", "4×4 km", "3×5 km"];
+          day.arch = "mp"; day.title = F.ugly ? "Big MP session — UGLY ZONE" : "Big MP session"; day.tag = `≈${w.km - w.longKm - 2 * easyEach + 4} km`;
+          day.steps = [ACT, "Warm-up 2 km + strides",
+            `${bigs[F.specIdx] || "4×3 km"} @ marathon effort ${mpBand}, 2 min jog between`,
+            F.ugly ? "This one should reach the place where you want to stop — that's the training" : "Controlled discomfort, not racing — HR guide only for the first half",
+            "Counts toward ≥10 km/week at race pace", FUEL, "Cool-down 1 km"];
+        } else if (w.phase === "Taper") {
+          day.arch = "easy"; day.title = "Short easy run"; day.tag = `${Math.max(4, easyEach - 2)} km`;
+          day.steps = ["Easy Z2, nothing more — freshness is the goal now"];
+        } else {
+          day.arch = "steady"; day.title = "Steady aerobic"; day.tag = `${easyEach + 2} km`;
+          day.steps = [ACT,
+            `Main: ${easyEach} km steady @ ${fmtPace(pz(2).maxSecPerKm + 15)}–${fmtPace(pz(2).maxSecPerKm - 5)} (or 2×20 min, 5 min easy between)`,
+            "Coach's mindset: 'today I work' — no stops, hold the pace",
+            "3–4 word conversation test; watch HR drift (>10 beats at fixed pace = start easier)"];
         }
       } else {
-        day.arch = "easy";
-        day.title = "Easy run"; day.tag = `${easyEach} km`;
-        day.steps = [
+        day.arch = "easy"; day.title = "Easy run"; day.tag = `${easyEach} km`;
+        day.steps = [ACT,
           `${easyEach} km @ ${paceRange(1)} (Z2, ${hrRange(1)})`,
-          "Luxury run: conversational, zero pressure — if in doubt, slower"];
-        if (dow === 1) day.steps.push("Finish with 6×20s strides, full recovery walks");
+          "Luxury run: conversational, zero pressure — if in doubt, slower",
+          "Finish with 6×20s strides, full recovery walks"];
       }
     } else if (gymDays[String(dow)]) {
       const g = gymDays[String(dow)];
-      if (w.isRace && (dow === 5 || dow === 6)) {
-        day.kind = "rest"; day.arch = "rest"; day.title = "Rest (race week)"; day.steps = ["Legs up, hydrate, carbs"];
+      if ((w.isRace || w.phase === "Taper") && (dow === 5 || dow === 6) && w.weeksToGo <= 1) {
+        day.kind = "rest"; day.arch = "rest"; day.title = "Rest (race week)"; day.steps = ["Legs up, hydrate, carbs, prepare kit"];
       } else {
         day.kind = "gym"; day.arch = "gym"; day.title = `Gym — ${g}`; day.tag = "45–60 min";
         day.steps = (GYM_TEMPLATES[g] || []).slice();
-        day.steps.push("Finisher (boring basics): calf raises + adductor squeezes + clams");
+        day.steps.push("Finisher (boring basics): calf raises + adductor squeezes + clams + hip control");
+        day.steps.push("Post-gym: protein within 20 min");
         if (w.phase === "Taper") { day.steps = day.steps.slice(0, 3); day.steps.push("Taper: light weights, stop 2 reps short"); }
       }
     }
@@ -653,7 +1105,7 @@ const EXPLAIN = {
     tags: ["easy"]
   },
   steady: {
-    why: "The Scullion signature. A deliberate 'work day' between easy and threshold that builds LT1 — the exact intensity a marathon is raced at. This is what stops the fade in the final 10K.",
+    why: "The The Coach signature. A deliberate 'work day' between easy and threshold that builds LT1 — the exact intensity a marathon is raced at. This is what stops the fade in the final 10K.",
     how: ["Settle 5-10 min, then lock the pace and commit", "Breathing noticeable but controlled; you could speak short phrases", "No stops once the steady block starts", "Note your HR at fixed pace — the month-over-month trend is the fitness signal"],
     mistakes: ["Letting it drift up into threshold — it's NOT a tempo run", "Treating it like an easy jog with stops", "Ignoring HR drift: >10 beats at the same pace means start slower"],
     tags: ["steady"]
@@ -665,7 +1117,7 @@ const EXPLAIN = {
     tags: ["long"]
   },
   threshold: {
-    why: "Threshold is the middle of the pyramid — it drags your cruising speed up and makes marathon pace feel cheap. Scullion: touch it every 3-4 days and track it weekly so it never slips.",
+    why: "Threshold is the middle of the pyramid — it drags your cruising speed up and makes marathon pace feel cheap. The Coach: touch it every 3-4 days and track it weekly so it never slips.",
     how: ["The pace must FEEL sustainable for 50-70 min — 'comfortably hard'", "HR reaches Z4 easily when you're fit; forcing it means you're not recovered", "Vary format: longer reps at the bottom end, shorter reps at the top end"],
     mistakes: ["Turning it into a race — if a rep cooks you, it wasn't threshold", "Only ever doing short reps (that's LT2 flattery, not marathon fitness)", "Doing it on tired legs the day after a hard session"],
     tags: ["threshold"]
@@ -677,7 +1129,7 @@ const EXPLAIN = {
     tags: ["vo2"]
   },
   alt: {
-    why: "Scullion's signature marathon session, from 10-12 weeks out. Alternating threshold km with marathon-pace floats teaches lactate clearing and fuel efficiency at speed — it pulls LT1 up toward LT2, which IS marathon fitness.",
+    why: "The Coach's signature marathon session, from 10-12 weeks out. Alternating threshold km with marathon-pace floats teaches lactate clearing and fuel efficiency at speed — it pulls LT1 up toward LT2, which IS marathon fitness.",
     how: ["The float is the session: hold MP+10-15s, never jog it", "Threshold kms at a 'decent effort' — you're not racing them", "Progression over weeks: 16k → 20k → 6×2k → 5×3k"],
     mistakes: ["Jogging the floats (turns it into plain intervals)", "Hammering the fast kms so the floats become survival", "Doing this session before the Peak phase — it needs the threshold base first"],
     tags: ["mp", "threshold"]
@@ -695,7 +1147,7 @@ const EXPLAIN = {
     tags: ["race", "mp"]
   },
   gym: {
-    why: "Strength is 'speed that doesn't require fitness' (Scullion found seconds/km here for Spencer). It's also why your legs stop feeling tight: tightness usually means weak muscles being broken down, not poor flexibility.",
+    why: "Strength is 'speed that doesn't require fitness' (The Coach found seconds/km here for Spencer). It's also why your legs stop feeling tight: tightness usually means weak muscles being broken down, not poor flexibility.",
     how: ["Heavy enough to matter, controlled form, stop 1-2 reps short of failure", "Always include the boring basics: calves, glutes, adductors, hip control", "Time it on non-run days (your Wed/Fri/Sat) so run quality doesn't suffer"],
     mistakes: ["Stretching instead of strengthening when legs feel tight", "Leg day the day before the long run at full send", "Dropping gym when running volume rises — that's when you need it most"],
     tags: ["gym"]
@@ -726,7 +1178,7 @@ function openDayModal(day, week) {
     <h4>Why this session</h4><p>${ex.why}</p>
     <h4>How to execute</h4><ul>${ex.how.map(s => `<li>${s}</li>`).join("")}</ul>
     <h4>Common mistakes</h4><ul>${ex.mistakes.map(s => `<li>${s}</li>`).join("")}</ul>
-    ${tips.length ? `<h4>Scullion says</h4>` + tips.map(t => `<div class="quote"><b>${t.title}</b>${t.insight}</div>`).join("") : ""}
+    ${tips.length ? `<h4>The Coach says</h4>` + tips.map(t => `<div class="quote"><b>${t.title}</b>${t.insight}</div>`).join("") : ""}
   `;
   $("#modalWrap").classList.add("open");
 }
@@ -897,10 +1349,11 @@ function renderRace() {
   el.innerHTML = `
     <div class="panel">
       <h2>Race recipe — train for 3:30, bank 3:45, floor sub-4</h2>
-      <div class="hint">The strategy: train toward 3:30 fitness so a rough race day still lands 3:45 and a bad one stays under 4:00. The gap below is measured against the 3:30 training target — it is SUPPOSED to look big right now; it closes block by block (Scullion: threshold moves ~5s/km per block).</div>
+      <div class="hint">The strategy: train toward 3:30 fitness so a rough race day still lands 3:45 and a bad one stays under 4:00. The gap below is measured against the 3:30 training target — it is SUPPOSED to look big right now; it closes block by block (The Coach: threshold moves ~5s/km per block).</div>
       <div class="cards" style="margin-top:8px">
         <div class="card"><div class="k">Current predicted time</div><div class="v">${pred ? fmtTime(pred.predictedS) : "–"}</div><div class="d">${pred ? `Riegel from ${fmtKm(pred.from.distanceKm)} km @ ${fmtPace(pred.from.paceSecPerKm)} (${pred.from.date})` : "Need a run ≥ 8 km"}</div></div>
         <div class="card"><div class="k">Goal</div><div class="v">${S.goal.targetTime}</div><div class="d">${fmtPace(gp)} average</div></div>
+        <div class="card"><div class="k">Race-pace km, last 8 weeks</div><div class="v">${(() => { const now=new Date(); const rp=runs().filter(r => r.paceSecPerKm && Math.abs(r.paceSecPerKm - gp) <= 15 && (now - parseISO(r.date)) < 56*dayMs); return fmtKm(rp.reduce((s,r)=>s+r.distanceKm,0)); })()}<span class="unit"> km</span></div><div class="d">The Coach's audit: 'zero km at race pace = don't expect it on race day.' Target ≥10 km/week in the final 6 weeks.</div></div>
         <div class="card"><div class="k">Gap to close</div><div class="v" style="color:${gapS != null && gapS <= 0 ? "var(--good-text)" : "var(--text-primary)"}">${gapS == null ? "–" : (gapS <= 0 ? "On track ✓" : fmtTime(gapS))}</div><div class="d">${gapS != null && gapS > 0 ? `≈ ${Math.round(gapS / S.goal.distanceKm)}s/km of fitness to build` : ""}</div></div>
       </div>
       <h2 style="margin-top:10px">The recipe</h2>
@@ -943,7 +1396,7 @@ function renderCalendar() {
   el.innerHTML = `
     <div class="panel">
       <h2>Training calendar</h2>
-      <div class="hint"><b>Click any day</b> for the full workout: why it exists, how to execute it, common mistakes, and what Scullion says about it. Your week: runs Mon · Tue · Thu · Sun (long run), gym Wed (legs) · Fri (back) · Sat (chest) — Wed &amp; Sat are no-run days. Detail for the next ${DETAIL_WEEKS} weeks; later weeks fill in as they approach.</div>
+      <div class="hint"><b>Click any day</b> for the full workout: why it exists, how to execute it, common mistakes, and what The Coach says about it. Your week: runs Mon · Tue · Thu · Sun (long run), gym Wed (legs) · Fri (back) · Sat (chest) — Wed &amp; Sat are no-run days. Detail for the next ${DETAIL_WEEKS} weeks; later weeks fill in as they approach.</div>
       ${CAL.map((cw, wi) => `
         <div class="calweek${cw.week.current ? " current" : ""}">
           <div class="whead" style="margin-bottom:8px">
@@ -969,7 +1422,7 @@ function renderCoach() {
   const topics = [...new Set((KB.tips || []).map(t => t.topic))];
   el.innerHTML = `
     <div class="panel">
-      <h2>Coach's corner — Stephen Scullion's strategies</h2>
+      <h2>Coach's corner — strategies from The Coach</h2>
       <div class="hint">Distilled from transcripts of ${KB.sources?.length || 0} of his training videos (${KB.extracted}). Not generic advice — his specific system, with how each piece applies to your plan. These same tips appear on matching days in the calendar.</div>
       ${topics.map(topic => `
         <div class="topic-h">${topic}</div>
