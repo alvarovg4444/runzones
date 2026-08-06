@@ -637,54 +637,7 @@ const SEED_KNOWLEDGE = {
     }
   ]
 };
-const SEED_SETTINGS = {
-  "athlete": {
-    "name": "Alvaro",
-    "maxHr": 185,
-    "restingHr": 55,
-    "units": "metric"
-  },
-  "goal": {
-    "raceName": "Marathon",
-    "raceDate": "2027-04-18",
-    "distanceKm": 42.195,
-    "targetTime": "3:30:00",
-    "bankTime": "3:45:00",
-    "floorTime": "3:59:00",
-    "note": "Strategy: train for 3:30 so that a rough day still banks 3:45 and a bad day stays under 4:00. Race date assumed 2027 - edit if different."
-  },
-  "hrZones": [
-    { "zone": "Z1", "name": "Recovery",  "minHr": 111, "maxHr": 129 },
-    { "zone": "Z2", "name": "Easy / Aerobic", "minHr": 130, "maxHr": 148 },
-    { "zone": "Z3", "name": "Steady / Marathon", "minHr": 149, "maxHr": 161 },
-    { "zone": "Z4", "name": "Threshold", "minHr": 162, "maxHr": 172 },
-    { "zone": "Z5", "name": "VO2max", "minHr": 173, "maxHr": 185 }
-  ],
-  "paceZones": [
-    { "zone": "Recovery",  "minSecPerKm": 420, "maxSecPerKm": 500 },
-    { "zone": "Easy",      "minSecPerKm": 360, "maxSecPerKm": 415 },
-    { "zone": "Steady/MP", "minSecPerKm": 310, "maxSecPerKm": 345 },
-    { "zone": "Threshold", "minSecPerKm": 290, "maxSecPerKm": 310 },
-    { "zone": "VO2 Interval", "minSecPerKm": 265, "maxSecPerKm": 285 },
-    { "zone": "Repetition",   "minSecPerKm": 245, "maxSecPerKm": 262 }
-  ],
-  "zonesNote": "Zones sit between current fitness (threshold ~5:15/km) and the 3:30 target chain (threshold ~4:50). Re-derived after every test race - Scullion: threshold must FEEL sustainable 50-70 min; if a rep cooks you, it was too fast, back off to the slow end of the band.",
-  "plan": {
-    "currentWeeklyKm": 34,
-    "peakWeeklyKm": 62,
-    "runsPerWeekStart": 4,
-    "runsPerWeekPeak": 4,
-    "longRunPeakKm": 32,
-    "cutbackEvery": 4,
-    "taperWeeks": 3
-  },
-  "schedule": {
-    "comment": "JS day numbers: 0=Sunday 1=Monday ... 6=Saturday. Wed+Sat are no-run days.",
-    "runDays": [1, 2, 4, 0],
-    "longRunDay": 0,
-    "gymDays": { "3": "Legs", "5": "Back", "6": "Chest" }
-  }
-};
+const SEED_SETTINGS = {"athlete": {"name": "Alvaro", "maxHr": 185, "restingHr": 55, "units": "metric"}, "goal": {"raceName": "Marathon", "raceDate": "2027-04-18", "distanceKm": 42.195, "targetTime": "3:30:00", "bankTime": "3:45:00", "floorTime": "3:59:00", "note": "Strategy: train for 3:30 so that a rough day still banks 3:45 and a bad day stays under 4:00. Race date assumed 2027 - edit if different."}, "hrZones": [{"zone": "Z1", "name": "Recovery", "minHr": 111, "maxHr": 129}, {"zone": "Z2", "name": "Easy / Aerobic", "minHr": 130, "maxHr": 148}, {"zone": "Z3", "name": "Steady / Marathon", "minHr": 149, "maxHr": 161}, {"zone": "Z4", "name": "Threshold", "minHr": 162, "maxHr": 172}, {"zone": "Z5", "name": "VO2max", "minHr": 173, "maxHr": 185}], "paceZones": [{"zone": "Recovery", "minSecPerKm": 420, "maxSecPerKm": 500}, {"zone": "Easy", "minSecPerKm": 360, "maxSecPerKm": 415}, {"zone": "Steady/MP", "minSecPerKm": 330, "maxSecPerKm": 360}, {"zone": "Threshold", "minSecPerKm": 305, "maxSecPerKm": 325}, {"zone": "VO2 Interval", "minSecPerKm": 285, "maxSecPerKm": 305}, {"zone": "Repetition", "minSecPerKm": 270, "maxSecPerKm": 285}], "zonesNote": "Zones are anchored to CURRENT fitness (threshold ~5:15/km, from real runs - 10.4km @5:17 HR162, benchmark 4:54 @HR149), not to the goal. They only move when the data says so: the dashboard checkpoint banner proposes new zones after a faster 5K/10K/half, and the Build-phase test half recalibrates everything. Reference: 3:30 marathon shape eventually needs threshold ~4:50/km - the plan walks you there via evidence, never by decree. Coach's rule: threshold must FEEL sustainable 50-70 min; if a rep cooks you, it was too fast.", "plan": {"currentWeeklyKm": 34, "peakWeeklyKm": 62, "runsPerWeekStart": 4, "runsPerWeekPeak": 4, "longRunPeakKm": 32, "cutbackEvery": 4, "taperWeeks": 3}, "schedule": {"comment": "JS day numbers: 0=Sunday 1=Monday ... 6=Saturday. Wed+Sat are no-run days.", "runDays": [1, 2, 4, 0], "longRunDay": 0, "gymDays": {"3": "Legs", "5": "Back", "6": "Chest"}}};
 const SEED_ACTIVITIES = {
   "lastSync": "2026-08-06T00:00:00Z",
   "source": "garmin-connect-manual-seed",
