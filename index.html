@@ -197,6 +197,11 @@
   .tipcard .app { font-size: 12.5px; margin-top: 8px; padding: 7px 10px; border-radius: 8px; background: var(--chip-bg); color: var(--text-primary); }
   .tipcard .app b { color: var(--good-text); }
   .tipcard .src { font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+  #ckbanner { border: 1px solid var(--series-2); background: var(--chip-bg); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+  #ckbanner b { color: var(--text-primary); }
+  #ckbanner .row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  #ckbanner button { appearance: none; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); border-radius: 8px; padding: 6px 12px; font: inherit; font-size: 12.5px; cursor: pointer; }
+  #ckbanner button.primary { background: var(--series-1); color: #fff; border-color: var(--series-1); }
   .topic-h { font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 18px 0 8px; }
 </style>
 </head>
@@ -1184,6 +1189,80 @@ function openDayModal(day, week) {
 }
 function closeModal() { $("#modalWrap").classList.remove("open"); }
 
+/* ---------- checkpoint auto-recalibration ----------
+   The Coach's method: zones move at checkpoints (5K TT, test race), not continuously.
+   Detects a hard recent effort, derives a new threshold, suggests new zones. */
+const ZKEY = "rz_zone_override_v1", DKEY = "rz_ck_dismissed_v1";
+
+function checkpointSuggestion() {
+  const now = new Date();
+  let best = null;
+  for (const r of runs()) {
+    if (!r.paceSecPerKm || (now - parseISO(r.date)) > 60 * dayMs) continue;
+    let type = null, tEst = null;
+    if (r.distanceKm >= 2.9 && r.distanceKm <= 6.5) { type = "5K-effort"; tEst = r.paceSecPerKm + 13; }
+    else if (r.distanceKm >= 8 && r.distanceKm <= 12.5) { type = "10K-effort"; tEst = r.paceSecPerKm + 6; }
+    else if (r.distanceKm >= 19 && r.distanceKm <= 22.5) { type = "half-marathon"; tEst = r.paceSecPerKm; }
+    if (!type) continue;
+    const hard = (r.avgHr && r.avgHr >= S.hrZones[3].minHr - 2) || r.paceSecPerKm <= pz(3).maxSecPerKm + 8;
+    if (!hard) continue;
+    if (!best || tEst < best.tEst) best = { run: r, type, tEst };
+  }
+  if (!best) return null;
+  const curMid = (pz(3).minSecPerKm + pz(3).maxSecPerKm) / 2;
+  const diff = Math.round(curMid - best.tEst); // + = you got faster
+  if (Math.abs(diff) < 6) return null;
+  const t = Math.round(best.tEst);
+  const zones = [
+    { zone: "Recovery", minSecPerKm: t + 110, maxSecPerKm: t + 190 },
+    { zone: "Easy", minSecPerKm: t + 55, maxSecPerKm: t + 105 },
+    { zone: "Steady/MP", minSecPerKm: t + 18, maxSecPerKm: t + 50 },
+    { zone: "Threshold", minSecPerKm: t - 10, maxSecPerKm: t + 10 },
+    { zone: "VO2 Interval", minSecPerKm: t - 45, maxSecPerKm: t - 25 },
+    { zone: "Repetition", minSecPerKm: t - 62, maxSecPerKm: t - 47 }
+  ];
+  return { ...best, zones, diff, t };
+}
+
+function applyZoneOverride(sug) {
+  try { localStorage.setItem(ZKEY, JSON.stringify({ base: S.paceZones, zones: sug.zones, runId: sug.run.id, date: sug.run.date })); } catch (e) {}
+  S.paceZones = sug.zones;
+  renderAll();
+}
+function loadZoneOverride() {
+  try {
+    const o = JSON.parse(localStorage.getItem(ZKEY) || "null");
+    if (o && JSON.stringify(o.base) === JSON.stringify(S.paceZones)) { S.paceZones = o.zones; return o; }
+    if (o) localStorage.removeItem(ZKEY); // settings.json changed in repo -> repo wins
+  } catch (e) {}
+  return null;
+}
+function ckBannerHTML() {
+  const sug = checkpointSuggestion();
+  if (!sug) return "";
+  try { if (localStorage.getItem(DKEY) === sug.run.id) return ""; } catch (e) {}
+  const faster = sug.diff > 0;
+  return `<div id="ckbanner">
+    <b>Checkpoint detected:</b> ${sug.run.name} — ${fmtKm(sug.run.distanceKm)} km @ ${fmtPace(sug.run.paceSecPerKm)} (${sug.run.date}), read as a ${sug.type}.
+    Suggested new threshold: <b>${fmtPace(sug.t + 10)}–${fmtPace(sug.t - 10)}</b> (${faster ? Math.abs(sug.diff) + "s/km faster" : Math.abs(sug.diff) + "s/km slower"} than current). Applying re-derives every zone and regenerates the whole calendar.
+    <div class="row">
+      <button class="primary" onclick="window.__ckApply()">Apply on this device</button>
+      <button onclick="window.__ckCopy()">Copy zones for settings.json</button>
+      <button onclick="window.__ckDismiss()">Dismiss</button>
+    </div></div>`;
+}
+window.__ckApply = () => { const s = checkpointSuggestion(); if (s) applyZoneOverride(s); };
+window.__ckCopy = async () => {
+  const s = checkpointSuggestion(); if (!s) return;
+  try { await navigator.clipboard.writeText('"paceZones": ' + JSON.stringify(s.zones, null, 2)); alert("Copied. Paste into data/settings.json (opens next) and commit - that makes it permanent for all devices."); } catch (e) {}
+  window.open("https://github.com/alvarovg4444/runzones/edit/main/data/settings.json", "_blank");
+};
+window.__ckDismiss = () => { const s = checkpointSuggestion(); if (s) { try { localStorage.setItem(DKEY, s.run.id); } catch (e) {} } renderAll(); };
+
+function renderAll() {
+  renderDashboard(); renderCalendar(); renderFitness(); renderSessions(); renderPlan(); renderRace(); renderCoach(); renderZones();
+}
+
 /* ---------- rendering ---------- */
 const TABS = [["dashboard", "Dashboard"], ["calendar", "Calendar"], ["fitness", "Fitness profile"], ["sessions", "Sessions"], ["plan", "Plan"], ["race", "Race recipe"], ["coach", "Coach"], ["zones", "Zones"]];
 
@@ -1248,6 +1327,7 @@ function renderDashboard() {
   $("#headSub").textContent = `${S.goal.raceName} · ${raceDay.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · train for ${S.goal.targetTime.slice(0, 4)}, bank ${(S.goal.bankTime || "3:45:00").slice(0, 4)}, floor sub-4`;
 
   el.innerHTML = `
+    ${ckBannerHTML()}
     <div class="cards">
       <div class="card"><div class="k">Days to race</div><div class="v">${days}</div><div class="d">${Math.floor(days / 7)} weeks</div></div>
       <div class="card"><div class="k">Readiness</div><div class="v" style="color:${scoreColor(readiness)}">${readiness}<span class="unit">/100</span></div><div class="d">${scoreWord(readiness)} — avg of 8 systems</div></div>
@@ -1486,6 +1566,7 @@ async function boot() {
     const k = await fetch("data/knowledge.json").then(r => r.ok ? r.json() : null).catch(() => null);
     if (k) KB = k;
   } catch (e) { /* file:// mode — use embedded seed */ }
+  loadZoneOverride();
   renderNav();
   renderDashboard();
   renderCalendar();
