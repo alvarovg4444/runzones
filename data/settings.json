@@ -86,7 +86,8 @@
     "runsPerWeekPeak": 4,
     "longRunPeakKm": 32,
     "cutbackEvery": 4,
-    "taperWeeks": 3
+    "taperWeeks": 3,
+    "planStartDate": "2026-08-06"
   },
   "schedule": {
     "comment": "JS day numbers: 0=Sunday 1=Monday ... 6=Saturday. Wed+Sat are no-run days.",

@@ -1,245 +1,607 @@
 {
-  "lastSync": "2026-08-07T00:28:14Z",
-  "source": "intervals-icu-sync",
+  "lastSync": "2026-08-07T10:20:00Z",
+  "source": "intervals-icu-full-backfill",
   "activities": [
     {
-      "id": "g-20260313-1",
+      "id": "icu-i173321459",
       "date": "2026-03-13",
       "name": "Vienna Cycling",
       "type": "ride",
       "distanceKm": 9.04,
-      "movingTimeS": 2086,
-      "avgSpeedKph": 15.6,
-      "avgHr": null,
-      "ascentM": 51,
-      "source": "garmin"
+      "movingTimeS": 1727,
+      "elapsedTimeS": 2086,
+      "avgHr": 99,
+      "maxHr": 129,
+      "ascentM": 130,
+      "source": "intervals.icu",
+      "avgSpeedKph": 18.8
     },
     {
-      "id": "g-20260313-2",
+      "id": "icu-i173321472",
       "date": "2026-03-13",
       "name": "Vienna Cycling",
       "type": "ride",
       "distanceKm": 8.91,
-      "movingTimeS": 1977,
-      "avgSpeedKph": 16.2,
-      "avgHr": null,
-      "ascentM": 108,
-      "source": "garmin"
+      "movingTimeS": 1758,
+      "elapsedTimeS": 1977,
+      "avgHr": 119,
+      "maxHr": 138,
+      "ascentM": 199,
+      "source": "intervals.icu",
+      "avgSpeedKph": 18.2
     },
     {
-      "id": "g-20260316",
+      "id": "icu-i173321481",
       "date": "2026-03-16",
       "name": "Gaelic Football",
       "type": "cross",
-      "distanceKm": 0,
+      "distanceKm": 0.0,
       "movingTimeS": 3600,
+      "elapsedTimeS": 3600,
       "avgHr": null,
-      "source": "garmin"
+      "maxHr": null,
+      "ascentM": null,
+      "source": "intervals.icu"
     },
     {
-      "id": "g-20260317",
+      "id": "icu-i173321483",
       "date": "2026-03-17",
       "name": "Gym",
       "type": "strength",
-      "distanceKm": 0,
+      "distanceKm": 0.0,
       "movingTimeS": 3376,
+      "elapsedTimeS": 3376,
       "avgHr": 79,
-      "source": "garmin"
+      "maxHr": 121,
+      "ascentM": null,
+      "source": "intervals.icu"
     },
     {
-      "id": "g-20260320",
+      "id": "icu-i173321488",
       "date": "2026-03-20",
       "name": "Gym",
       "type": "strength",
-      "distanceKm": 0,
+      "distanceKm": 0.0,
       "movingTimeS": 3960,
+      "elapsedTimeS": 3960,
       "avgHr": 84,
-      "source": "garmin"
+      "maxHr": 134,
+      "ascentM": null,
+      "source": "intervals.icu"
     },
     {
-      "id": "g-20260324",
+      "id": "icu-i173321494",
       "date": "2026-03-24",
       "name": "Gym",
       "type": "strength",
-      "distanceKm": 0,
+      "distanceKm": 0.0,
       "movingTimeS": 3352,
+      "elapsedTimeS": 3352,
       "avgHr": 92,
-      "source": "garmin"
+      "maxHr": 120,
+      "ascentM": null,
+      "source": "intervals.icu"
     },
     {
-      "id": "g-20260325",
+      "id": "icu-i173321500",
       "date": "2026-03-25",
       "name": "Vienna Running",
       "type": "run",
       "distanceKm": 6.19,
-      "movingTimeS": 2184,
-      "paceSecPerKm": 352,
-      "avgHr": 155,
-      "ascentM": 88,
-      "source": "garmin"
+      "movingTimeS": 2036,
+      "elapsedTimeS": 2184,
+      "avgHr": 154,
+      "maxHr": 170,
+      "ascentM": 36,
+      "source": "intervals.icu",
+      "paceSecPerKm": 329,
+      "bestKmSecPerKm": 359,
+      "best20minSecPerKm": 347,
+      "laps": [
+        [
+          1617,
+          550,
+          134
+        ],
+        [
+          1626,
+          575,
+          157
+        ],
+        [
+          1613,
+          579,
+          162
+        ],
+        [
+          1339,
+          481,
+          161
+        ]
+      ]
     },
     {
-      "id": "g-20260326",
-      "date": "2026-03-26",
-      "name": "Climbing",
-      "type": "cross",
-      "distanceKm": 0,
-      "movingTimeS": 2739,
-      "avgHr": 94,
-      "source": "garmin"
-    },
-    {
-      "id": "g-20260328",
+      "id": "icu-i173321505",
       "date": "2026-03-28",
       "name": "Gaelic Handball",
-      "type": "cross",
-      "distanceKm": 0,
+      "type": "strength",
+      "distanceKm": 0.0,
       "movingTimeS": 7642,
+      "elapsedTimeS": 7642,
       "avgHr": 107,
-      "source": "garmin"
+      "maxHr": 163,
+      "ascentM": null,
+      "source": "intervals.icu"
     },
     {
-      "id": "g-20260329",
+      "id": "icu-i173321510",
       "date": "2026-03-29",
       "name": "Run after drinks",
       "type": "run",
       "distanceKm": 10.43,
-      "movingTimeS": 3305,
-      "paceSecPerKm": 317,
-      "avgHr": 162,
-      "ascentM": 62,
-      "source": "garmin"
+      "movingTimeS": 3299,
+      "elapsedTimeS": 3305,
+      "avgHr": 160,
+      "maxHr": 174,
+      "ascentM": 27,
+      "source": "intervals.icu",
+      "paceSecPerKm": 316,
+      "best20minSecPerKm": 309,
+      "laps": [
+        [
+          1641,
+          511,
+          144
+        ],
+        [
+          1606,
+          467,
+          167
+        ],
+        [
+          1618,
+          523,
+          159
+        ],
+        [
+          1590,
+          517,
+          163
+        ],
+        [
+          1628,
+          526,
+          166
+        ],
+        [
+          1599,
+          510,
+          167
+        ],
+        [
+          749,
+          252,
+          162
+        ]
+      ]
     },
     {
-      "id": "g-20260331",
+      "id": "icu-i173321520",
+      "date": "2026-03-30",
+      "name": "Vienna Other",
+      "type": "cross",
+      "distanceKm": 2.96,
+      "movingTimeS": 2310,
+      "elapsedTimeS": 3604,
+      "avgHr": 112,
+      "maxHr": 139,
+      "ascentM": 91,
+      "source": "intervals.icu"
+    },
+    {
+      "id": "icu-i173321526",
       "date": "2026-03-31",
       "name": "Gym Workout",
-      "type": "strength",
-      "distanceKm": 0,
-      "movingTimeS": 4626,
-      "avgHr": 89,
-      "source": "garmin"
+      "type": "cross",
+      "distanceKm": 1.13,
+      "movingTimeS": 4579,
+      "elapsedTimeS": 4625,
+      "avgHr": 88,
+      "maxHr": 130,
+      "ascentM": 215,
+      "source": "intervals.icu"
     },
     {
-      "id": "g-20260401",
+      "id": "icu-i173321529",
       "date": "2026-04-01",
       "name": "Pilates",
       "type": "cross",
-      "distanceKm": 0,
-      "movingTimeS": 3252,
+      "distanceKm": 0.0,
+      "movingTimeS": 3253,
+      "elapsedTimeS": 3253,
       "avgHr": 75,
-      "source": "garmin"
+      "maxHr": 101,
+      "ascentM": null,
+      "source": "intervals.icu"
     },
     {
-      "id": "g-20260408",
+      "id": "icu-i173321534",
+      "date": "2026-04-03",
+      "name": "Vienna Other",
+      "type": "cross",
+      "distanceKm": 2.53,
+      "movingTimeS": 5590,
+      "elapsedTimeS": 5910,
+      "avgHr": 79,
+      "maxHr": 111,
+      "ascentM": 144,
+      "source": "intervals.icu"
+    },
+    {
+      "id": "icu-i173321539",
+      "date": "2026-04-04",
+      "name": "Other",
+      "type": "strength",
+      "distanceKm": 0.0,
+      "movingTimeS": 3019,
+      "elapsedTimeS": 3019,
+      "avgHr": 86,
+      "maxHr": 120,
+      "ascentM": null,
+      "source": "intervals.icu"
+    },
+    {
+      "id": "icu-i173321552",
+      "date": "2026-04-06",
+      "name": "Vienna Other",
+      "type": "cross",
+      "distanceKm": 0.45,
+      "movingTimeS": 5986,
+      "elapsedTimeS": 6209,
+      "avgHr": 83,
+      "maxHr": 133,
+      "ascentM": 141,
+      "source": "intervals.icu"
+    },
+    {
+      "id": "icu-i173321556",
       "date": "2026-04-08",
       "name": "Vienna Running",
       "type": "run",
       "distanceKm": 8.04,
-      "movingTimeS": 3078,
-      "paceSecPerKm": 383,
-      "avgHr": 136,
-      "ascentM": 68,
-      "source": "garmin"
+      "movingTimeS": 3043,
+      "elapsedTimeS": 3081,
+      "avgHr": 135,
+      "maxHr": 146,
+      "ascentM": 20,
+      "source": "intervals.icu",
+      "paceSecPerKm": 378,
+      "best20minSecPerKm": 359,
+      "laps": [
+        [
+          1612,
+          557,
+          127
+        ],
+        [
+          1630,
+          606,
+          136
+        ],
+        [
+          1615,
+          605,
+          138
+        ],
+        [
+          1609,
+          611,
+          139
+        ],
+        [
+          1574,
+          692,
+          133
+        ]
+      ]
     },
     {
-      "id": "g-20260411",
+      "id": "icu-i173321562",
       "date": "2026-04-11",
       "name": "GAA Handball",
-      "type": "cross",
-      "distanceKm": 0,
+      "type": "strength",
+      "distanceKm": 0.0,
       "movingTimeS": 5448,
+      "elapsedTimeS": 5448,
       "avgHr": 107,
-      "source": "garmin"
+      "maxHr": 132,
+      "ascentM": null,
+      "source": "intervals.icu"
     },
     {
-      "id": "g-20260421",
+      "id": "icu-i173321564",
+      "date": "2026-04-13",
+      "name": "Vienna Other",
+      "type": "cross",
+      "distanceKm": 3.54,
+      "movingTimeS": 2176,
+      "elapsedTimeS": 3078,
+      "avgHr": 132,
+      "maxHr": 178,
+      "ascentM": 80,
+      "source": "intervals.icu"
+    },
+    {
+      "id": "icu-i173321568",
+      "date": "2026-04-15",
+      "name": "Vienna Other",
+      "type": "cross",
+      "distanceKm": 1.86,
+      "movingTimeS": 3735,
+      "elapsedTimeS": 3971,
+      "avgHr": 85,
+      "maxHr": 122,
+      "ascentM": 104,
+      "source": "intervals.icu"
+    },
+    {
+      "id": "icu-i173321576",
       "date": "2026-04-21",
       "name": "Running",
       "type": "run",
       "distanceKm": 9.18,
-      "movingTimeS": 4026,
-      "paceSecPerKm": 439,
+      "movingTimeS": 3764,
+      "elapsedTimeS": 4026,
       "avgHr": 132,
+      "maxHr": 145,
       "ascentM": null,
-      "source": "garmin"
+      "source": "intervals.icu",
+      "paceSecPerKm": 410,
+      "bestKmSecPerKm": 663,
+      "best20minSecPerKm": 403,
+      "laps": [
+        [
+          1654,
+          691,
+          117
+        ],
+        [
+          1607,
+          653,
+          134
+        ],
+        [
+          1611,
+          661,
+          136
+        ],
+        [
+          1602,
+          646,
+          140
+        ],
+        [
+          1614,
+          651,
+          141
+        ],
+        [
+          1091,
+          723,
+          124
+        ]
+      ]
     },
     {
-      "id": "g-20260508",
+      "id": "icu-i173321591",
       "date": "2026-05-08",
-      "name": "Gym",
+      "name": "Other",
       "type": "strength",
-      "distanceKm": 0,
-      "movingTimeS": 2672,
-      "avgHr": 82,
-      "source": "garmin"
+      "distanceKm": 0.0,
+      "movingTimeS": 2673,
+      "elapsedTimeS": 2673,
+      "avgHr": 83,
+      "maxHr": 110,
+      "ascentM": null,
+      "source": "intervals.icu"
     },
     {
-      "id": "g-20260726",
+      "id": "icu-i173321595",
+      "date": "2026-05-09",
+      "name": "Aklan Other",
+      "type": "cross",
+      "distanceKm": 0.08,
+      "movingTimeS": 459,
+      "elapsedTimeS": 461,
+      "avgHr": 97,
+      "maxHr": 109,
+      "ascentM": null,
+      "source": "intervals.icu"
+    },
+    {
+      "id": "icu-i173321598",
+      "date": "2026-06-11",
+      "name": "Other",
+      "type": "strength",
+      "distanceKm": 0.0,
+      "movingTimeS": 4667,
+      "elapsedTimeS": 316325,
+      "avgHr": 93,
+      "maxHr": 129,
+      "ascentM": null,
+      "source": "intervals.icu"
+    },
+    {
+      "id": "icu-i173321603",
+      "date": "2026-07-13",
+      "name": "Wien Other",
+      "type": "cross",
+      "distanceKm": 3.99,
+      "movingTimeS": 2824,
+      "elapsedTimeS": 4102,
+      "avgHr": 129,
+      "maxHr": 172,
+      "ascentM": 186,
+      "source": "intervals.icu"
+    },
+    {
+      "id": "icu-i173321609",
       "date": "2026-07-26",
       "name": "Warsaw Laufen",
       "type": "run",
       "distanceKm": 15.27,
-      "movingTimeS": 5295,
-      "paceSecPerKm": 347,
+      "movingTimeS": 5006,
+      "elapsedTimeS": 5295,
       "avgHr": 156,
-      "ascentM": 80,
-      "source": "garmin"
+      "maxHr": 185,
+      "ascentM": 37,
+      "source": "intervals.icu",
+      "paceSecPerKm": 328,
+      "best20minSecPerKm": 318,
+      "laps": [
+        [
+          1628,
+          546,
+          135
+        ],
+        [
+          1623,
+          559,
+          149
+        ],
+        [
+          1609,
+          543,
+          151
+        ],
+        [
+          1603,
+          539,
+          157
+        ],
+        [
+          1592,
+          548,
+          161
+        ],
+        [
+          1634,
+          531,
+          160
+        ],
+        [
+          1609,
+          771,
+          151
+        ],
+        [
+          1608,
+          523,
+          165
+        ],
+        [
+          1576,
+          510,
+          165
+        ],
+        [
+          779,
+          226,
+          174
+        ]
+      ]
     },
     {
-      "id": "g-20260802-1",
-      "date": "2026-08-02",
-      "name": "Wien - Einstufungslauf",
-      "type": "run",
-      "distanceKm": 1.84,
-      "movingTimeS": 540,
-      "paceSecPerKm": 294,
-      "avgHr": 149,
-      "ascentM": 24,
-      "source": "garmin"
-    },
-    {
-      "id": "g-20260802-2",
+      "id": "icu-i173321620",
       "date": "2026-08-02",
       "name": "Wien Radfahren",
       "type": "ride",
       "distanceKm": 14.78,
-      "movingTimeS": 4672,
-      "avgSpeedKph": 11.4,
-      "avgHr": null,
-      "ascentM": 319,
-      "source": "garmin"
+      "movingTimeS": 3794,
+      "elapsedTimeS": 11136,
+      "avgHr": 86,
+      "maxHr": 124,
+      "ascentM": 357,
+      "source": "intervals.icu",
+      "avgSpeedKph": 14.0
     },
     {
-      "id": "g-20260804",
+      "id": "icu-i173321640",
+      "date": "2026-08-02",
+      "name": "Wien - Einstufungslauf",
+      "type": "run",
+      "distanceKm": 1.84,
+      "movingTimeS": 529,
+      "elapsedTimeS": 539,
+      "avgHr": 149,
+      "maxHr": 169,
+      "ascentM": 16,
+      "source": "intervals.icu",
+      "paceSecPerKm": 288,
+      "bestKmSecPerKm": 263,
+      "laps": [
+        [
+          348,
+          121,
+          116
+        ],
+        [
+          1137,
+          299,
+          159
+        ],
+        [
+          352,
+          120,
+          155
+        ]
+      ]
+    },
+    {
+      "id": "icu-i173321645",
       "date": "2026-08-04",
       "name": "Wien - Locker laufen",
       "type": "run",
       "distanceKm": 4.6,
-      "movingTimeS": 1800,
-      "paceSecPerKm": 391,
+      "movingTimeS": 1794,
+      "elapsedTimeS": 1801,
       "avgHr": 143,
-      "ascentM": 123,
-      "source": "garmin"
-    },
-    {
-      "id": "icu-i173193801",
-      "date": "2026-08-06",
-      "name": "Vienna Running",
-      "type": "run",
-      "distanceKm": 0.83,
-      "movingTimeS": 286,
-      "avgHr": 134,
-      "maxHr": 153,
-      "ascentM": 1,
+      "maxHr": 163,
+      "ascentM": 42,
       "source": "intervals.icu",
-      "paceSecPerKm": 345,
-      "bestKmSecPerKm": 381,
+      "paceSecPerKm": 390,
+      "bestKmSecPerKm": 341,
+      "best20minSecPerKm": 347,
       "laps": [
         [
-          832,
-          317,
-          133
+          730,
+          300,
+          123
+        ],
+        [
+          999,
+          355,
+          146
+        ],
+        [
+          724,
+          246,
+          153
+        ],
+        [
+          998,
+          340,
+          158
+        ],
+        [
+          738,
+          260,
+          156
+        ],
+        [
+          411,
+          299,
+          118
         ]
       ]
     },
@@ -250,6 +612,7 @@
       "type": "run",
       "distanceKm": 6.67,
       "movingTimeS": 2441,
+      "elapsedTimeS": 2455,
       "avgHr": 139,
       "maxHr": 153,
       "ascentM": 89,
@@ -297,6 +660,28 @@
           444,
           166,
           149
+        ]
+      ]
+    },
+    {
+      "id": "icu-i173193801",
+      "date": "2026-08-06",
+      "name": "Vienna Running",
+      "type": "run",
+      "distanceKm": 0.83,
+      "movingTimeS": 286,
+      "elapsedTimeS": 316,
+      "avgHr": 134,
+      "maxHr": 153,
+      "ascentM": 1,
+      "source": "intervals.icu",
+      "paceSecPerKm": 345,
+      "bestKmSecPerKm": 381,
+      "laps": [
+        [
+          832,
+          317,
+          133
         ]
       ]
     }
