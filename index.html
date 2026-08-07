@@ -874,7 +874,14 @@ const SEED_ACTIVITIES = {
       "ascentM": 1,
       "source": "intervals.icu",
       "paceSecPerKm": 345,
-      "bestKmSecPerKm": 381
+      "bestKmSecPerKm": 381,
+      "laps": [
+        [
+          832,
+          317,
+          133
+        ]
+      ]
     },
     {
       "id": "icu-i173192735",
@@ -889,7 +896,49 @@ const SEED_ACTIVITIES = {
       "source": "intervals.icu",
       "paceSecPerKm": 366,
       "bestKmSecPerKm": 312,
-      "best20minSecPerKm": 350
+      "best20minSecPerKm": 350,
+      "laps": [
+        [
+          202,
+          92,
+          107
+        ],
+        [
+          999,
+          398,
+          127
+        ],
+        [
+          1000,
+          370,
+          139
+        ],
+        [
+          1052,
+          328,
+          145
+        ],
+        [
+          951,
+          333,
+          142
+        ],
+        [
+          1000,
+          368,
+          142
+        ],
+        [
+          999,
+          379,
+          144
+        ],
+        [
+          444,
+          166,
+          149
+        ]
+      ]
     }
   ]
 };
@@ -986,14 +1035,27 @@ const SESSION_TARGETS = () => ({
 const sustainedPace = (r) => Math.min(r.paceSecPerKm ?? Infinity, r.best20minSecPerKm ?? Infinity);
 const repPace       = (r) => Math.min(sustainedPace(r), r.bestKmSecPerKm ?? Infinity);
 function scoreExecution(r) {
-  const kind = classifySession(r);
-  const t = SESSION_TARGETS()[kind];
+  /* The Coach's rule: judge the run against what was ON THE PLAN that day.
+     Only when nothing was planned do we fall back to classifying by name. */
+  const hit = plannedFor(r.date);
+  const pd = hit && hit.day;
+  let t, evalAs, planned = null;
+  if (pd && pd.target) {
+    planned = pd;
+    t = { label: pd.title, pace: pd.target.pace, hr: pd.target.hr };
+    evalAs = pd.target.evalAs;
+  } else {
+    const k = classifySession(r);
+    t = SESSION_TARGETS()[k];
+    evalAs = (k === "interval") ? "rep" : (k === "threshold" || k === "test") ? "sustained" : "avg";
+  }
   let score = 100; const notes = [];
-  const evalPace = (kind === "interval") ? repPace(r) : (kind === "threshold" || kind === "test") ? sustainedPace(r) : r.paceSecPerKm;
+  if (pd && !pd.target) notes.push(`unscheduled — plan said ${pd.title}`);
+  const evalPace = evalAs === "rep" ? repPace(r) : evalAs === "sustained" ? sustainedPace(r) : r.paceSecPerKm;
   if (evalPace != null && evalPace !== Infinity) {
     const [lo, hi] = t.pace;
-    if (evalPace < lo) { const over = lo - evalPace; score -= Math.min(45, over * 0.55); notes.push(`${Math.round(over)}s/km too fast`); }
-    else if (evalPace > hi) { const under = evalPace - hi; score -= Math.min(35, under * 0.35); notes.push(`${Math.round(under)}s/km slower than target (best sustained portion)`); }
+    if (evalPace < lo) { const over = lo - evalPace; score -= Math.min(45, over * 0.55); notes.push(`${Math.round(over)}s/km too fast — don't race the training`); }
+    else if (evalPace > hi) { const under = evalPace - hi; score -= Math.min(35, under * 0.35); notes.push(`${Math.round(under)}s/km slower than prescribed`); }
   }
   const z = hrZoneOf(r.avgHr);
   if (z != null) {
@@ -1001,7 +1063,7 @@ function scoreExecution(r) {
     if (z > zhi) { score -= (z - zhi) * 14; notes.push(`HR drifted to Z${z}`); }
     else if (z < zlo) { score -= (zlo - z) * 8; notes.push(`HR below Z${zlo}`); }
   }
-  return { kind, target: t, score: Math.round(clamp(score, 0, 100)), notes };
+  return { target: t, planned, evalAs, evalPace: (evalPace === Infinity ? null : evalPace), score: Math.round(clamp(score, 0, 100)), notes };
 }
 
 /* ---- the eight physiological systems (RunZones-style profile) ---- */
@@ -1137,6 +1199,45 @@ const GYM_TEMPLATES = {
 const pz = (i) => S.paceZones[i];
 const paceRange = (i) => `${fmtPace(pz(i).maxSecPerKm)}–${fmtPace(pz(i).minSecPerKm)}`;
 const hrRange = (i) => `${S.hrZones[i].minHr}–${S.hrZones[i].maxHr} bpm`;
+
+/* Machine-readable target for each planned run day — the SAME band the
+   calendar text shows, so Sessions judges you against what was prescribed.
+   evalAs: "avg" (whole run) | "sustained" (best >=18min stretch) | "rep" (best km lap). */
+function dayTarget(day, w, gp) {
+  if (day.kind !== "run" && day.arch !== "race") return null;
+  const ph = w.phase, F = w.flags || {};
+  const T = (pace, hr, evalAs) => ({ pace, hr, evalAs });
+  switch (day.arch) {
+    case "easy":   return T([pz(1).minSecPerKm, pz(1).maxSecPerKm], [1, 2], "avg");
+    case "steady": return T([pz(2).maxSecPerKm - 5, pz(2).maxSecPerKm + 15], [2, 3], "sustained");
+    case "long":
+      if (ph === "Build")    return T([gp + 12, gp + 20], [2, 3], "sustained");
+      if (ph === "Specific") return (F.specIdx % 2 === 0)
+        ? T([gp, pz(1).maxSecPerKm], [2, 4], "sustained")
+        : T([gp - 8, gp + 12], [2, 4], "rep");
+      return T([pz(1).minSecPerKm, pz(1).maxSecPerKm], [1, 2], "avg");
+    case "threshold": return T([pz(3).minSecPerKm, pz(3).maxSecPerKm + 5], [3, 4], "sustained");
+    case "vo2": return F.tt5k ? T([pz(4).minSecPerKm - 15, pz(4).maxSecPerKm], [4, 5], "rep")
+                              : T([pz(4).minSecPerKm, pz(4).maxSecPerKm], [3, 5], "rep");
+    case "alt": return T([pz(3).minSecPerKm, gp + 15], [3, 4], "sustained");
+    case "mp":  return T([gp - 5, gp + 10], [3, 4], "rep");
+    case "race":
+      if ((day.title || "").startsWith("TEST")) return T([278, 307], [3, 5], "sustained");
+      return T([gp - 5, gp + 5], [3, 5], "sustained");
+  }
+  return null;
+}
+
+const localKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+let __planIdx = null;
+function plannedFor(dateStr) {
+  if (!__planIdx) {
+    __planIdx = {};
+    const plan = buildPlan();
+    for (const w of plan) for (const d of buildWeekDays(w)) __planIdx[localKey(d.date)] = { day: d, week: w };
+  }
+  return __planIdx[dateStr] || null;
+}
 
 /* Build the 7 concrete days of a plan week — sessions per The Coach's method. */
 function buildWeekDays(w) {
@@ -1284,6 +1385,7 @@ function buildWeekDays(w) {
         if (w.phase === "Taper") { day.steps = day.steps.slice(0, 3); day.steps.push("Taper: light weights, stop 2 reps short"); }
       }
     }
+    day.target = dayTarget(day, w, gp);
     days.push(day);
   }
   return days;
@@ -1377,6 +1479,95 @@ function openDayModal(day, week) {
 }
 function closeModal() { $("#modalWrap").classList.remove("open"); }
 
+/* ---------- run debrief — how the Coach reads a finished run ---------- */
+function coachRead(r, ex) {
+  const out = [];
+  const laps = (r.laps || []).filter(l => l[0] >= 400);
+  const stops = (r.elapsedTimeS && r.movingTimeS) ? r.elapsedTimeS - r.movingTimeS : null;
+  const z = hrZoneOf(r.avgHr);
+  const arch = ex.planned ? ex.planned.arch : null;
+  const easyDay = arch ? (arch === "easy" || (arch === "long" && ex.evalAs === "avg")) : (ex.target.label || "").toLowerCase().includes("easy");
+  const [lo, hi] = ex.target.pace;
+  const p = ex.evalPace;
+
+  // 1. verdict on the work itself
+  if (p != null) {
+    if (p < lo - 10) out.push({ t: "You raced the training", s: `The work came out ${Math.round(lo - p)}s/km faster than prescribed. Feels great today — but the Coach's rule is blunt: if a rep cooks you, it was too fast. Save the hero pace for race day; tomorrow's session is the price.` });
+    else if (p < lo) out.push({ t: "Touch quick", s: `A few seconds under the band. Fine on a good day — just don't let it become the habit that turns every session into a race.` });
+    else if (p <= hi) out.push({ t: "That's the session", s: `Right in the prescribed band (${fmtPace(lo)}–${fmtPace(hi)}). This is what training to a plan looks like: boring, repeatable, bankable.` });
+    else if (p <= hi + 20) out.push({ t: "Slow day — still counts", s: `${Math.round(p - hi)}s/km outside the band. Heat, sleep, life — it happens. The Coach: a slower session completed beats a perfect one abandoned. Note it, don't chase it back tomorrow.` });
+    else out.push({ t: "A long way off the target", s: `${Math.round(p - hi)}s/km slower than prescribed. If this keeps happening, the zones are wrong or the fatigue is real — either way we recalibrate, we don't force it.` });
+  }
+
+  // 2. easy-day discipline (his own data shows this tendency)
+  if (easyDay && z != null && z > 2) out.push({ t: "Easy day, hard heart rate", s: `Average HR sat in Z${z}. This is the #1 amateur mistake — easy days creeping into the grey zone. The point of easy is buying volume for free; run it 20s/km slower and it will still count more.` });
+  if (!easyDay && z === 2 && arch && ["threshold","vo2","alt","mp","steady"].includes(arch)) out.push({ t: "Effort came cheap", s: `HR stayed in Z2 for a quality session — either you're fitter than the zones think (good problem; the checkpoint will catch it) or the session never really started.` });
+
+  // 3. lap-based reads
+  if (laps.length >= 4) {
+    const half = Math.floor(laps.length / 2);
+    const avg = (arr, i) => arr.reduce((s, l) => s + l[i], 0) / arr.length;
+    const h1 = laps.slice(0, half), h2 = laps.slice(half);
+    const pace1 = avg(h1, 1) / (avg(h1, 0) / 1000), pace2 = avg(h2, 1) / (avg(h2, 0) / 1000);
+    const hr1 = avg(h1, 2), hr2 = avg(h2, 2);
+    if (hr1 && hr2 && Math.abs(pace1 - pace2) < 12) {
+      const drift = Math.round(hr2 - hr1);
+      if (drift > 10) out.push({ t: `HR drift: +${drift} beats`, s: `Same pace, second half cost ${drift} more beats. The Coach's drift test says >10 = the aerobic engine ran out of cheap fuel. Start the next one slower, and keep building the base.` });
+      else if (drift >= 0) out.push({ t: `HR drift: +${drift} beats`, s: `Held the pace for ${drift} extra beats — inside the Coach's ≤8–10 window. That's the diesel engine talking. This is the number to watch month over month.` });
+    }
+    if (pace2 < pace1 - 8) out.push({ t: "Negative split", s: `Second half ${Math.round(pace1 - pace2)}s/km faster than the first. Finishing in control is the 'easiest mile' trick working — exactly how the marathon itself must be run.` });
+    if (pace1 < pace2 - 15 && !easyDay) out.push({ t: "Fast start, fading finish", s: `First half ${Math.round(pace2 - pace1)}s/km quicker than the second. Enthusiasm tax. Start the work a touch slower and make the LAST rep the easiest-feeling one — that's the Coach's target.` });
+  }
+
+  // 4. stops
+  if (stops != null && stops > 120 && arch === "steady") out.push({ t: `${Math.round(stops / 60)} min stood still`, s: `City running is city running — but on steady days the rule is: once the block starts, no stops. Pick a route with fewer lights for the Thursday sessions.` });
+
+  // 5. fuel practice
+  if ((r.distanceKm >= 14 || (r.movingTimeS || 0) >= 5400)) out.push({ t: "Fuel check", s: `Over ${fmtKm(r.distanceKm)} km / ${Math.round((r.movingTimeS||0)/60)} min — was the nibble strategy on? ~10g carbs every 10 min, every long run. Race-day gut tolerance is trained now, not in April.` });
+
+  if (!out.length) out.push({ t: "Clean run", s: "Nothing to flag. Bank it and move on — most of training should read exactly like this." });
+  return out;
+}
+
+function openRunModal(id) {
+  const r = runs().find(x => x.id === id);
+  if (!r) return;
+  const ex = scoreExecution(r);
+  const laps = (r.laps || []).filter(l => l[0] >= 400);
+  const reads = coachRead(r, ex);
+  const hit = plannedFor(r.date);
+  const stops = (r.elapsedTimeS && r.movingTimeS) ? r.elapsedTimeS - r.movingTimeS : null;
+  const z = hrZoneOf(r.avgHr);
+  const m = $("#modal");
+  const stat = (v, l) => `<div style="background:var(--chip-bg);border-radius:10px;padding:8px 10px"><div style="font-size:15px;font-weight:600">${v}</div><div style="font-size:11px;color:var(--muted)">${l}</div></div>`;
+  m.innerHTML = `
+    <button class="closex" onclick="closeModal()">✕</button>
+    <h3>${r.name}</h3>
+    <div class="msub">${parseISO(r.date).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })} · score <b style="color:${scoreColor(ex.score)}">${ex.score} — ${scoreWord(ex.score)}</b></div>
+    <h4>${ex.planned ? "What the plan asked for" : "No session planned this day"}</h4>
+    ${ex.planned
+      ? `<p><b>${ex.planned.title}</b>${ex.planned.tag ? ` · ${ex.planned.tag}` : ""} — prescribed ${fmtPace(ex.target.pace[0])}–${fmtPace(ex.target.pace[1])}, HR Z${ex.target.hr[0]}–Z${ex.target.hr[1]}. Judged on ${ex.evalAs === "rep" ? "your best km lap (rep quality)" : ex.evalAs === "sustained" ? "your best sustained stretch (≥18 min)" : "whole-run moving pace"}.</p>`
+      : (hit && hit.day ? `<p>The plan said <b>${hit.day.title}</b>. This run was extra — judged as a ${ex.target.label.toLowerCase()}.</p>` : `<p>Judged as a ${ex.target.label.toLowerCase()} from its profile.</p>`)}
+    <h4>What you did</h4>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:6px">
+      ${stat(fmtKm(r.distanceKm) + " km", "distance")}
+      ${stat(fmtPace(r.paceSecPerKm), "moving pace")}
+      ${r.best20minSecPerKm ? stat(fmtPace(r.best20minSecPerKm), "best 20 min") : ""}
+      ${r.bestKmSecPerKm ? stat(fmtPace(r.bestKmSecPerKm), "best km") : ""}
+      ${r.avgHr ? stat(r.avgHr + (z ? ` (Z${z})` : ""), "avg HR") : ""}
+      ${stops != null && stops > 30 ? stat(Math.round(stops / 60) + " min", "stood still") : ""}
+    </div>
+    ${laps.length ? `<h4>Splits</h4><table style="font-size:12.5px"><thead><tr><th>Lap</th><th class="num">Dist</th><th class="num">Pace</th><th class="num">HR</th></tr></thead><tbody>${laps.map((l, i) => {
+        const lp = l[1] / (l[0] / 1000);
+        const best = Math.min(...laps.map(x => x[1] / (x[0] / 1000)));
+        return `<tr><td>${i + 1}</td><td class="num">${(l[0] / 1000).toFixed(2)}</td><td class="num" ${lp === best ? 'style="font-weight:700"' : ""}>${fmtPace(lp)}</td><td class="num">${l[2] || "–"}</td></tr>`;
+      }).join("")}</tbody></table>` : ""}
+    <h4>The Coach's read</h4>
+    ${reads.map(q => `<div class="quote"><b>${q.t}</b>${q.s}</div>`).join("")}
+  `;
+  $("#modalWrap").classList.add("open");
+}
+
 /* ---------- checkpoint auto-recalibration ----------
    The Coach's method: zones move at checkpoints (5K TT, test race), not continuously.
    Detects a hard recent effort, derives a new threshold, suggests new zones. */
@@ -1449,6 +1640,7 @@ window.__ckCopy = async () => {
 window.__ckDismiss = () => { const s = checkpointSuggestion(); if (s) { try { localStorage.setItem(DKEY, s.run.id); } catch (e) {} } renderAll(); };
 
 function renderAll() {
+  __planIdx = null;
   renderDashboard(); renderCalendar(); renderFitness(); renderSessions(); renderPlan(); renderRace(); renderCoach(); renderZones();
 }
 
@@ -1570,15 +1762,15 @@ function renderSessions() {
   el.innerHTML = `
     <div class="panel">
       <h2>Session execution</h2>
-      <div class="hint">Every synced run, classified (from its name, distance and intensity) and scored against the pace/HR target of that session type.</div>
+      <div class="hint">Each run is judged against the session that was on the plan for that day — the same band the calendar shows. Tap a run for the Coach's full debrief.</div>
       <table>
-        <thead><tr><th>Date</th><th>Run</th><th>Classified as</th><th class="num">Km</th><th class="num">Pace</th><th>Target pace</th><th class="num">Score</th><th>Notes</th></tr></thead>
+        <thead><tr><th>Date</th><th>Run</th><th>Session</th><th class="num">Km</th><th class="num">Pace</th><th>Prescribed</th><th class="num">Score</th><th>Notes</th></tr></thead>
         <tbody>${rs.map(r => {
           const ex = scoreExecution(r);
-          return `<tr>
+          return `<tr onclick="openRunModal('${r.id}')" style="cursor:pointer">
             <td>${parseISO(r.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}</td>
-            <td>${r.name}</td><td><span class="chip">${ex.target.label}</span></td>
-            <td class="num">${fmtKm(r.distanceKm)}</td><td class="num">${fmtPace(r.paceSecPerKm)}</td>
+            <td>${r.name}</td><td><span class="chip">${ex.planned ? "📋 " : ""}${ex.target.label}</span></td>
+            <td class="num">${fmtKm(r.distanceKm)}</td><td class="num">${fmtPace(ex.evalPace ?? r.paceSecPerKm)}</td>
             <td>${fmtPace(ex.target.pace[0])}–${fmtPace(ex.target.pace[1])}</td>
             <td class="num"><span class="chip"><span class="dot" style="background:${scoreColor(ex.score)}"></span>${ex.score} · ${scoreWord(ex.score)}</span></td>
             <td style="color:var(--text-secondary);font-size:12.5px">${ex.notes.join("; ") || "On target"}</td></tr>`;
