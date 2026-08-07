@@ -58,7 +58,7 @@ def interval_metrics(activity_id, api_key):
         iv = http_get(f"https://intervals.icu/api/v1/activity/{activity_id}/intervals", {}, api_key)
     except Exception as e:
         print(f"  intervals fetch failed for {activity_id}: {e}")
-        return None, None
+        return None, None, []
     laps = []
     for i in (iv.get("icu_intervals") or []):
         d = i.get("distance") or 0
@@ -66,7 +66,7 @@ def interval_metrics(activity_id, api_key):
         if d >= 60 and t > 0:
             laps.append((d, t))
     if not laps:
-        return None, None
+        return None, None, []
     best_km = None
     for d, t in laps:
         if 800 <= d <= 1400:
@@ -83,8 +83,12 @@ def interval_metrics(activity_id, api_key):
                 if best_20 is None or p < best_20:
                     best_20 = p
                 break
+    compact = [[round(d), round(t), round(i.get("average_heartrate") or 0) or None]
+               for (d, t), i in zip(laps, [x for x in (iv.get("icu_intervals") or [])
+                                           if (x.get("distance") or 0) >= 60 and (x.get("moving_time") or x.get("elapsed_time") or 0) > 0])][:60]
     return (round(best_km) if best_km else None,
-            round(best_20) if best_20 else None)
+            round(best_20) if best_20 else None,
+            compact)
 
 
 def map_activity(a):
@@ -141,9 +145,10 @@ def main():
         if m["id"] in existing or sig in seen_sig:
             continue
         if m["type"] == "run":
-            bk, b20 = interval_metrics(a["id"], api_key)
+            bk, b20, laps = interval_metrics(a["id"], api_key)
             if bk:  m["bestKmSecPerKm"] = bk
             if b20: m["best20minSecPerKm"] = b20
+            if laps: m["laps"] = laps
         new_items.append(m)
         existing.add(m["id"])
         seen_sig.add(sig)
