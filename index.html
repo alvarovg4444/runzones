@@ -639,29 +639,258 @@ const SEED_KNOWLEDGE = {
 };
 const SEED_SETTINGS = {"athlete": {"name": "Alvaro", "maxHr": 185, "restingHr": 55, "units": "metric"}, "goal": {"raceName": "Marathon", "raceDate": "2027-04-18", "distanceKm": 42.195, "targetTime": "3:30:00", "bankTime": "3:45:00", "floorTime": "3:59:00", "note": "Strategy: train for 3:30 so that a rough day still banks 3:45 and a bad day stays under 4:00. Race date assumed 2027 - edit if different."}, "hrZones": [{"zone": "Z1", "name": "Recovery", "minHr": 111, "maxHr": 129}, {"zone": "Z2", "name": "Easy / Aerobic", "minHr": 130, "maxHr": 148}, {"zone": "Z3", "name": "Steady / Marathon", "minHr": 149, "maxHr": 161}, {"zone": "Z4", "name": "Threshold", "minHr": 162, "maxHr": 172}, {"zone": "Z5", "name": "VO2max", "minHr": 173, "maxHr": 185}], "paceZones": [{"zone": "Recovery", "minSecPerKm": 420, "maxSecPerKm": 500}, {"zone": "Easy", "minSecPerKm": 360, "maxSecPerKm": 415}, {"zone": "Steady/MP", "minSecPerKm": 330, "maxSecPerKm": 360}, {"zone": "Threshold", "minSecPerKm": 305, "maxSecPerKm": 325}, {"zone": "VO2 Interval", "minSecPerKm": 285, "maxSecPerKm": 305}, {"zone": "Repetition", "minSecPerKm": 270, "maxSecPerKm": 285}], "zonesNote": "Zones are anchored to CURRENT fitness (threshold ~5:15/km, from real runs - 10.4km @5:17 HR162, benchmark 4:54 @HR149), not to the goal. They only move when the data says so: the dashboard checkpoint banner proposes new zones after a faster 5K/10K/half, and the Build-phase test half recalibrates everything. Reference: 3:30 marathon shape eventually needs threshold ~4:50/km - the plan walks you there via evidence, never by decree. Coach's rule: threshold must FEEL sustainable 50-70 min; if a rep cooks you, it was too fast.", "plan": {"currentWeeklyKm": 34, "peakWeeklyKm": 62, "runsPerWeekStart": 4, "runsPerWeekPeak": 4, "longRunPeakKm": 32, "cutbackEvery": 4, "taperWeeks": 3}, "schedule": {"comment": "JS day numbers: 0=Sunday 1=Monday ... 6=Saturday. Wed+Sat are no-run days.", "runDays": [1, 2, 4, 0], "longRunDay": 0, "gymDays": {"3": "Legs", "5": "Back", "6": "Chest"}}};
 const SEED_ACTIVITIES = {
-  "lastSync": "2026-08-06T00:00:00Z",
-  "source": "garmin-connect-manual-seed",
+  "lastSync": "2026-08-07T00:28:14Z",
+  "source": "intervals-icu-sync",
   "activities": [
-    { "id": "g-20260313-1", "date": "2026-03-13", "name": "Vienna Cycling", "type": "ride", "distanceKm": 9.04, "movingTimeS": 2086, "avgSpeedKph": 15.6, "avgHr": null, "ascentM": 51, "source": "garmin" },
-    { "id": "g-20260313-2", "date": "2026-03-13", "name": "Vienna Cycling", "type": "ride", "distanceKm": 8.91, "movingTimeS": 1977, "avgSpeedKph": 16.2, "avgHr": null, "ascentM": 108, "source": "garmin" },
-    { "id": "g-20260316", "date": "2026-03-16", "name": "Gaelic Football", "type": "cross", "distanceKm": 0, "movingTimeS": 3600, "avgHr": null, "source": "garmin" },
-    { "id": "g-20260317", "date": "2026-03-17", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 3376, "avgHr": 79, "source": "garmin" },
-    { "id": "g-20260320", "date": "2026-03-20", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 3960, "avgHr": 84, "source": "garmin" },
-    { "id": "g-20260324", "date": "2026-03-24", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 3352, "avgHr": 92, "source": "garmin" },
-    { "id": "g-20260325", "date": "2026-03-25", "name": "Vienna Running", "type": "run", "distanceKm": 6.19, "movingTimeS": 2184, "paceSecPerKm": 352, "avgHr": 155, "ascentM": 88, "source": "garmin" },
-    { "id": "g-20260326", "date": "2026-03-26", "name": "Climbing", "type": "cross", "distanceKm": 0, "movingTimeS": 2739, "avgHr": 94, "source": "garmin" },
-    { "id": "g-20260328", "date": "2026-03-28", "name": "Gaelic Handball", "type": "cross", "distanceKm": 0, "movingTimeS": 7642, "avgHr": 107, "source": "garmin" },
-    { "id": "g-20260329", "date": "2026-03-29", "name": "Run after drinks", "type": "run", "distanceKm": 10.43, "movingTimeS": 3305, "paceSecPerKm": 317, "avgHr": 162, "ascentM": 62, "source": "garmin" },
-    { "id": "g-20260331", "date": "2026-03-31", "name": "Gym Workout", "type": "strength", "distanceKm": 0, "movingTimeS": 4626, "avgHr": 89, "source": "garmin" },
-    { "id": "g-20260401", "date": "2026-04-01", "name": "Pilates", "type": "cross", "distanceKm": 0, "movingTimeS": 3252, "avgHr": 75, "source": "garmin" },
-    { "id": "g-20260408", "date": "2026-04-08", "name": "Vienna Running", "type": "run", "distanceKm": 8.04, "movingTimeS": 3078, "paceSecPerKm": 383, "avgHr": 136, "ascentM": 68, "source": "garmin" },
-    { "id": "g-20260411", "date": "2026-04-11", "name": "GAA Handball", "type": "cross", "distanceKm": 0, "movingTimeS": 5448, "avgHr": 107, "source": "garmin" },
-    { "id": "g-20260421", "date": "2026-04-21", "name": "Running", "type": "run", "distanceKm": 9.18, "movingTimeS": 4026, "paceSecPerKm": 439, "avgHr": 132, "ascentM": null, "source": "garmin" },
-    { "id": "g-20260508", "date": "2026-05-08", "name": "Gym", "type": "strength", "distanceKm": 0, "movingTimeS": 2672, "avgHr": 82, "source": "garmin" },
-    { "id": "g-20260726", "date": "2026-07-26", "name": "Warsaw Laufen", "type": "run", "distanceKm": 15.27, "movingTimeS": 5295, "paceSecPerKm": 347, "avgHr": 156, "ascentM": 80, "source": "garmin" },
-    { "id": "g-20260802-1", "date": "2026-08-02", "name": "Wien - Einstufungslauf", "type": "run", "distanceKm": 1.84, "movingTimeS": 540, "paceSecPerKm": 294, "avgHr": 149, "ascentM": 24, "source": "garmin" },
-    { "id": "g-20260802-2", "date": "2026-08-02", "name": "Wien Radfahren", "type": "ride", "distanceKm": 14.78, "movingTimeS": 4672, "avgSpeedKph": 11.4, "avgHr": null, "ascentM": 319, "source": "garmin" },
-    { "id": "g-20260804", "date": "2026-08-04", "name": "Wien - Locker laufen", "type": "run", "distanceKm": 4.6, "movingTimeS": 1800, "paceSecPerKm": 391, "avgHr": 143, "ascentM": 123, "source": "garmin" }
+    {
+      "id": "g-20260313-1",
+      "date": "2026-03-13",
+      "name": "Vienna Cycling",
+      "type": "ride",
+      "distanceKm": 9.04,
+      "movingTimeS": 2086,
+      "avgSpeedKph": 15.6,
+      "avgHr": null,
+      "ascentM": 51,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260313-2",
+      "date": "2026-03-13",
+      "name": "Vienna Cycling",
+      "type": "ride",
+      "distanceKm": 8.91,
+      "movingTimeS": 1977,
+      "avgSpeedKph": 16.2,
+      "avgHr": null,
+      "ascentM": 108,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260316",
+      "date": "2026-03-16",
+      "name": "Gaelic Football",
+      "type": "cross",
+      "distanceKm": 0,
+      "movingTimeS": 3600,
+      "avgHr": null,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260317",
+      "date": "2026-03-17",
+      "name": "Gym",
+      "type": "strength",
+      "distanceKm": 0,
+      "movingTimeS": 3376,
+      "avgHr": 79,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260320",
+      "date": "2026-03-20",
+      "name": "Gym",
+      "type": "strength",
+      "distanceKm": 0,
+      "movingTimeS": 3960,
+      "avgHr": 84,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260324",
+      "date": "2026-03-24",
+      "name": "Gym",
+      "type": "strength",
+      "distanceKm": 0,
+      "movingTimeS": 3352,
+      "avgHr": 92,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260325",
+      "date": "2026-03-25",
+      "name": "Vienna Running",
+      "type": "run",
+      "distanceKm": 6.19,
+      "movingTimeS": 2184,
+      "paceSecPerKm": 352,
+      "avgHr": 155,
+      "ascentM": 88,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260326",
+      "date": "2026-03-26",
+      "name": "Climbing",
+      "type": "cross",
+      "distanceKm": 0,
+      "movingTimeS": 2739,
+      "avgHr": 94,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260328",
+      "date": "2026-03-28",
+      "name": "Gaelic Handball",
+      "type": "cross",
+      "distanceKm": 0,
+      "movingTimeS": 7642,
+      "avgHr": 107,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260329",
+      "date": "2026-03-29",
+      "name": "Run after drinks",
+      "type": "run",
+      "distanceKm": 10.43,
+      "movingTimeS": 3305,
+      "paceSecPerKm": 317,
+      "avgHr": 162,
+      "ascentM": 62,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260331",
+      "date": "2026-03-31",
+      "name": "Gym Workout",
+      "type": "strength",
+      "distanceKm": 0,
+      "movingTimeS": 4626,
+      "avgHr": 89,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260401",
+      "date": "2026-04-01",
+      "name": "Pilates",
+      "type": "cross",
+      "distanceKm": 0,
+      "movingTimeS": 3252,
+      "avgHr": 75,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260408",
+      "date": "2026-04-08",
+      "name": "Vienna Running",
+      "type": "run",
+      "distanceKm": 8.04,
+      "movingTimeS": 3078,
+      "paceSecPerKm": 383,
+      "avgHr": 136,
+      "ascentM": 68,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260411",
+      "date": "2026-04-11",
+      "name": "GAA Handball",
+      "type": "cross",
+      "distanceKm": 0,
+      "movingTimeS": 5448,
+      "avgHr": 107,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260421",
+      "date": "2026-04-21",
+      "name": "Running",
+      "type": "run",
+      "distanceKm": 9.18,
+      "movingTimeS": 4026,
+      "paceSecPerKm": 439,
+      "avgHr": 132,
+      "ascentM": null,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260508",
+      "date": "2026-05-08",
+      "name": "Gym",
+      "type": "strength",
+      "distanceKm": 0,
+      "movingTimeS": 2672,
+      "avgHr": 82,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260726",
+      "date": "2026-07-26",
+      "name": "Warsaw Laufen",
+      "type": "run",
+      "distanceKm": 15.27,
+      "movingTimeS": 5295,
+      "paceSecPerKm": 347,
+      "avgHr": 156,
+      "ascentM": 80,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260802-1",
+      "date": "2026-08-02",
+      "name": "Wien - Einstufungslauf",
+      "type": "run",
+      "distanceKm": 1.84,
+      "movingTimeS": 540,
+      "paceSecPerKm": 294,
+      "avgHr": 149,
+      "ascentM": 24,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260802-2",
+      "date": "2026-08-02",
+      "name": "Wien Radfahren",
+      "type": "ride",
+      "distanceKm": 14.78,
+      "movingTimeS": 4672,
+      "avgSpeedKph": 11.4,
+      "avgHr": null,
+      "ascentM": 319,
+      "source": "garmin"
+    },
+    {
+      "id": "g-20260804",
+      "date": "2026-08-04",
+      "name": "Wien - Locker laufen",
+      "type": "run",
+      "distanceKm": 4.6,
+      "movingTimeS": 1800,
+      "paceSecPerKm": 391,
+      "avgHr": 143,
+      "ascentM": 123,
+      "source": "garmin"
+    },
+    {
+      "id": "icu-i173193801",
+      "date": "2026-08-06",
+      "name": "Vienna Running",
+      "type": "run",
+      "distanceKm": 0.83,
+      "movingTimeS": 286,
+      "avgHr": 134,
+      "maxHr": 153,
+      "ascentM": 1,
+      "source": "intervals.icu",
+      "paceSecPerKm": 345,
+      "bestKmSecPerKm": 381
+    },
+    {
+      "id": "icu-i173192735",
+      "date": "2026-08-06",
+      "name": "Vienna - RZ Steady Aerobic 50min",
+      "type": "run",
+      "distanceKm": 6.67,
+      "movingTimeS": 2441,
+      "avgHr": 139,
+      "maxHr": 153,
+      "ascentM": 89,
+      "source": "intervals.icu",
+      "paceSecPerKm": 366,
+      "bestKmSecPerKm": 312,
+      "best20minSecPerKm": 350
+    }
   ]
 };
 
@@ -751,14 +980,20 @@ const SESSION_TARGETS = () => ({
   interval:  { label: "VO2 intervals",  pace: [S.paceZones[4].minSecPerKm, S.paceZones[4].maxSecPerKm], hr: [4, 5] },
   test:      { label: "Test / race",    pace: [S.paceZones[4].minSecPerKm, S.paceZones[2].maxSecPerKm], hr: [3, 5] },
 });
+/* Pace that ignores warm-up/cool-down/stops where lap data exists.
+   paceSecPerKm from the sync is MOVING pace (traffic lights excluded);
+   best20min/bestKm come from intervals.icu laps. */
+const sustainedPace = (r) => Math.min(r.paceSecPerKm ?? Infinity, r.best20minSecPerKm ?? Infinity);
+const repPace       = (r) => Math.min(sustainedPace(r), r.bestKmSecPerKm ?? Infinity);
 function scoreExecution(r) {
   const kind = classifySession(r);
   const t = SESSION_TARGETS()[kind];
   let score = 100; const notes = [];
-  if (r.paceSecPerKm != null) {
+  const evalPace = (kind === "interval") ? repPace(r) : (kind === "threshold" || kind === "test") ? sustainedPace(r) : r.paceSecPerKm;
+  if (evalPace != null && evalPace !== Infinity) {
     const [lo, hi] = t.pace;
-    if (r.paceSecPerKm < lo) { const over = lo - r.paceSecPerKm; score -= Math.min(45, over * 0.55); notes.push(`${Math.round(over)}s/km too fast`); }
-    else if (r.paceSecPerKm > hi) { const under = r.paceSecPerKm - hi; score -= Math.min(35, under * 0.35); notes.push(`${Math.round(under)}s/km slower than target`); }
+    if (evalPace < lo) { const over = lo - evalPace; score -= Math.min(45, over * 0.55); notes.push(`${Math.round(over)}s/km too fast`); }
+    else if (evalPace > hi) { const under = evalPace - hi; score -= Math.min(35, under * 0.35); notes.push(`${Math.round(under)}s/km slower than target (best sustained portion)`); }
   }
   const z = hrZoneOf(r.avgHr);
   if (z != null) {
@@ -781,7 +1016,7 @@ function fitnessProfile() {
 
   const longRun = Math.max(0, ...last6w.map(r => r.distanceKm), ...rs.slice(-6).map(r => r.distanceKm));
   const sustained = rs.filter(r => r.distanceKm >= 5 && r.paceSecPerKm);
-  const bestSustainedPace = sustained.length ? Math.min(...sustained.map(r => r.paceSecPerKm)) : null;
+  const bestSustainedPace = sustained.length ? Math.min(...sustained.map(r => sustainedPace(r))) : null;
   const bestShortPace = rs.filter(r => r.paceSecPerKm).length ? Math.min(...rs.filter(r => r.paceSecPerKm).map(r => r.paceSecPerKm)) : null;
 
   const easyRuns = rs.filter(r => r.avgHr && r.paceSecPerKm && hrZoneOf(r.avgHr) <= 2);
@@ -1152,12 +1387,13 @@ function checkpointSuggestion() {
   let best = null;
   for (const r of runs()) {
     if (!r.paceSecPerKm || (now - parseISO(r.date)) > 60 * dayMs) continue;
+    const p = sustainedPace(r); // moving pace, or the best >=18-min stretch when lap data exists
     let type = null, tEst = null;
-    if (r.distanceKm >= 2.9 && r.distanceKm <= 6.5) { type = "5K-effort"; tEst = r.paceSecPerKm + 13; }
-    else if (r.distanceKm >= 8 && r.distanceKm <= 12.5) { type = "10K-effort"; tEst = r.paceSecPerKm + 6; }
-    else if (r.distanceKm >= 19 && r.distanceKm <= 22.5) { type = "half-marathon"; tEst = r.paceSecPerKm; }
+    if (r.distanceKm >= 2.9 && r.distanceKm <= 6.5) { type = "5K-effort"; tEst = p + 13; }
+    else if (r.distanceKm >= 8 && r.distanceKm <= 12.5) { type = "10K-effort"; tEst = p + 6; }
+    else if (r.distanceKm >= 19 && r.distanceKm <= 22.5) { type = "half-marathon"; tEst = p; }
     if (!type) continue;
-    const hard = (r.avgHr && r.avgHr >= S.hrZones[3].minHr - 2) || r.paceSecPerKm <= pz(3).maxSecPerKm + 8;
+    const hard = (r.avgHr && r.avgHr >= S.hrZones[3].minHr - 2) || p <= pz(3).maxSecPerKm + 8;
     if (!hard) continue;
     if (!best || tEst < best.tEst) best = { run: r, type, tEst };
   }
