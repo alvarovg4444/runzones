@@ -233,7 +233,15 @@
       "maxHr": 153,
       "ascentM": 1,
       "source": "intervals.icu",
-      "paceSecPerKm": 345
+      "paceSecPerKm": 345,
+      "bestKmSecPerKm": 381,
+      "laps": [
+        [
+          832,
+          317,
+          133
+        ]
+      ]
     },
     {
       "id": "icu-i173192735",
@@ -246,7 +254,51 @@
       "maxHr": 153,
       "ascentM": 89,
       "source": "intervals.icu",
-      "paceSecPerKm": 366
+      "paceSecPerKm": 366,
+      "bestKmSecPerKm": 312,
+      "best20minSecPerKm": 350,
+      "laps": [
+        [
+          202,
+          92,
+          107
+        ],
+        [
+          999,
+          398,
+          127
+        ],
+        [
+          1000,
+          370,
+          139
+        ],
+        [
+          1052,
+          328,
+          145
+        ],
+        [
+          951,
+          333,
+          142
+        ],
+        [
+          1000,
+          368,
+          142
+        ],
+        [
+          999,
+          379,
+          144
+        ],
+        [
+          444,
+          166,
+          149
+        ]
+      ]
     }
   ]
 }
