@@ -1,6 +1,6 @@
 {
-  "lastSync": "2026-08-07T10:20:00Z",
-  "source": "intervals-icu-full-backfill",
+  "lastSync": "2026-08-08T16:00:11Z",
+  "source": "intervals-icu-sync",
   "activities": [
     {
       "id": "icu-i173321459",
@@ -684,6 +684,20 @@
           133
         ]
       ]
+    },
+    {
+      "id": "icu-i173789075",
+      "date": "2026-08-08",
+      "name": "Vienna Cycling",
+      "type": "ride",
+      "distanceKm": 30.12,
+      "movingTimeS": 6516,
+      "elapsedTimeS": 7847,
+      "avgHr": 88,
+      "maxHr": 124,
+      "ascentM": 368,
+      "source": "intervals.icu",
+      "avgSpeedKph": 16.6
     }
   ]
 }
