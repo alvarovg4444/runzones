@@ -203,6 +203,34 @@
   #ckbanner button { appearance: none; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); border-radius: 8px; padding: 6px 12px; font: inherit; font-size: 12.5px; cursor: pointer; }
   #ckbanner button.primary { background: var(--series-1); color: #fff; border-color: var(--series-1); }
   .topic-h { font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 18px 0 8px; }
+
+  /* zones tab — report-style cards + pace lookup */
+  .zgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 12px; }
+  .zcard { border: 1px solid var(--grid); border-radius: 10px; padding: 14px 16px; border-left: 4px solid var(--zc, var(--series-1)); transition: box-shadow 0.15s, border-color 0.15s; }
+  .zcard.hitzone { border-color: var(--zc); box-shadow: 0 0 0 2px var(--zc); }
+  .zcard h3 { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .ltbadge { font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border-radius: 5px; background: var(--chip-bg); color: var(--text-secondary); border: 1px solid var(--border); }
+  .zcard .znum { display: flex; gap: 22px; margin: 8px 0 10px; }
+  .zcard .znum .k { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .zcard .znum .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .zcard .zrow { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-top: 3px; }
+  .zcard .zrow b { color: var(--text-primary); font-weight: 600; }
+  .zcard .zwatch { font-size: 12.5px; margin-top: 9px; padding: 7px 10px; border-radius: 8px; background: var(--chip-bg); color: var(--text-secondary); line-height: 1.45; }
+  .zcard .zwatch b { color: var(--serious); }
+  /* pace → LT lookup */
+  #ltlookup .inrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  #ltlookup input { appearance: none; font: inherit; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; width: 110px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-1); color: var(--text-primary); }
+  #ltlookup .preset { appearance: none; border: 1px solid var(--border); background: var(--chip-bg); color: var(--text-secondary); border-radius: 99px; padding: 4px 11px; font: inherit; font-size: 12px; cursor: pointer; }
+  #ltlookup .preset:hover { color: var(--text-primary); }
+  .pacebar { position: relative; height: 60px; margin: 18px 2px 4px; }
+  .pacebar .seg { position: absolute; top: 14px; height: 14px; border-radius: 3px; opacity: 0.85; }
+  .pacebar .seglbl { position: absolute; top: 31px; font-size: 10px; color: var(--muted); white-space: nowrap; }
+  .pacebar .seglbl.row2 { top: 44px; }
+  .pacebar .marker { position: absolute; top: 6px; width: 2px; height: 30px; background: var(--text-primary); transform: translateX(-1px); }
+  .pacebar .marker::after { content: ""; position: absolute; top: -5px; left: -4px; border: 5px solid transparent; border-top-color: var(--text-primary); }
+  #ltverdict { margin-top: 12px; border-left: 3px solid var(--series-2); background: var(--chip-bg); border-radius: 0 8px 8px 0; padding: 10px 14px; }
+  #ltverdict .big { font-size: 15px; font-weight: 700; }
+  #ltverdict .sub { font-size: 12.5px; color: var(--text-secondary); margin-top: 3px; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -1619,6 +1647,95 @@ function racePrediction() {
   return best;
 }
 
+/* ---------- best efforts: fastest 1k / 5k / 10k / half ----------
+   Sources, best wins: (a) sync-computed stream efforts (r.bestEfforts, v2 sync),
+   (b) fastest contiguous lap window covering the distance, (c) bestKmSecPerKm
+   for the 1k, (d) whole-run moving pace as a conservative fallback. */
+const EFFORT_DISTS = [["1 km", 1000], ["5 km", 5000], ["10 km", 10000], ["21.1 km", 21097.5]];
+const EFFORT_KEYS = { 1000: "1k", 5000: "5k", 10000: "10k", 21097.5: "hm" };
+
+function bestEffortFor(r, distM) {
+  let best = null; // sec/km
+  const be = r.bestEfforts && r.bestEfforts[EFFORT_KEYS[distM]];
+  if (be) best = be / (distM / 1000);
+  const laps = r.laps || [];
+  for (let i = 0; i < laps.length; i++) {
+    let d = 0, t = 0;
+    for (let j = i; j < laps.length; j++) {
+      d += laps[j][0]; t += laps[j][1];
+      if (d >= distM) { const p = t / d * 1000; if (best == null || p < best) best = p; break; }
+    }
+  }
+  if (distM <= 1400 && r.bestKmSecPerKm && (best == null || r.bestKmSecPerKm < best)) best = r.bestKmSecPerKm;
+  if (best == null && r.distanceKm * 1000 >= distM && r.paceSecPerKm) best = r.paceSecPerKm;
+  return best;
+}
+
+function bestEffortsAll() {
+  return EFFORT_DISTS.map(([label, distM]) => {
+    let best = null;
+    for (const r of runs()) {
+      const p = bestEffortFor(r, distM);
+      if (p != null && (best == null || p < best.paceSecPerKm))
+        best = { label, distM, paceSecPerKm: p, timeS: Math.round(p * distM / 1000), run: r };
+    }
+    return best || { label, distM, paceSecPerKm: null, timeS: null, run: null };
+  });
+}
+const fmtEffort = (s) => s == null ? "–" : s < 3600 ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}` : fmtTime(s);
+
+/* Riegel ensemble: below the longest proven distance take the fastest defensible
+   estimate from any anchor; above it, extrapolate only from the longest anchor
+   (short-effort extrapolation flatters endurance). */
+function riegelCurve() {
+  const anchors = bestEffortsAll().filter(e => e.timeS);
+  if (!anchors.length) return null;
+  const longest = anchors.reduce((a, b) => a.distM > b.distM ? a : b);
+  const sorted = anchors.slice().sort((a, b) => a.distM - b.distM);
+  const predT = (D) => { // passes exactly through every proven effort
+    if (D <= sorted[0].distM) return sorted[0].timeS * Math.pow(D / sorted[0].distM, 1.06);
+    if (D >= longest.distM) return longest.timeS * Math.pow(D / longest.distM, 1.06);
+    let i = 0; while (sorted[i + 1].distM < D) i++;
+    const a = sorted[i], b = sorted[i + 1];
+    const f = (Math.log(D) - Math.log(a.distM)) / (Math.log(b.distM) - Math.log(a.distM));
+    return Math.exp(Math.log(a.timeS) * (1 - f) + Math.log(b.timeS) * f);
+  };
+  const bandPct = (D) => { // confidence band widens away from evidence
+    const r = Math.min(...anchors.map(a => Math.max(D, a.distM) / Math.min(D, a.distM)));
+    return r <= 1.5 ? 3 : r <= 3 ? 5.5 : 8.5;
+  };
+  return { anchors, longest, predT, bandPct };
+}
+
+/* ---------- pace → zone / lactate-threshold position ---------- */
+const ZONE_COLORS = ["var(--seq-200)", "var(--series-1)", "var(--series-3)", "var(--warning)", "var(--serious)", "var(--critical)"];
+const ZONE_LT = [
+  { badge: null,          lt: "Well below LT1", ltDesc: "pure aerobic — fat-burning, conversational, recovery fuel economy" },
+  { badge: null,          lt: "Below LT1",      ltDesc: "aerobic foundation — where ~80% of your running should live" },
+  { badge: "LT1",         lt: "LT1 territory",  ltDesc: "first lactate turn-point — marathon-supporting stamina; the marathon is raced HERE, not at LT2" },
+  { badge: "LT2",         lt: "LT2 territory",  ltDesc: "second lactate turn-point — your repeatable hard limit; sustainable ~50–70 min when fit" },
+  { badge: "AP + VO₂",    lt: "Above LT2",      ltDesc: "aerobic power / VO₂ — clears the ceiling so LT2 can rise; reps only" },
+  { badge: "Speed",       lt: "Far above LT2",  ltDesc: "repetition speed — form, economy and top-end; pulse lags and never fully responds" },
+];
+function paceToLT(p) {
+  const z = S.paceZones;
+  if (p == null || isNaN(p)) return null;
+  if (p > z[0].maxSecPerKm) return { idx: -1, name: "Slower than Recovery", ...{ lt: "Well below LT1", ltDesc: "walking / very easy jogging — fine for recovery, no training stress" } };
+  if (p < z[z.length - 1].minSecPerKm) return { idx: 6, name: "Beyond Repetition", lt: "Sprint", ltDesc: "faster than any training zone — race finishes and strides only" };
+  for (let i = 0; i < z.length; i++)
+    if (p >= z[i].minSecPerKm && p <= z[i].maxSecPerKm) return { idx: i, name: z[i].zone, ...ZONE_LT[i] };
+  for (let i = 0; i < z.length - 1; i++) // gap between zone i (slower) and i+1 (faster)
+    if (p < z[i].minSecPerKm && p > z[i + 1].maxSecPerKm)
+      return { idx: i + 0.5, name: `${z[i].zone} → ${z[i + 1].zone} transition`, badge: ZONE_LT[i + 1].badge,
+               lt: i === 1 ? "Approaching LT1" : i === 2 ? "LT1 → LT2 transition" : ZONE_LT[i + 1].lt,
+               ltDesc: `on the edge between ${z[i].zone} and ${z[i + 1].zone} — decide which session this is and commit` };
+  return null;
+}
+const parsePace = (str) => {
+  const m = String(str).trim().match(/^(\d{1,2})[:.](\d{1,2})$/);
+  return m ? (+m[1]) * 60 + (+m[2]) : null;
+};
+
 /* Infer intended session type, then score execution against it */
 function classifySession(r) {
   const n = (r.name || "").toLowerCase();
@@ -1875,7 +1992,7 @@ function buildWeekDays(w) {
       day.kind = "race"; day.arch = "race"; day.title = `RACE — ${S.goal.raceName}`; day.tag = "42.2 km";
       day.steps = [
         "Breakfast 2h before; nibble carbs from 10 min before the gun — never slam a gel",
-        `0–30 km: lock ${fmtPace(gp)} — never faster ("it's just another Sunday")`,
+        `0–30 km: lock ${fmtPace(gp)} — never faster (\"it's just another Sunday\")`,
         "Carbs every 30–40 min like every long run since autumn",
         `30–42 km: the part you rehearsed in the ugly-zone days`,
         `Target ${S.goal.targetTime} · bank ${S.goal.bankTime} · floor sub-4`];
@@ -2249,7 +2366,7 @@ function ckBannerHTML() {
 window.__ckApply = () => { const s = checkpointSuggestion(); if (s) applyZoneOverride(s); };
 window.__ckCopy = async () => {
   const s = checkpointSuggestion(); if (!s) return;
-  try { await navigator.clipboard.writeText('"paceZones": ' + JSON.stringify(s.zones, null, 2)); alert("Copied. Paste into data/settings.json (opens next) and commit - that makes it permanent for all devices."); } catch (e) {}
+  try { await navigator.clipboard.writeText('\"paceZones\": ' + JSON.stringify(s.zones, null, 2)); alert("Copied. Paste into data/settings.json (opens next) and commit - that makes it permanent for all devices."); } catch (e) {}
   window.open("https://github.com/alvarovg4444/runzones/edit/main/data/settings.json", "_blank");
 };
 window.__ckDismiss = () => { const s = checkpointSuggestion(); if (s) { try { localStorage.setItem(DKEY, s.run.id); } catch (e) {} } renderAll(); };
@@ -2413,6 +2530,49 @@ function renderPlan() {
     </div>`;
 }
 
+function raceCurveSVG() {
+  const rc = riegelCurve();
+  if (!rc) return "";
+  const gp = goalPaceSec();
+  const DISTS = [1000, 1500, 2000, 3000, 5000, 8000, 10000, 15000, 21097.5, 30000, 42195];
+  const pts = DISTS.map(D => { const t = rc.predT(D); return { D, t, p: t / (D / 1000), band: rc.bandPct(D) }; });
+  const goal = { t: gp * S.goal.distanceKm, p: gp };
+
+  const W = 960, H = 320, padL = 52, padR = 16, padT = 18, padB = 34;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const tmin = 150, tmax = Math.max(pts.at(-1).t, goal.t) * 1.12;
+  // duration decreases left → right (like the report): longest efforts on the left
+  const x = (t) => padL + iw * (1 - (Math.log(t) - Math.log(tmin)) / (Math.log(tmax) - Math.log(tmin)));
+  const allP = pts.flatMap(q => [q.p * (1 - q.band / 100), q.p * (1 + q.band / 100)]).concat(rc.anchors.map(a => a.paceSecPerKm), [goal.p]);
+  const pLo = Math.min(...allP) - 12, pHi = Math.max(...allP) + 12;
+  const y = (p) => padT + (p - pLo) / (pHi - pLo) * ih; // faster pace at the top
+
+  let g = "";
+  for (let p = Math.ceil(pLo / 30) * 30; p <= pHi; p += 30) {
+    g += `<line x1="${padL}" y1="${y(p)}" x2="${W - padR}" y2="${y(p)}" stroke="var(--grid)"/>`;
+    g += `<text x="${padL - 8}" y="${y(p) + 4}" text-anchor="end" font-size="11" fill="var(--muted)" style="font-variant-numeric:tabular-nums">${fmtPace(p).replace("/km", "")}</text>`;
+  }
+  const TICKS = [[14400, "4h"], [10800, "3h"], [7200, "2h"], [5400, "90m"], [3600, "60m"], [2700, "45m"], [1800, "30m"], [1200, "20m"], [720, "12m"], [300, "5m"], [180, "3m"]];
+  for (const [t, lbl] of TICKS) { if (t > tmax || t < tmin) continue;
+    g += `<text x="${x(t)}" y="${H - 12}" text-anchor="middle" font-size="10.5" fill="var(--muted)">${lbl}</text>`; }
+
+  const band = pts.map(q => `${x(q.t)},${y(q.p * (1 - q.band / 100))}`).join(" ") + " " +
+               pts.slice().reverse().map(q => `${x(q.t)},${y(q.p * (1 + q.band / 100))}`).join(" ");
+  const line = pts.map((q, i) => `${i ? "L" : "M"}${x(q.t)},${y(q.p)}`).join("");
+  let marks = "";
+  for (const q of pts.filter(q => [5000, 10000, 21097.5, 42195].includes(q.D)))
+    marks += `<circle cx="${x(q.t)}" cy="${y(q.p)}" r="4" fill="var(--surface-1)" stroke="var(--series-2)" stroke-width="2" class="hit" data-tip="${q.D === 42195 ? "Marathon" : q.D === 21097.5 ? "Half" : fmtKm(q.D / 1000) + " km"} estimate|${fmtTime(Math.round(q.t))} · ${fmtPace(q.p)} · ±${q.band}%"/>`;
+  for (const a of rc.anchors)
+    marks += `<circle cx="${x(a.timeS)}" cy="${y(a.paceSecPerKm)}" r="4.5" fill="var(--series-1)" class="hit" data-tip="Proven: best ${a.label}|${fmtEffort(a.timeS)} · ${fmtPace(a.paceSecPerKm)} · ${a.run.date}"/>`;
+  marks += `<path d="M${x(goal.t)},${y(goal.p) - 6} l6,6 l-6,6 l-6,-6 z" fill="var(--series-3)" class="hit" data-tip="Goal: ${S.goal.targetTime} marathon|${fmtPace(goal.p)} — where the training is taking you"/>`;
+
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Estimated pace across race durations" style="width:100%;height:auto">
+    ${g}<polygon points="${band}" fill="var(--series-2)" opacity="0.13"/>
+    <path d="${line}" fill="none" stroke="var(--series-2)" stroke-width="2.5"/>${marks}
+    <text x="${padL + iw / 2}" y="${H - 1}" text-anchor="middle" font-size="10.5" fill="var(--muted)">duration · longer ← → shorter</text></svg>
+  <div class="legend"><span><i style="background:var(--series-2)"></i>Pace estimate ±band</span><span><i style="background:var(--series-1)"></i>Proven best efforts</span><span><i style="background:var(--series-3)"></i>Goal marathon</span></div>`;
+}
+
 function renderRace() {
   const el = $("#tab-race");
   const pred = racePrediction();
@@ -2432,7 +2592,20 @@ function renderRace() {
         <div class="card"><div class="k">Race-pace km, last 8 weeks</div><div class="v">${(() => { const now=new Date(); const rp=runs().filter(r => r.paceSecPerKm && Math.abs(r.paceSecPerKm - gp) <= 15 && (now - parseISO(r.date)) < 56*dayMs); return fmtKm(rp.reduce((s,r)=>s+r.distanceKm,0)); })()}<span class="unit"> km</span></div><div class="d">The Coach's audit: 'zero km at race pace = don't expect it on race day.' Target ≥10 km/week in the final 6 weeks.</div></div>
         <div class="card"><div class="k">Gap to close</div><div class="v" style="color:${gapS != null && gapS <= 0 ? "var(--good-text)" : "var(--text-primary)"}">${gapS == null ? "–" : (gapS <= 0 ? "On track ✓" : fmtTime(gapS))}</div><div class="d">${gapS != null && gapS > 0 ? `≈ ${Math.round(gapS / S.goal.distanceKm)}s/km of fitness to build` : ""}</div></div>
       </div>
-      <h2 style="margin-top:10px">The recipe</h2>
+      <h2 style="margin-top:18px">Your fastest — the evidence</h2>
+      <div class="hint">Best efforts found inside your synced runs (contiguous lap windows, so warm-ups and traffic-light stops don't hide them). These anchor every prediction below — a new best here moves the whole curve.</div>
+      <div class="cards" style="margin-top:8px">
+        ${bestEffortsAll().map(e => `
+          <div class="card"><div class="k">Best ${e.label}</div>
+            <div class="v">${fmtEffort(e.timeS)}</div>
+            <div class="d">${e.timeS
+              ? `${fmtPace(e.paceSecPerKm)} · ${parseISO(e.run.date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}${e.distM >= 5000 ? ` · marathon equiv ≈ ${fmtTime(Math.round(e.timeS * Math.pow(42195 / e.distM, 1.06)))}` : ""}`
+              : `no effort ≥ ${e.label} yet — the test races will fill this`}</div></div>`).join("")}
+      </div>
+      <h2 style="margin-top:18px">Pace across race durations</h2>
+      <div class="hint">What you could run today, from 3 minutes to 4 hours — Riegel model anchored to your proven bests (blue dots). The band is the defensible range: tight where recent efforts directly support the estimate, wide where nothing has tested you yet. The green diamond is the 3:30 goal — the gap between it and the orange line is the training still to do.</div>
+      ${raceCurveSVG()}
+      <h2 style="margin-top:18px">The recipe</h2>
       <ul style="margin:10px 0 0 18px;font-size:13.5px;color:var(--text-secondary);display:grid;gap:6px">
         <li><b style="color:var(--text-primary)">Volume before speed.</b> The single biggest lever from where you are: get to 40–55 km/week and hold it. The plan tab ramps you there.</li>
         <li><b style="color:var(--text-primary)">80% easy.</b> Most running in Z2 (${S.hrZones[1].minHr}–${S.hrZones[1].maxHr} bpm / ${fmtPace(S.paceZones[1].minSecPerKm)}–${fmtPace(S.paceZones[0].maxSecPerKm)}). Your Warsaw 15 km at HR 156 was a great effort — but that intensity every run blocks volume growth.</li>
@@ -2512,26 +2685,114 @@ function renderCoach() {
     </div>`;
 }
 
+/* zone card copy — numbers always pulled live from S so recalibration updates them */
+const ZONE_HR_MAP = [0, 1, 2, 3, 4, 4]; // paceZone index → hrZone index
+const ZONE_CARDS = [
+  { what: "Your easiest running, with no meaningful extra fatigue.",
+    benefit: "Boosts blood flow, eases stiffness and aids recovery.",
+    use: "Recovery days, warm-ups and cool-downs.",
+    feel: "Very relaxed; full conversation.",
+    example: "30–45 min very easy.",
+    watch: "do not turn it into another workout because you feel good." },
+  { what: "Comfortable running — the foundation of your training.",
+    benefit: "Builds endurance and efficiency without heavy fatigue.",
+    use: "Most daily runs and most of your long-run volume (~80% of everything).",
+    feel: "Relaxed, conversational, controlled breathing.",
+    example: "60–90 min comfortable — your Sunday long run lives here.",
+    watch: "the top pulse is a ceiling, not a target — easy must not become steady." },
+  { what: "Controlled aerobic running just below threshold — your first lactate turn-point.",
+    benefit: "Builds stamina and fuel economy. The marathon is a fuel race raced at LT1, not LT2.",
+    use: "Steady runs and marathon-supporting long-run blocks.",
+    feel: "Purposeful but controlled; short sessions only.",
+    example: "3 × 15 min steady, 2 min easy — or your Thursday 35 min steady.",
+    watch: "it costs more than easy running — do not drift into it every day." },
+  { what: "Hard, controlled running near your repeatable limit — the second lactate turn-point.",
+    benefit: "Raises sustainable race pace; teaches the body to clear by-products.",
+    use: "Tempo runs, cruise intervals, race-specific sessions.",
+    feel: "Hard but repeatable; the last rep should feel like the first.",
+    example: "3 × 10 min with 2 min easy, or 30 min straight at the bottom end.",
+    watch: "pulse rises slowly — do not judge the first rep by pulse or chase a number." },
+  { what: "Hard 3–8 min reps above threshold, below a sprint.",
+    benefit: "Pulls the whole chain up: VO₂ → aerobic power → LT2 → race pace.",
+    use: "Long intervals, hill reps and race sharpening.",
+    feel: "Hard breathing, high focus, pace controlled.",
+    example: "5 × 3 min with equal easy recovery.",
+    watch: "the fastest rep is not the goal — consistent reps create the benefit." },
+  { what: "Short, fast reps led by pace, form and duration.",
+    benefit: "Develops top-end speed, coordination and running economy.",
+    use: "Strides, short hills, track reps.",
+    feel: "Very hard but technical; stop before form fails.",
+    example: "6–8 × 30 s strides, full recovery.",
+    watch: "pulse may never fully respond — never accelerate just to chase heart rate." },
+];
+
 function renderZones() {
   const el = $("#tab-zones");
+  const z = S.paceZones, h = S.hrZones;
+  const latest = runs().at(-1);
+  const best20 = Math.min(...runs().map(r => r.best20minSecPerKm ?? Infinity));
+  const spanSlow = z[0].maxSecPerKm + 15, spanFast = z[z.length - 1].minSecPerKm - 15;
+  const posPct = (p) => clamp((spanSlow - p) / (spanSlow - spanFast) * 100, 0, 100); // slower ← → faster
+
   el.innerHTML = `
-    <div class="panel">
-      <h2>Heart-rate zones</h2>
-      <div class="hint">Based on max HR ${S.athlete.maxHr} (highest observed). Update maxHr in data/settings.json after any race or hard test.</div>
-      <table style="max-width:560px">
-        <thead><tr><th>Zone</th><th>Name</th><th class="num">bpm</th><th class="num">% max</th></tr></thead>
-        <tbody>${S.hrZones.map(z => `<tr><td><b>${z.zone}</b></td><td>${z.name}</td><td class="num">${z.minHr}–${z.maxHr}</td><td class="num">${Math.round(z.minHr / S.athlete.maxHr * 100)}–${Math.round(z.maxHr / S.athlete.maxHr * 100)}%</td></tr>`).join("")}</tbody>
-      </table>
+    <div class="panel" id="ltlookup">
+      <h2>Where does a pace put you?</h2>
+      <div class="hint">Type any pace — the app tells you which zone it is and where you sit against your two lactate turn-points (LT1 ≈ top of Steady, LT2 ≈ Threshold). Zones are anchored to current fitness and move only when the data says so.</div>
+      <div class="inrow">
+        <input id="ltpace" inputmode="numeric" placeholder="5:30" aria-label="pace min:sec per km"/><span style="color:var(--muted);font-size:13px">min/km</span>
+        ${latest?.paceSecPerKm ? `<button class="preset" data-p="${latest.paceSecPerKm}">Latest run ${fmtPace(latest.paceSecPerKm).replace("/km", "")}</button>` : ""}
+        ${isFinite(best20) ? `<button class="preset" data-p="${best20}">Best 20 min ${fmtPace(best20).replace("/km", "")}</button>` : ""}
+        <button class="preset" data-p="${goalPaceSec()}">Goal MP ${fmtPace(goalPaceSec()).replace("/km", "")}</button>
+      </div>
+      <div class="pacebar" aria-hidden="true">
+        ${z.map((zz, i) => { const l = posPct(zz.maxSecPerKm), r = posPct(zz.minSecPerKm); return `
+          <div class="seg" style="left:${l}%;width:${r - l}%;background:${ZONE_COLORS[i]}"></div>
+          <div class="seglbl${i % 2 ? " row2" : ""}" style="left:${l}%">${zz.zone}${ZONE_LT[i].badge ? " · " + ZONE_LT[i].badge : ""}</div>`; }).join("")}
+        <div class="marker" id="ltmarker" style="left:50%;display:none"></div>
+      </div>
+      <div id="ltverdict" style="display:none"></div>
     </div>
     <div class="panel">
-      <h2>Pace zones</h2>
-      <div class="hint">Calibrated from your recent training (best sustained ~${fmtPace(317)}, long run ${fmtPace(347)}). These tighten automatically in spirit — re-derive after each test race.</div>
-      <table style="max-width:560px">
-        <thead><tr><th>Zone</th><th class="num">Pace</th></tr></thead>
-        <tbody>${S.paceZones.map(z => `<tr><td>${z.zone}</td><td class="num">${fmtPace(z.maxSecPerKm)} – ${fmtPace(z.minSecPerKm)}</td></tr>`).join("")}</tbody>
-      </table>
-      <div class="note">Goal marathon pace ${fmtPace(goalPaceSec())} sits at the top of Steady/MP — exactly where it should be for a realistic goal.</div>
+      <h2>Your zones, explained</h2>
+      <div class="hint">Each zone has a different job — easy builds the base, steady (LT1) builds stamina, threshold (LT2) raises sustainable speed, and fast work develops your top end. Faster is not automatically better. Pulse anchored to max HR ${S.athlete.maxHr}.</div>
+      <div class="zgrid">
+        ${z.map((zz, i) => { const hz = h[ZONE_HR_MAP[i]]; const c = ZONE_CARDS[i]; return `
+          <div class="zcard" id="zcard-${i}" style="--zc:${ZONE_COLORS[i]}">
+            <h3>${zz.zone}${ZONE_LT[i].badge ? ` <span class="ltbadge">${ZONE_LT[i].badge}</span>` : ""}</h3>
+            <div class="znum">
+              <div><div class="k">Pace /km</div><div class="v">${fmtPace(zz.minSecPerKm).replace("/km", "")}–${fmtPace(zz.maxSecPerKm).replace("/km", "")}</div></div>
+              <div><div class="k">Pulse</div><div class="v">${i === 5 ? "rises late" : `${hz.minHr}–${hz.maxHr} bpm`}</div></div>
+            </div>
+            <div class="zrow"><b>What it is</b> · ${c.what}</div>
+            <div class="zrow"><b>Benefit</b> · ${c.benefit}</div>
+            <div class="zrow"><b>Use it for</b> · ${c.use}</div>
+            <div class="zrow"><b>Feel</b> · ${c.feel}</div>
+            <div class="zrow"><b>Example</b> · ${c.example}</div>
+            <div class="zwatch"><b>Watch out</b> — ${c.watch}</div>
+          </div>`; }).join("")}
+      </div>
+      <div class="note" style="border-left:3px solid var(--series-2);padding:8px 12px;background:var(--chip-bg);border-radius:0 8px 8px 0;margin-top:14px"><b style="color:var(--text-primary)">Why pace changes with duration</b> — a short repetition can be quicker than continuous running in the same zone, and pulse takes time to catch up. Use pace, duration and repeatability first — then use pulse as confirmation.</div>
+      <div class="note">${(() => { const g = goalPaceSec(), v = paceToLT(g); return `Goal marathon pace ${fmtPace(g)} currently reads as <b>${v.name}</b> against today's zones. On race day it must sit at the top of Steady/MP (LT1) — the training's whole job is to move these zones until it does. Each recalibration updates this line.`; })()}</div>
     </div>`;
+
+  const input = el.querySelector("#ltpace");
+  const update = (p) => {
+    const v = paceToLT(p);
+    const marker = el.querySelector("#ltmarker"), box = el.querySelector("#ltverdict");
+    el.querySelectorAll(".zcard").forEach(c => c.classList.remove("hitzone"));
+    if (!v) { marker.style.display = "none"; box.style.display = "none"; return; }
+    marker.style.display = "block"; marker.style.left = posPct(p) + "%";
+    box.style.display = "block";
+    const hz = v.idx >= 0 && v.idx <= 5 ? h[ZONE_HR_MAP[Math.round(v.idx)]] : null;
+    box.innerHTML = `<div class="big">${fmtPace(p)} → ${v.name}${v.badge ? ` <span class="ltbadge">${v.badge}</span>` : ""} · ${v.lt}</div>
+      <div class="sub">${v.ltDesc}.${hz ? ` Expected pulse once settled: ${hz.minHr}–${hz.maxHr} bpm (${hz.zone}).` : ""}</div>`;
+    if (v.idx >= 0 && v.idx <= 5) el.querySelector(`#zcard-${Math.round(v.idx)}`)?.classList.add("hitzone");
+  };
+  input.addEventListener("input", () => update(parsePace(input.value)));
+  el.querySelectorAll(".preset").forEach(b => b.addEventListener("click", () => {
+    const p = +b.dataset.p; input.value = fmtPace(p).replace("/km", ""); update(p);
+  }));
+  if (latest?.paceSecPerKm) { input.value = fmtPace(latest.paceSecPerKm).replace("/km", ""); update(latest.paceSecPerKm); }
 }
 
 /* ---------- tooltip ---------- */
