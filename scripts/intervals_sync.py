@@ -91,6 +91,49 @@ def interval_metrics(activity_id, api_key):
             compact)
 
 
+EFFORT_TARGETS = {"1k": 1000, "5k": 5000, "10k": 10000, "hm": 21097.5}
+
+
+def stream_best_efforts(activity_id, api_key):
+    """True rolling best efforts (1k/5k/10k/half) from the raw GPS streams.
+
+    Uses elapsed time between stream samples, so a 'best 5k' with a long stop
+    in the middle is honestly slower — we want continuous efforts. Returns
+    {"1k": totalSec, ...} for every target the activity covers, or {}.
+    """
+    try:
+        st = http_get(f"https://intervals.icu/api/v1/activity/{activity_id}/streams",
+                      {"types": "time,distance"}, api_key)
+    except Exception as e:
+        print(f"  streams fetch failed for {activity_id}: {e}")
+        return {}
+    cols = {s.get("type") or s.get("name"): s.get("data") for s in st} if isinstance(st, list) else st
+    time_s, dist_m = cols.get("time"), cols.get("distance")
+    if not time_s or not dist_m or len(time_s) != len(dist_m):
+        return {}
+    pairs = [(t, d) for t, d in zip(time_s, dist_m) if t is not None and d is not None]
+    if len(pairs) < 10:
+        return {}
+    out = {}
+    for key, target in EFFORT_TARGETS.items():
+        if pairs[-1][1] - pairs[0][1] < target:
+            continue
+        best = None
+        i = 0
+        for j in range(len(pairs)):
+            while i < j and pairs[j][1] - pairs[i + 1][1] >= target:
+                i += 1
+            dd = pairs[j][1] - pairs[i][1]
+            if dd >= target:
+                tt = pairs[j][0] - pairs[i][0]
+                eff = tt / dd * target  # normalise to exactly the target distance
+                if best is None or eff < best:
+                    best = eff
+        if best:
+            out[key] = round(best)
+    return out
+
+
 def map_activity(a):
     distance_km = round((a.get("distance") or 0) / 1000, 2)
     moving = a.get("moving_time") or a.get("elapsed_time") or 0
@@ -149,11 +192,25 @@ def main():
             if bk:  m["bestKmSecPerKm"] = bk
             if b20: m["best20minSecPerKm"] = b20
             if laps: m["laps"] = laps
+            be = stream_best_efforts(a["id"], api_key)
+            if be: m["bestEfforts"] = be
         new_items.append(m)
         existing.add(m["id"])
         seen_sig.add(sig)
 
-    if not new_items:
+    # one-off backfill: BACKFILL_BEST_EFFORTS=1 fills bestEfforts on already-synced runs
+    backfilled = 0
+    if os.environ.get("BACKFILL_BEST_EFFORTS"):
+        for act in store["activities"]:
+            if act.get("type") == "run" and "bestEfforts" not in act and act["id"].startswith("icu-"):
+                be = stream_best_efforts(act["id"][4:], api_key)
+                if be:
+                    act["bestEfforts"] = be
+                    backfilled += 1
+        if backfilled:
+            print(f"Backfilled best efforts on {backfilled} runs.")
+
+    if not new_items and not backfilled:
         print("No new activities.")
         return 0
 
