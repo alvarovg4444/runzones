@@ -3,7 +3,12 @@ name: Intervals.icu sync
 on:
   schedule:
     - cron: "41 * * * *"      # every hour at :41
-  workflow_dispatch: {}       # manual "Run workflow" button
+  workflow_dispatch:          # manual "Run workflow" button
+    inputs:
+      backfill_best_efforts:
+        description: "Backfill best 1k/5k/10k/half efforts on already-synced runs"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -19,6 +24,7 @@ jobs:
         env:
           INTERVALS_ATHLETE_ID: ${{ secrets.INTERVALS_ATHLETE_ID }}
           INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
+          BACKFILL_BEST_EFFORTS: ${{ inputs.backfill_best_efforts == true && '1' || '' }}
         run: |
           if [ -z "$INTERVALS_API_KEY" ]; then
             echo "INTERVALS_API_KEY secret not set - skipping."
