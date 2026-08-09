@@ -150,6 +150,11 @@
   .dsteps { list-style: none; margin-top: 6px; display: grid; gap: 3px; }
   .dsteps li { font-size: 11px; color: var(--text-secondary); line-height: 1.35; padding-left: 10px; position: relative; }
   .dsteps li::before { content: ""; position: absolute; left: 0; top: 6px; width: 4px; height: 4px; border-radius: 50%; background: var(--baseline); }
+  .daycard.pastday { opacity: 0.6; min-height: 0; padding: 6px 9px; }
+  .daycard.pastday .dtitle { font-size: 11.5px; font-weight: 500; }
+  .daycard.pastday:hover { opacity: 1; }
+  #todaypanel { border: 1px solid var(--series-1); }
+  #todaypanel .daycard { background: var(--surface-1); }
   @media (max-width: 1100px) { .daygrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   @media (max-width: 900px) { .daygrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .compactgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   @media (max-width: 640px) {
@@ -165,6 +170,8 @@
     table { display: block; overflow-x: auto; white-space: nowrap; font-size: 12px; }
     #modal { padding: 16px 14px; width: 96vw; max-height: 90vh; }
     nav button { padding: 8px 10px; font-size: 13px; }
+    .pacebar { height: 34px; }
+    .pacebar .seglbl { display: none; }
   }
   * { min-width: 0; }
   .panel, .card, .tipcard, .weekcard { overflow-wrap: break-word; word-break: normal; }
@@ -2630,19 +2637,36 @@ function renderCalendar() {
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const DETAIL_WEEKS = 6; // full detail for the next 6 weeks, compact after
 
-  const dayCard = (day, wi, di, compact) => {
+  const dayCard = (day, wi, di, compact, past) => {
     const isToday = day.date.getTime() === today.getTime();
     const colors = { run: "var(--series-1)", gym: "var(--series-2)", race: "var(--critical)", rest: "var(--baseline)" };
     const badge = { run: "RUN", gym: "GYM", race: "RACE", rest: "REST" }[day.kind];
-    return `<div class="daycard${isToday ? " today" : ""}" data-w="${wi}" data-d="${di}" title="Click for full detail">
+    return `<div class="daycard${isToday ? " today" : ""}${past ? " pastday" : ""}" data-w="${wi}" data-d="${di}" title="Click for full detail">
       <div class="dhead"><span class="dnum">${day.date.getDate()}.${day.date.getMonth() + 1}.</span>
         <span class="dbadge" style="background:${colors[day.kind]}">${badge}</span></div>
       <div class="dtitle">${day.title}${day.tag ? ` <span class="dtag">${day.tag}</span>` : ""}</div>
-      ${compact || !day.steps.length ? "" : `<ul class="dsteps">${day.steps.slice(0, 4).map(s => `<li>${s}</li>`).join("")}</ul>`}
+      ${compact || past || !day.steps.length ? "" : `<ul class="dsteps">${day.steps.slice(0, 4).map(s => `<li>${s}</li>`).join("")}</ul>`}
     </div>`;
   };
 
+  // pinned "today" card so the day's session is always first — no scrolling
+  let todayHTML = "";
+  outer: for (let wi = 0; wi < CAL.length; wi++) {
+    const days = CAL[wi].days;
+    for (let di = 0; di < days.length; di++) {
+      if (days[di].date.getTime() === today.getTime()) {
+        todayHTML = `<div class="panel" id="todaypanel">
+          <h2>Today — ${days[di].title}</h2>
+          <div class="hint">${today.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })} · Week ${CAL[wi].week.idx} · ${CAL[wi].week.phase} phase · click the card for the full briefing</div>
+          <div class="daygrid" style="grid-template-columns:minmax(0,1fr)">${dayCard(days[di], wi, di, false, false)}</div>
+        </div>`;
+        break outer;
+      }
+    }
+  }
+
   el.innerHTML = `
+    ${todayHTML}
     <div class="panel">
       <h2>Training calendar</h2>
       <div class="hint"><b>Click any day</b> for the full workout: why it exists, how to execute it, common mistakes, and what The Coach says about it. Your week: runs Mon · Tue · Thu · Sun (long run), gym Wed (legs) · Fri (back) · Sat (chest) — Wed &amp; Sat are no-run days. Detail for the next ${DETAIL_WEEKS} weeks; later weeks fill in as they approach.</div>
@@ -2653,7 +2677,7 @@ function renderCalendar() {
             <span style="color:var(--text-secondary);font-size:12.5px">${cw.week.isRace ? "Race week" : `${cw.week.km} km running · long ${cw.week.longKm} km`}</span>
           </div>
           <div class="daygrid${wi < DETAIL_WEEKS ? "" : " compactgrid"}">
-            ${cw.days.map((d, di) => dayCard(d, wi, di, wi >= DETAIL_WEEKS)).join("")}
+            ${cw.days.map((d, di) => dayCard(d, wi, di, wi >= DETAIL_WEEKS, d.date < today)).join("")}
           </div>
         </div>`).join("")}
     </div>`;
