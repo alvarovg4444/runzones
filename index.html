@@ -2076,11 +2076,17 @@ function fitnessProfile() {
   const activeWeeks = weeks.filter(w => w.count > 0).length;
 
   const longRun = Math.max(0, ...last6w.map(r => r.distanceKm), ...rs.slice(-6).map(r => r.distanceKm));
-  const sustained = rs.filter(r => r.distanceKm >= 5 && r.paceSecPerKm);
+  const gp = goalPaceSec();
+  const needSustained = gp - 10;                 // LT2 the goal requires: threshold ≈ MP − 10s/km
+  const need5k = gp - 32;                        // the 3:30 chain wants a ≈22:10 5k
+  const sustained = last8w.filter(r => r.distanceKm >= 5 && r.paceSecPerKm);
   const bestSustainedPace = sustained.length ? Math.min(...sustained.map(r => sustainedPace(r))) : null;
-  const bestShortPace = rs.filter(r => r.paceSecPerKm).length ? Math.min(...rs.filter(r => r.paceSecPerKm).map(r => r.paceSecPerKm)) : null;
+  const kms = rs.map(r => r.bestKmSecPerKm).filter(Boolean);
+  const bestKm = kms.length ? Math.min(...kms) : null;
+  const e5 = (typeof bestEffortsAll === "function" ? bestEffortsAll() : []).find(e => e.label === "5 km" && e.timeS);
+  const best5kPace = e5 ? e5.paceSecPerKm : null;
 
-  const easyRuns = rs.filter(r => r.avgHr && r.paceSecPerKm && hrZoneOf(r.avgHr) <= 2);
+  const easyRuns = last8w.filter(r => r.avgHr && r.paceSecPerKm && hrZoneOf(r.avgHr) <= 2);
   let economy = null;
   if (easyRuns.length) {
     const eff = easyRuns.map(r => (1000 / r.paceSecPerKm) * 60 / r.avgHr); // m per min per bpm
@@ -2098,12 +2104,12 @@ function fitnessProfile() {
   const mapInv = (v, best, worst) => v == null ? 20 : Math.round(clamp((worst - v) / (worst - best) * 100, 4, 100));
 
   return [
-    { name: "Aerobic base", score: map(avgWeeklyKm, 0, 55), why: `${fmtKm(avgWeeklyKm)} km/week avg (8w) — marathon-ready ≈ 45–55` },
-    { name: "Durability", score: map(longRun, 0, 30), why: `Longest recent run ${fmtKm(longRun)} km — build toward 30–32` },
-    { name: "Threshold control", score: mapInv(bestSustainedPace, 310, 430), why: bestSustainedPace ? `Best sustained pace ${fmtPace(bestSustainedPace)} vs threshold target ${fmtPace(S.paceZones[3].maxSecPerKm)}` : "No sustained efforts yet" },
-    { name: "VO2 capacity", score: mapInv(bestShortPace, 265, 400), why: bestShortPace ? `Fastest pace ${fmtPace(bestShortPace)}` : "No fast efforts yet" },
-    { name: "Speed", score: mapInv(bestShortPace, 240, 380), why: "Top-end pace from short efforts" },
-    { name: "Running economy", score: map(economy, 0.85, 1.45), why: economy ? `${economy.toFixed(2)} m/min per bpm on easy runs` : "Need easy runs with HR" },
+    { name: "Aerobic base", score: map(avgWeeklyKm, 0, 55), why: `${fmtKm(avgWeeklyKm)} km/week avg (8w) — 100 = the 45–55 the block must hold for months` },
+    { name: "Durability", score: map(longRun, 0, 30), why: `Longest recent run ${fmtKm(longRun)} km — 100 = the 30–32 you reach by March` },
+    { name: "Threshold control", score: mapInv(bestSustainedPace, needSustained, needSustained + 90), why: bestSustainedPace ? `Best 20-min ${fmtPace(bestSustainedPace)} in the last 8 weeks — 100 = goal-ready ${fmtPace(needSustained)} sustained; the Build phase closes this` : "No sustained efforts (≥5 km) in the last 8 weeks" },
+    { name: "VO2 capacity", score: mapInv(best5kPace, need5k, need5k + 90), why: best5kPace ? `Best 5 km effort ${fmtPace(best5kPace)} — 100 = ${fmtPace(need5k)} (≈22:10 5k) that the 3:30 chain needs; TTs and the tune-up races move this` : "No 5 km effort yet — the first 5K time trial fills this in" },
+    { name: "Speed", score: mapInv(bestKm, 255, 345), why: bestKm ? `Fastest single km ${fmtPace(bestKm)} vs Rep zone ${fmtPace(S.paceZones[5].minSecPerKm)}–${fmtPace(S.paceZones[5].maxSecPerKm)} — already there: speed is not your limiter, the middle of the pyramid is` : "No fast kilometres logged yet" },
+    { name: "Running economy", score: map(economy, 0.85, 1.45), why: economy ? `${economy.toFixed(2)} m/min per bpm on easy runs (8w) — rises silently as volume grows; the trend matters, not the day` : "Need easy runs with HR in the last 8 weeks" },
     { name: "Consistency", score: Math.round(clamp(activeWeeks / 8 * 100 * (Math.min(weeks.at(-1).count + weeks.at(-2).count, 6) / 6 * 0.5 + 0.5), 4, 100)), why: `${activeWeeks}/8 recent weeks with running` },
     { name: "Recovery discipline", score: easyShare == null ? 20 : Math.round(clamp(100 - Math.abs(0.8 - easyShare) * 220, 4, 100)), why: easyShare != null ? `${Math.round(easyShare * 100)}% of run time easy (target ≈ 80%)` : "Need HR data" },
   ];
@@ -2248,6 +2254,11 @@ function buildWeekDays(w) {
   const easyEach = w.easyEach ?? Math.max(4, Math.round((w.km - w.longKm) / 3));
   const F = w.flags || {};
   const FUEL = "Fuel: nibble ~10g carbs every 10 min, starting 10 min before";
+  const fuelPlan = (gPerH, extra) => [
+    "Fuel BEFORE — day before: carb meals ~15:00 AND ~18:00 (white rice, clean carbs). Morning: breakfast 2 h out (oats/toast + banana), then ONLY water + a pinch of salt. Nothing solid in the final 2 h, no sugary drinks",
+    `Fuel DURING — minute −10 (before you press start): first nibble ≈ 8–10 g = ⅓ gel / 2 chews / 3 gummy bears. Then 8–10 g EVERY 10 min from minute 10 (10, 20, 30…) to the end = ${gPerH} g/h. Sip water with every nibble. NEVER a whole gel at once — the insulin spike dumps your glucose${extra ? ". " + extra : ""}`,
+    "Fuel AFTER — real carbs + protein within 20 min. The window is non-negotiable: skipping it is why next week 'suddenly feels bad'",
+  ];
   const ACT = "Before: 5-min activation (calf raises, lunges, leg swings)";
   const mpBand = `${fmtPace(gp + 10)}–${fmtPace(gp - 5)}`;
 
@@ -2276,7 +2287,7 @@ function buildWeekDays(w) {
       day.steps = [
         "Breakfast 2h before; nibble carbs from 10 min before the gun — never slam a gel",
         `0–30 km: lock ${fmtPace(gp)} — never faster (\"it's just another Sunday\")`,
-        "Carbs every 30–40 min like every long run since autumn",
+        "Nibble 8–10 g every 10 min, exactly like every long run since autumn",
         `30–42 km: the part you rehearsed in the ugly-zone days`,
         `Target ${S.goal.targetTime} · bank ${S.goal.bankTime} · floor sub-4`];
     } else if (runDays.includes(dow) && !w.isRace) {
@@ -2288,7 +2299,7 @@ function buildWeekDays(w) {
           day.steps = [ACT,
             `${w.longKm} km @ ${paceRange(1)} (Z2, ${hrRange(1)}) — just banking time, pace irrelevant`,
             "Type 1 of 4: build the distance first; nothing sexy",
-            FUEL + " (practice starts NOW, not in the marathon block)"];
+            ...fuelPlan("40–50", "The gut is trainable and race day is not the day to find out — practice starts NOW")];
         } else if (w.phase === "Build") {
           if (F.test) {
             day.arch = "race"; day.title = "TEST — half marathon race"; day.tag = "21.1 km";
@@ -2301,7 +2312,7 @@ function buildWeekDays(w) {
             day.steps = [ACT + " + prepare drinks like race morning",
               `${w.longKm} km @ MP + 15–20s (${fmtPace(gp + 20)}–${fmtPace(gp + 12)}) — a solid day, race intent`,
               "Imperfect route (hills, corners), NOT super shoes — 'why should this day be easy?'",
-              FUEL + ", target 50–60g/h"];
+              ...fuelPlan("50–60")];
           }
         } else if (w.phase === "Specific") {
           if (F.specIdx % 2 === 0) {
@@ -2310,19 +2321,20 @@ function buildWeekDays(w) {
               `Start @ MP + 1:15/km, step down every 5 km`,
               `Final 4–5 km AT race pace ${fmtPace(gp)}${F.ugly ? " — UGLY ZONE: keep going 2 km past where you want to stop" : ""}`,
               "Don't stare at the watch mid-run — check each 2 km, feel the rest",
-              FUEL + ", target 60–80g/h (race dress rehearsal)"];
+              ...fuelPlan("60–80", "Dress rehearsal: exact race products, exact race timing")];
           } else {
             day.arch = "long"; day.title = "Long run — race-pace reps"; day.tag = `${w.longKm} km`;
             day.steps = [ACT,
               `First half steady (${fmtPace(pz(2).maxSecPerKm + 15)})`,
               `Second half: 4×2 km @ ${fmtPace(gp)} with 1 km float${F.ugly ? " — UGLY ZONE week: last rep 3 km" : ""}`,
               "These km count toward the ≥10 km/week at race pace target",
-              FUEL + ", target 60–80g/h"];
+              ...fuelPlan("60–80", "Dress rehearsal: exact race products, exact race timing")];
           }
         } else { // Taper
           day.arch = "long"; day.title = "Long run — taper"; day.tag = `${w.longKm} km`;
           day.steps = [`${w.longKm} km relaxed Z2 — keep the Sunday rhythm, lose the fatigue`,
-            "Still practice fueling at race rate", "Legs should feel better every week now"];
+            "Fuel exactly like race day: nibble 8–10 g at −10 min, then every 10 min, race products only — 60–80 g/h",
+            "Legs should feel better every week now"];
         }
       } else if (dow === 2) {
         // ---- Tuesday: quality slot ----
@@ -2429,7 +2441,7 @@ const EXPLAIN = {
   },
   long: {
     why: "The marathon is a fuel race: your body stores ~100 min of hard-intensity fuel but you'll race for 3:30+. The long run teaches fat-burning efficiency ('diesel engine') and durability — but only if you keep it controlled.",
-    how: ["First 2 km deliberately slow", "Hold Z2 heart rate throughout — 10+ beats below marathon HR", "Practice fueling: carbs every 30-40 min from minute 60, every single week", "MP finishes only when the plan says so (Specific phase)"],
+    how: ["First 2 km deliberately slow", "Hold Z2 heart rate throughout — 10+ beats below marathon HR", "Fuel by the nibble protocol: 8–10 g every 10 min, first bite at minute −10 — never big gels 30-40 min apart", "MP finishes only when the plan says so (Specific phase)"],
     mistakes: ["Adding 'sexy stuff' — surges and tempo teach your body to burn MORE carbs, the opposite of the goal", "Racing the distance instead of banking the time", "Skipping fuel practice, then wondering why race gels wreck your gut"],
     tags: ["long"]
   },
@@ -2459,7 +2471,7 @@ const EXPLAIN = {
   },
   race: {
     why: "Everything converges here. The plan trained you for a faster time than you need — that margin is your armour.",
-    how: ["Even pacing: lock goal pace from km 1, never faster in the first 30k", "Fuel like you practiced: carbs every 30-40 min from early", "The race starts at 30 km — until then you're just not slowing down"],
+    how: ["Even pacing: lock goal pace from km 1, never faster in the first 30k", "Fuel like you practiced: 8–10 g nibbles every 10 min from minute −10", "The race starts at 30 km — until then you're just not slowing down"],
     mistakes: ["Going out 10s/km fast 'because it feels easy' — it always does at km 5", "Trying new gels/shoes on race day", "Hero first half, death march second half"],
     tags: ["race", "mp"]
   },
