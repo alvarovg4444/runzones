@@ -895,7 +895,112 @@ const SEED_SETTINGS = {
    "5": "Back",
    "6": "Chest"
   }
- }
+ },
+ "races": [
+  {
+   "date": "2026-11-08",
+   "name": "Leopoldilauf Halbmarathon",
+   "title": "RACE — Leopoldilauf Half (baseline)",
+   "tag": "21.1 km race · ~26 km day",
+   "steps": [
+    "Job: honest baseline, 23 weeks out — information, not glory. You come off a cutback week; no extra taper",
+    "Warm-up: 3 km very easy + drills + 4 strides, timed to finish ~10 min before the 10:00 gun",
+    "Loop 1 (7 km) @ 5:30/km — must feel embarrassingly easy",
+    "Loop 2 (7 km) @ 5:20/km — settle in and work",
+    "Loop 3 (7 km) @ 5:10/km or faster on feel — earn the finish · ≈1:52:30 (band 1:52–1:55)",
+    "Fuel: breakfast 2 h before · water + salt only · nibble ~10 g carbs from 10 min before, ~40 g/h during",
+    "Cool-down 1–2 km jog · next 2–3 days easy — the recovery ladder applies"
+   ],
+   "target": {
+    "pace": [
+     305,
+     332
+    ],
+    "hr": [
+     3,
+     5
+    ],
+    "evalAs": "sustained"
+   }
+  },
+  {
+   "date": "2026-12-06",
+   "name": "Adventlauf 10k",
+   "title": "RACE — Adventlauf 10k (THE checkpoint)",
+   "tag": "10 km race · ~16 km day",
+   "steps": [
+    "Job: the season's honest fitness checkpoint — 3 easy days before, then race it properly",
+    "Warm-up: 3 km easy + drills + 4 strides",
+    "Km 1–3 @ 5:05/km — controlled, breathing quiet",
+    "Km 4–7 @ 4:58/km — goal marathon pace, locked",
+    "Km 8–10 @ 4:48/km — empty the tank · ≈49:30 (band 49:30–51:00) · sub-50 = goal MP held for 10 km",
+    "Fuel: breakfast 2 h before · water + salt · nibble from 10 min before the gun",
+    "Cool-down 2–3 km very easy · the result recalibrates your zones"
+   ],
+   "target": {
+    "pace": [
+     288,
+     308
+    ],
+    "hr": [
+     4,
+     5
+    ],
+    "evalAs": "sustained"
+   }
+  },
+  {
+   "date": "2026-12-31",
+   "name": "San Silvestre Vallecana 10k",
+   "title": "RACE — San Silvestre 10k (fun, hard)",
+   "tag": "10 km race · ~15 km day",
+   "steps": [
+    "Job: hard festive effort — race on EFFORT; the crowd decides what the clock says",
+    "Evening race: main meal ~14:00, light carb snack 2 h before, nibble from 10 min before",
+    "Warm-up: 2–3 km easy + strides, as space allows",
+    "First 5 km: controlled ~5:00/km effort — don't fight the crowd, surf it",
+    "Second 5 km: build 4:55 → 4:45 — pass people all the way · 48:30–50:30 with clear road",
+    "Enjoy it — finishing the year racing is the point. Sunday's long run after this: short and genuinely easy"
+   ],
+   "target": {
+    "pace": [
+     285,
+     312
+    ],
+    "hr": [
+     3,
+     5
+    ],
+    "evalAs": "sustained"
+   }
+  },
+  {
+   "date": "2027-02-14",
+   "name": "Eisbärlauf Halbmarathon",
+   "title": "TEST RACE — Eisbärlauf Half",
+   "tag": "21.1 km race · ~26 km day",
+   "steps": [
+    "The Build-phase exam — this result decides the Specific phase and recalibrates every zone",
+    "Warm-up: 3 km easy + drills + 4 strides",
+    "Loop 1 (7 km) @ 5:05/km — patient",
+    "Loop 2 (7 km) @ 4:57/km — the race pace of the day",
+    "Loop 3 (7 km) @ 4:48/km on courage · ≈1:44:20 · 1:44–1:46 untapered = green light for 3:30",
+    "Full race rehearsal: breakfast 2 h before · water + salt · nibble from −10 min · 40–60 g carbs/h · race shoes",
+    "Cool-down 1–2 km · then the recovery ladder: walk days → test jog → gym re-engagement"
+   ],
+   "target": {
+    "pace": [
+     288,
+     306
+    ],
+    "hr": [
+     3,
+     5
+    ],
+    "evalAs": "sustained"
+   }
+  }
+ ]
 };
 const SEED_ACTIVITIES = {
  "lastSync": "2026-08-09T17:05:13Z",
@@ -2151,7 +2256,22 @@ function buildWeekDays(w) {
     const date = addDays(w.start, d - 1);
     const day = { date, dow, kind: "rest", arch: "rest", title: "Rest", steps: [], tag: "" };
 
-    if (w.isRace && dow === longDay) {
+    const raceInfo = (S.races || []).find(r => r.date === localKey(date));
+    const nearRace = (S.races || []).find(r => { const t = parseISO(r.date) - date; return t > 0 && t <= 3.6 * dayMs; });
+    const raceAhead = (S.races || []).find(r => { const t = parseISO(r.date) - date; return t > 0 && t <= 6.5 * dayMs; });
+    const afterRace = (S.races || []).find(r => { const t = date - parseISO(r.date); return t > 0 && t <= 3 * dayMs; });
+    const sharpener = (why) => {
+      day.arch = "easy"; day.exKey = "easy"; day.title = "Pre-race sharpener"; day.tag = `${Math.max(4, easyEach - 2)} km`;
+      day.steps = [why, `${Math.max(4, easyEach - 2)} km easy Z2 — freshness beats fitness now`,
+        "Finish with 4×20s strides at race rhythm, full walk recoveries",
+        "Nothing hard this close to a race: you can't gain fitness in 3 days, only lose freshness"];
+    };
+    if (raceInfo && !w.isRace) {
+      day.kind = "race"; day.arch = "race"; day.exKey = "tune";
+      day.title = raceInfo.title; day.tag = raceInfo.tag;
+      day.steps = raceInfo.steps.slice();
+      day.raceTarget = raceInfo.target ? { pace: raceInfo.target.pace, hr: raceInfo.target.hr, evalAs: raceInfo.target.evalAs } : null;
+    } else if (w.isRace && dow === longDay) {
       day.kind = "race"; day.arch = "race"; day.title = `RACE — ${S.goal.raceName}`; day.tag = "42.2 km";
       day.steps = [
         "Breakfast 2h before; nibble carbs from 10 min before the gun — never slam a gel",
@@ -2173,7 +2293,7 @@ function buildWeekDays(w) {
           if (F.test) {
             day.arch = "race"; day.title = "TEST — half marathon race"; day.tag = "21.1 km";
             day.steps = ["The Build phase exam: race a half (or 15 km solo @ MP effort)",
-              `Sub-3:30 shape ≈ 1:38–1:41 half · sub-3:45 ≈ 1:45–1:48`,
+              `Green light for 3:30 ≈ 1:44–1:46 untapered, mid-block (a fresh, tapered race ≈ 1:40) · 3:45 shape ≈ 1:50–1:52`,
               "Result recalibrates every zone + decides the Specific phase focus",
               "Full fueling rehearsal: breakfast 2h before, nibble strategy, race shoes"];
           } else {
@@ -2206,44 +2326,50 @@ function buildWeekDays(w) {
         }
       } else if (dow === 2) {
         // ---- Tuesday: quality slot ----
-        if (w.phase === "Foundation") {
+        if (nearRace || (raceAhead && (w.flags || {}).tt5k && w.phase === "Foundation")) {
+          sharpener(`${(nearRace || raceAhead).name} this week — the race replaces this session's job`);
+        } else if (w.phase === "Foundation") {
           if (F.tt5k) {
-            day.arch = "vo2"; day.title = "5K TIME TRIAL"; day.tag = "≈9 km";
-            day.steps = ["Warm-up: 15 min easy + drills + 4 strides",
-              "5 km all-out, solo, honest — 'after this, no rep can hurt you'",
-              "Recalibrates every zone; log the result", "Cool-down 10 min"];
+            day.arch = "vo2"; day.exKey = "tt5k"; day.title = "5K TIME TRIAL"; day.tag = "≈9 km (3 WU + 5 TT + 1 CD)";
+            day.steps = ["Warm-up: 3 km easy + drills + 4 strides",
+              "5 km ALL OUT — one single effort, no reps: pace it like a race, first km the 'slowest'",
+              "Honest and solo — 'after this, no rep can hurt you'",
+              "Cool-down: 1 km jog",
+              "Log the result — the checkpoint banner proposes new zones from it"];
           } else if (F.vo2Week) {
             day.arch = "vo2"; day.title = "VO2 injection"; day.tag = `≈${easyEach + 4} km`;
-            day.steps = [ACT, "Warm-up 15 min + strides",
-              `Pick one: 5×3 min @ ${paceRange(4)} / 10×400m / 10×60s uphill — vary it`,
-              "Inject the meat, then settle back into base for ~10 days", "Cool-down 10 min"];
+            day.steps = [ACT, "Warm-up: 3 km easy + strides",
+              `Pick one: 5×3 min @ ${paceRange(4)} / 10×400m / 10×60s uphill — vary it (3-min jog recoveries)`,
+              "Inject the meat, then settle back into base for ~10 days", "Cool-down: 1–2 km jog"];
           } else {
             day.arch = "threshold"; day.title = "Threshold foundations"; day.tag = `≈${easyEach + 4} km`;
-            day.steps = [ACT, "Warm-up 15 min + strides",
-              `3×10 min @ bottom of threshold ${fmtPace(pz(3).maxSecPerKm)}, 2 min jog`,
+            day.steps = [ACT, "Warm-up: 3 km easy + strides",
+              `3×10 min @ bottom of threshold ${fmtPace(pz(3).maxSecPerKm)}, 2 min jog between`,
               "3–4 word conversation test — if you can't, you're over threshold",
-              "Cool-down 10 min"];
+              "Cool-down: 1–2 km jog"];
           }
         } else if (w.phase === "Build") {
           day.arch = "threshold"; day.title = "Threshold + secret finisher"; day.tag = `≈${easyEach + 5} km`;
-          day.steps = [ACT, "Warm-up 15 min + drills + strides",
+          day.steps = [ACT, "Warm-up: 3 km easy + drills + strides",
             `Main: 3×8 min @ ${paceRange(3)} (or 4 mile tempo) — make rep 3 the EASIEST: drop shoulders, long exhales`,
             "Finisher (after 2–3 min): 15s hard / 15s stand, for 5 min — keeps speed alive",
-            FUEL, "Cool-down 10 min"];
+            FUEL, "Cool-down: 1–2 km jog"];
         } else if (w.phase === "Specific") {
-          day.arch = "alt"; day.title = "Alternating tempo"; day.tag = `${10 + Math.min(F.specIdx * 2, 6)} km`;
+          day.arch = "alt"; day.title = "Alternating tempo"; day.tag = `${13 + Math.min(F.specIdx, 3) * 2} km (incl. 2 WU + 1 CD)`;
           day.steps = [ACT, "Warm-up 2 km",
             `${5 + Math.min(F.specIdx, 3)}× [1 km @ threshold ${paceRange(3)} → 1 km float @ ${fmtPace(gp + 12)}]`,
             "The float IS the session — never jog it",
             "If sessions start feeling too good: slow the early reps, save it for race day",
             FUEL, "Cool-down 1 km"];
         } else {
-          day.arch = "mp"; day.title = "Marathon-pace touch"; day.tag = "≈6 km";
-          day.steps = ["Warm-up 10 min", `3 km @ ${fmtPace(gp)} — should feel boring by now`, "Cool-down 10 min"];
+          day.arch = "mp"; day.title = "Marathon-pace touch"; day.tag = "≈7 km (2 WU + 3 MP + 2 CD)";
+          day.steps = ["Warm-up: 2 km easy", `3 km @ ${fmtPace(gp)} — should feel boring by now`, "Cool-down: 2 km easy"];
         }
       } else if (dow === 4) {
         // ---- Thursday ----
-        if (w.phase === "Specific") {
+        if (nearRace) {
+          sharpener(`${nearRace.name} in ${Math.ceil((parseISO(nearRace.date) - date) / dayMs)} days — start the mini-taper`);
+        } else if (w.phase === "Specific") {
           const bigs = ["4×3 km", "4×3 km", "3×4 km", "4×4 km", "3×5 km"];
           day.arch = "mp"; day.title = F.ugly ? "Big MP session — UGLY ZONE" : "Big MP session"; day.tag = `≈${w.km - w.longKm - 2 * easyEach + 4} km`;
           day.steps = [ACT, "Warm-up 2 km + strides",
@@ -2258,7 +2384,8 @@ function buildWeekDays(w) {
           day.steps = [ACT,
             `Main: ${easyEach} km steady @ ${fmtPace(pz(2).maxSecPerKm + 15)}–${fmtPace(pz(2).maxSecPerKm - 5)} (or 2×20 min, 5 min easy between)`,
             "Coach's mindset: 'today I work' — no stops, hold the pace",
-            "3–4 word conversation test; watch HR drift (>10 beats at fixed pace = start easier)"];
+            "3–4 word conversation test; watch HR drift (>10 beats at fixed pace = start easier)",
+            "Warm-up / cool-down: 1 km easy at each end (that's the extra 2 km in the total)"];
         }
       } else {
         day.arch = "easy"; day.title = "Easy run"; day.tag = `${easyEach} km`;
@@ -2279,7 +2406,8 @@ function buildWeekDays(w) {
         if (w.phase === "Taper") { day.steps = day.steps.slice(0, 3); day.steps.push("Taper: light weights, stop 2 reps short"); }
       }
     }
-    day.target = dayTarget(day, w, gp);
+    if (day.arch === "long" && afterRace) day.steps.push(`Days after ${afterRace.name}: genuinely easy today, cut it short if anything aches — recovery ladder rules`);
+    day.target = day.raceTarget || dayTarget(day, w, gp);
     days.push(day);
   }
   return days;
@@ -2294,14 +2422,14 @@ const EXPLAIN = {
     tags: ["easy"]
   },
   steady: {
-    why: "The The Coach signature. A deliberate 'work day' between easy and threshold that builds LT1 — the exact intensity a marathon is raced at. This is what stops the fade in the final 10K.",
+    why: "The Coach's signature. A deliberate 'work day' between easy and threshold that builds LT1 — the exact intensity a marathon is raced at. This is what stops the fade in the final 10K.",
     how: ["Settle 5-10 min, then lock the pace and commit", "Breathing noticeable but controlled; you could speak short phrases", "No stops once the steady block starts", "Note your HR at fixed pace — the month-over-month trend is the fitness signal"],
     mistakes: ["Letting it drift up into threshold — it's NOT a tempo run", "Treating it like an easy jog with stops", "Ignoring HR drift: >10 beats at the same pace means start slower"],
     tags: ["steady"]
   },
   long: {
     why: "The marathon is a fuel race: your body stores ~100 min of hard-intensity fuel but you'll race for 3:30+. The long run teaches fat-burning efficiency ('diesel engine') and durability — but only if you keep it controlled.",
-    how: ["First 2 km deliberately slow", "Hold Z2 heart rate throughout — 10+ beats below marathon HR", "Practice fueling: carbs every 30-40 min from minute 60, every single week", "MP finishes only when the plan says so (Peak phase)"],
+    how: ["First 2 km deliberately slow", "Hold Z2 heart rate throughout — 10+ beats below marathon HR", "Practice fueling: carbs every 30-40 min from minute 60, every single week", "MP finishes only when the plan says so (Specific phase)"],
     mistakes: ["Adding 'sexy stuff' — surges and tempo teach your body to burn MORE carbs, the opposite of the goal", "Racing the distance instead of banking the time", "Skipping fuel practice, then wondering why race gels wreck your gut"],
     tags: ["long"]
   },
@@ -2320,7 +2448,7 @@ const EXPLAIN = {
   alt: {
     why: "The Coach's signature marathon session, from 10-12 weeks out. Alternating threshold km with marathon-pace floats teaches lactate clearing and fuel efficiency at speed — it pulls LT1 up toward LT2, which IS marathon fitness.",
     how: ["The float is the session: hold MP+10-15s, never jog it", "Threshold kms at a 'decent effort' — you're not racing them", "Progression over weeks: 16k → 20k → 6×2k → 5×3k"],
-    mistakes: ["Jogging the floats (turns it into plain intervals)", "Hammering the fast kms so the floats become survival", "Doing this session before the Peak phase — it needs the threshold base first"],
+    mistakes: ["Jogging the floats (turns it into plain intervals)", "Hammering the fast kms so the floats become survival", "Doing this session before the Specific phase — it needs the threshold base first"],
     tags: ["mp", "threshold"]
   },
   mp: {
@@ -2341,6 +2469,18 @@ const EXPLAIN = {
     mistakes: ["Stretching instead of strengthening when legs feel tight", "Leg day the day before the long run at full send", "Dropping gym when running volume rises — that's when you need it most"],
     tags: ["gym"]
   },
+  tt5k: {
+    why: "One all-out 5 km — a session and a measurement in one. It counts as your VO2 touch (top of the pyramid) AND it recalibrates every zone below it, because the app anchors zones to proven paces, not wishes. Bonus armour: 'if you're willing to do a 5k time trial, everything else starts to feel easier — no reps can hurt you after that.'",
+    how: ["It is ONE effort, not reps: 3 km warm-up + 5 km time trial + 1 km cool-down = the ≈9 km total", "Pace it like a race: first km deliberately controlled, build through the middle, empty the last km", "Solo and honest — no downhill start, no wind at your back, log the exact result"],
+    mistakes: ["Sprinting km 1 and crawling km 4 — that measures your ego, not your fitness", "Treating it like an interval day and 'saving something' — the value IS the honest max", "Skipping it because it's scary — that's exactly why it works"],
+    tags: ["vo2", "general"]
+  },
+  tune: {
+    why: "A tune-up race has two jobs the training can't do: an honest, bib-on measurement that recalibrates your zones, and racing practice — warm-up routine, fueling script, pacing discipline under adrenaline. It also proves the starting line of the next phase moved: that's the between-blocks fitness that decides the marathon.",
+    how: ["Negative split, always: start easier than feels right, finish faster than feels possible — that's the plan to reach the goal", "Warm-up 2–3 km easy + strides; fuel script exactly as rehearsed (breakfast 2 h out, water + salt, nibble from −10 min)", "The days after: recovery ladder — easy days, then a short test jog that must be pain-free during AND after"],
+    mistakes: ["Opening 10-15s/km too fast 'because it feels easy' — it always does with a bib on", "Racing the training days around it — the race replaces that day's session, including the long run", "Bolting extra km onto smashed legs afterwards to 'complete the volume' — recovery is the volume now"],
+    tags: ["race", "general"]
+  },
   rest: {
     why: "Adaptation happens in recovery, not in the session. A planned rest day is training.",
     how: ["Sleep is the best legal performance enhancer", "Eat properly — recovery days are not diet days", "Light walking is fine"],
@@ -2350,13 +2490,13 @@ const EXPLAIN = {
 };
 
 function tipsFor(day) {
-  const tags = (EXPLAIN[day.arch]?.tags) || [];
+  const tags = (EXPLAIN[day.exKey || day.arch]?.tags) || [];
   if (!KB?.tips) return [];
   return KB.tips.filter(t => t.tags.some(x => tags.includes(x))).slice(0, 3);
 }
 
 function openDayModal(day, week) {
-  const ex = EXPLAIN[day.arch] || EXPLAIN.rest;
+  const ex = EXPLAIN[day.exKey || day.arch] || EXPLAIN.rest;
   const tips = tipsFor(day);
   const m = $("#modal");
   m.innerHTML = `
@@ -2753,8 +2893,27 @@ function renderRace() {
         <div class="card"><div class="k">Current predicted time</div><div class="v">${pred ? fmtTime(pred.predictedS) : "–"}</div><div class="d">${pred ? `Riegel from ${fmtKm(pred.from.distanceKm)} km @ ${fmtPace(pred.from.paceSecPerKm)} (${pred.from.date})` : "Need a run ≥ 8 km"}</div></div>
         <div class="card"><div class="k">Goal</div><div class="v">${S.goal.targetTime}</div><div class="d">${fmtPace(gp)} average</div></div>
         <div class="card"><div class="k">Race-pace km, last 8 weeks</div><div class="v">${(() => { const now=new Date(); const rp=runs().filter(r => r.paceSecPerKm && Math.abs(r.paceSecPerKm - gp) <= 15 && (now - parseISO(r.date)) < 56*dayMs); return fmtKm(rp.reduce((s,r)=>s+r.distanceKm,0)); })()}<span class="unit"> km</span></div><div class="d">The Coach's audit: 'zero km at race pace = don't expect it on race day.' Target ≥10 km/week in the final 6 weeks.</div></div>
+        <div class="card"><div class="k">Total km logged</div><div class="v">${fmtKm(runs().reduce((s, r) => s + r.distanceKm, 0))}<span class="unit"> km</span></div><div class="d">${runs().length} runs synced · ${(() => { const ps = S.plan.planStartDate || "1970-01-01"; const tr = runs().filter(r => r.date >= ps); return `${fmtKm(tr.reduce((s, r) => s + r.distanceKm, 0))} km in ${tr.length} runs since the plan started`; })()}</div></div>
         <div class="card"><div class="k">Gap to close</div><div class="v" style="color:${gapS != null && gapS <= 0 ? "var(--good-text)" : "var(--text-primary)"}">${gapS == null ? "–" : (gapS <= 0 ? "On track ✓" : fmtTime(gapS))}</div><div class="d">${gapS != null && gapS > 0 ? `≈ ${Math.round(gapS / S.goal.distanceKm)}s/km of fitness to build` : ""}</div></div>
       </div>
+      <h2 style="margin-top:18px">Goal pace vs your registered paces</h2>
+      <div class="hint">Goal marathon pace is ${fmtPace(gp)}. Green = you have already run faster than goal pace at that duration; the rest is the gap the plan is closing.</div>
+      <table style="max-width:520px;margin-top:8px">
+        <thead><tr><th>Evidence</th><th class="num">Pace</th><th class="num">vs goal ${fmtPace(gp)}</th></tr></thead>
+        <tbody>${(() => {
+          const rows = [];
+          const b20 = runs().reduce((b, r) => r.best20minSecPerKm && (!b || r.best20minSecPerKm < b.p) ? { p: r.best20minSecPerKm, d: r.date } : b, null);
+          for (const e of bestEffortsAll()) if (e.timeS) rows.push([`Best ${e.label}`, e.paceSecPerKm]);
+          if (b20) rows.push(["Best 20 min (sustained)", b20.p]);
+          const last = runs().slice(-1)[0];
+          if (last && last.paceSecPerKm) rows.push([`Latest run (${last.name.length > 22 ? last.name.slice(0, 22) + "…" : last.name})`, last.paceSecPerKm]);
+          return rows.map(([lbl, p]) => {
+            const d = Math.round(p - gp);
+            const txt = d <= 0 ? `${Math.abs(d)}s/km faster ✓` : `${d}s/km slower`;
+            return `<tr><td>${lbl}</td><td class="num">${fmtPace(p)}</td><td class="num" style="color:${d <= 0 ? "var(--good-text)" : "var(--text-secondary)"}">${txt}</td></tr>`;
+          }).join("");
+        })()}</tbody>
+      </table>
       <h2 style="margin-top:18px">Your fastest — the evidence</h2>
       <div class="hint">Best efforts found inside your synced runs (contiguous lap windows, so warm-ups and traffic-light stops don't hide them). These anchor every prediction below — a new best here moves the whole curve.</div>
       <div class="cards" style="margin-top:8px">
@@ -2772,9 +2931,9 @@ function renderRace() {
       <ul style="margin:10px 0 0 18px;font-size:13.5px;color:var(--text-secondary);display:grid;gap:6px">
         <li><b style="color:var(--text-primary)">Volume before speed.</b> The single biggest lever from where you are: get to 40–55 km/week and hold it. The plan tab ramps you there.</li>
         <li><b style="color:var(--text-primary)">80% easy.</b> Most running in Z2 (${S.hrZones[1].minHr}–${S.hrZones[1].maxHr} bpm / ${fmtPace(S.paceZones[1].minSecPerKm)}–${fmtPace(S.paceZones[0].maxSecPerKm)}). Your Warsaw 15 km at HR 156 was a great effort — but that intensity every run blocks volume growth.</li>
-        <li><b style="color:var(--text-primary)">Long run is sacred.</b> One per week, building to 30–32 km. Marathon pace segments appear in the Peak phase.</li>
+        <li><b style="color:var(--text-primary)">Long run is sacred.</b> One per week, building to 30–32 km. Marathon pace segments appear in the Specific phase.</li>
         <li><b style="color:var(--text-primary)">Touch goal pace weekly from Build phase.</b> ${fmtPace(gp)} must feel boring by April.</li>
-        <li><b style="color:var(--text-primary)">Test races.</b> A 10K in autumn and a half marathon ~8 weeks out (target ≈ 1:52–1:55) will recalibrate every number here automatically.</li>
+        <li><b style="color:var(--text-primary)">Test races — scheduled.</b> Leopoldilauf Half 8 Nov (1:52–1:55) → Adventlauf 10k 6 Dec (49:30–51:00) → San Silvestre 10k 31 Dec (on effort) → Eisbärlauf Half 14 Feb (1:44–1:46 = green light for 3:30). Each one recalibrates every number on this page.</li>
       </ul>
       <h2 style="margin-top:18px">Goal splits (even pacing)</h2>
       <table style="max-width:420px;margin-top:8px">
