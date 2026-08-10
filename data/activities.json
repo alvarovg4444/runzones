@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-08-09T17:05:13Z",
+  "lastSync": "2026-08-10T18:30:04Z",
   "source": "intervals-icu-sync",
   "activities": [
     {
@@ -837,6 +837,58 @@
         "1k": 260,
         "5k": 1704,
         "10k": 3596
+      }
+    },
+    {
+      "id": "icu-i174467234",
+      "date": "2026-08-10",
+      "name": "Vienna - RZ Easy Run 6km",
+      "type": "run",
+      "distanceKm": 6.02,
+      "movingTimeS": 2418,
+      "elapsedTimeS": 2528,
+      "avgHr": 125,
+      "maxHr": 142,
+      "ascentM": 39,
+      "source": "intervals.icu",
+      "paceSecPerKm": 402,
+      "bestKmSecPerKm": 384,
+      "best20minSecPerKm": 399,
+      "laps": [
+        [
+          1001,
+          399,
+          110
+        ],
+        [
+          1001,
+          412,
+          122
+        ],
+        [
+          998,
+          401,
+          125
+        ],
+        [
+          1002,
+          385,
+          136
+        ],
+        [
+          999,
+          411,
+          127
+        ],
+        [
+          1000,
+          408,
+          130
+        ]
+      ],
+      "bestEfforts": {
+        "1k": 376,
+        "5k": 1998
       }
     }
   ]
