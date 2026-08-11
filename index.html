@@ -2271,6 +2271,32 @@ function buildWeekDays(w) {
   const ACT = "Before: 5-min activation (calf raises, lunges, leg swings)";
   const mpBand = `${fmtPace(gp + 10)}–${fmtPace(gp - 5)}`;
 
+  /* Maurten kit for long runs — computes exactly what to carry from distance,
+     estimated pace and the phase's g/h target. DM320 = 80 g / 500 ml, Gel 160 = 40 g. */
+  const maurtenKit = (km, lo, hi, paceSec) => {
+    const h = km * paceSec / 3600;
+    const total = ((lo + hi) / 2) * h;
+    const bottles = Math.max(1, Math.min(2, Math.floor(total / 80)));
+    const gels = Math.max(0, Math.round((total - bottles * 80) / 40));
+    const supply = bottles * 80 + gels * 40;
+    const gph = Math.round(supply / h);
+    const topUp = gph < lo ? ` — add 1 × Gel 100 (25 g) to reach ≈${Math.round((supply + 25) / h)} g/h` : "";
+    const mins = Math.round(h * 12) * 5;
+    const dur = `${Math.floor(mins / 60)}h${String(mins % 60).padStart(2, "0")}`;
+    const lines = [
+      `BRING (run ≈ ${dur}): ${bottles} × Maurten DM320 bottle (1 sachet + exactly 500 ml water each, shaken — nothing else in it)${gels ? ` + ${gels} × Gel 160` : ""} = ${supply} g → ≈${gph} g/h (phase target ${lo}–${hi})${topUp}`,
+      bottles === 1 && !gels
+        ? "Protocol: first sip at −10 min, then ~50 ml every 10 min — empty the bottle by the end"
+        : `Protocol: bottle #1 from −10 min, ~50 ml every 10 min${bottles > 1 ? "; bottle #2 for the second half" : ""}${gels ? `; Gel 160 nibbled in 3–4 small bites ${gels > 1 ? "— space them ~40 min apart" : "around halfway"}, never one swallow` : ""}`,
+    ];
+    if (h > 1.9) lines.push("Over ~2 h: carry a separate PLAIN water bottle too (drink to thirst, more in heat). A pinch of salt or squeeze of lemon in the WATER is fine — NEVER in the Maurten bottle, it breaks the hydrogel");
+    return lines;
+  };
+  const fuelPlanLong = (km, lo, hi, paceSec, extra) => {
+    const base = fuelPlan("");
+    return [base[0], ...maurtenKit(km, lo, hi, paceSec), ...(extra ? [extra] : []), base[2]];
+  };
+
   for (let d = 1; d <= 7; d++) {
     const dow = d % 7;
     const date = addDays(w.start, d - 1);
@@ -2332,7 +2358,7 @@ function buildWeekDays(w) {
           day.steps = [ACT,
             `${w.longKm} km @ ${paceRange(1)} (Z2, ${hrRange(1)}) — just banking time, pace irrelevant`,
             "Type 1 of 4: build the distance first; nothing sexy",
-            ...fuelPlan("40–50", "The gut is trainable and race day is not the day to find out — practice starts NOW")];
+            ...fuelPlanLong(w.longKm, 40, 50, 385, "The gut is trainable and race day is not the day to find out — practice starts NOW")];
         } else if (w.phase === "Build") {
           if (F.test) {
             day.arch = "race"; day.title = "TEST — half marathon race"; day.tag = "21.1 km";
@@ -2345,7 +2371,7 @@ function buildWeekDays(w) {
             day.steps = [ACT + " + prepare drinks like race morning",
               `${w.longKm} km @ MP + 15–20s (${fmtPace(gp + 20)}–${fmtPace(gp + 12)}) — a solid day, race intent`,
               "Imperfect route (hills, corners), NOT super shoes — 'why should this day be easy?'",
-              ...fuelPlan("50–60")];
+              ...fuelPlanLong(w.longKm, 50, 60, 320)];
           }
         } else if (w.phase === "Specific") {
           if (F.specIdx % 2 === 0) {
@@ -2354,14 +2380,14 @@ function buildWeekDays(w) {
               `Start @ MP + 1:15/km, step down every 5 km`,
               `Final 4–5 km AT race pace ${fmtPace(gp)}${F.ugly ? " — UGLY ZONE: keep going 2 km past where you want to stop" : ""}`,
               "Don't stare at the watch mid-run — check each 2 km, feel the rest",
-              ...fuelPlan("60–80", "Dress rehearsal: exact race products, exact race timing")];
+              ...fuelPlanLong(w.longKm, 60, 80, 350, "Dress rehearsal: exact race products, exact race timing")];
           } else {
             day.arch = "long"; day.title = "Long run — race-pace reps"; day.tag = `${w.longKm} km`;
             day.steps = [ACT,
               `First half steady (${fmtPace(pz(2).maxSecPerKm + 15)})`,
               `Second half: 4×2 km @ ${fmtPace(gp)} with 1 km float${F.ugly ? " — UGLY ZONE week: last rep 3 km" : ""}`,
               "These km count toward the ≥10 km/week at race pace target",
-              ...fuelPlan("60–80", "Dress rehearsal: exact race products, exact race timing")];
+              ...fuelPlanLong(w.longKm, 60, 80, 350, "Dress rehearsal: exact race products, exact race timing")];
           }
         } else { // Taper — Scullion hybrid: Sunday stays a real long run, shrinking, not vanishing
           day.arch = "long"; day.title = "Long run — taper"; day.tag = `${w.longKm} km`;
@@ -2369,12 +2395,12 @@ function buildWeekDays(w) {
             day.steps = [ACT,
               `${w.longKm} km mostly Z2 — middle 4–5 km @ ${fmtPace(gp)} (last proper MP block before the race)`,
               "The Coach: don't let the body switch off — this closes the long-run gap to 2 weeks, not 4",
-              "Fuel exactly like race day: nibble 8–10 g at −10 min, then every 10 min, race products only — 60–80 g/h"];
+              ...maurtenKit(w.longKm, 60, 80, 370)];
           } else if (w.weeksToGo === 2) {
             day.steps = [ACT,
               `${w.longKm} km relaxed Z2 — final 3 km @ ${fmtPace(gp)}, nothing more`,
               "Keep the Sunday rhythm and the fueling routine; lose the fatigue",
-              "Fuel exactly like race day: nibble 8–10 g at −10 min, then every 10 min — 60–80 g/h"];
+              ...maurtenKit(w.longKm, 60, 80, 370)];
           } else {
             day.steps = [
               `${w.longKm} km fully relaxed Z2 — race is in 7 days, this is rhythm only`,
