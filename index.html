@@ -253,6 +253,7 @@
   <section class="tab" id="tab-sessions"></section>
   <section class="tab" id="tab-plan"></section>
   <section class="tab" id="tab-race"></section>
+  <section class="tab" id="tab-fuel"></section>
   <section class="tab" id="tab-coach"></section>
   <section class="tab" id="tab-zones"></section>
 </main>
@@ -2688,11 +2689,11 @@ window.__ckDismiss = () => { const s = checkpointSuggestion(); if (s) { try { lo
 
 function renderAll() {
   __planIdx = null;
-  renderDashboard(); renderCalendar(); renderFitness(); renderSessions(); renderPlan(); renderRace(); renderCoach(); renderZones();
+  renderDashboard(); renderCalendar(); renderFitness(); renderSessions(); renderPlan(); renderRace(); renderFuel(); renderCoach(); renderZones();
 }
 
 /* ---------- rendering ---------- */
-const TABS = [["dashboard", "Dashboard"], ["calendar", "Calendar"], ["fitness", "Fitness profile"], ["sessions", "Sessions"], ["plan", "Plan"], ["race", "Race recipe"], ["coach", "Coach"], ["zones", "Zones"]];
+const TABS = [["dashboard", "Dashboard"], ["calendar", "Calendar"], ["fitness", "Fitness profile"], ["sessions", "Sessions"], ["plan", "Plan"], ["race", "Race recipe"], ["fuel", "Fuel"], ["coach", "Coach"], ["zones", "Zones"]];
 
 function renderNav() {
   const nav = $("#nav");
@@ -2955,6 +2956,97 @@ function renderRace() {
     </div>`;
 }
 
+function renderFuel() {
+  const el = $("#tab-fuel");
+  const fuelSrc = (KB.sources || []).find(s => s.id === "fuel");
+  const aid = [
+    ["3.9", "Water refill"], ["4.8", "Water + Powerade"], ["7.4", "Water refill"], ["9.5", "Water + Powerade"],
+    ["10.5", "Water refill"], ["11.7", "Water refill"], ["12.5", "Water refill"], ["13.1", "Water refill"],
+    ["15.0", "Water + Powerade + banana"], ["17.8", "Water refill"], ["19.6", "Water + Powerade + banana — Bottle #2"],
+    ["21.8", "Water refill"], ["24.8", "Water + Powerade + banana"], ["26.1", "Water refill"], ["27.2", "Water refill"],
+    ["28.5", "Water refill"], ["29.4", "Water + Powerade + banana"], ["31.4", "Water"], ["33.5", "ESN Hydro Energy Gel point (2026)"],
+    ["34.0", "Water + Powerade + banana + cola"], ["37.7", "Water refill"], ["38.6", "Water"],
+    ["39.6", "Water + Powerade + banana + cola"], ["40.8", "Water refill"],
+  ];
+  el.innerHTML = `
+    <div class="panel">
+      <h2>Fuel — Vienna race plan vs The Coach's nibble protocol</h2>
+      <div class="hint">Your Maurten-first race plan (same totals and products as always) re-checked against The Coach's dedicated fueling video. Nothing about the carb total changed — only how each gel is taken, plus a training-week layer the race-day plan didn't have before.</div>
+      <div class="cards" style="margin-top:8px">
+        <div class="card"><div class="k">Race carb target</div><div class="v">~92<span class="unit"> g/h</span></div><div class="d">345 g in-race + 25 g pre-start, banked ${S.goal.bankTime || "3:45:00"} scenario. The Coach trains toward a 60–80 g/h baseline and flags 100–120 g/h as a newer extreme — 92 is reasonable but conditional on Stage 4 gut training actually feeling easy.</div></div>
+        <div class="card"><div class="k">Technique</div><div class="v">Nibble, not bolus</div><div class="d">3–4 small bites over ~2–3 min per gel — never one swallow. Slamming a full gel spikes insulin and dumps glucose; the bottle's 50 ml sips already do this right.</div></div>
+        <div class="card"><div class="k">Pre-run electrolytes</div><div class="v">Water + salt only</div><div class="d">No flavoured/sugary electrolyte tabs in the 2 h before the gun — same glucose-control logic as the eat-2h-before-or-nothing rule.</div></div>
+        <div class="card"><div class="k">Post-session refuel</div><div class="v">≤ 20 min</div><div class="d">Non-negotiable, every hard session, all year — not just race day.</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Race-day execution — nibble-adjusted</h2>
+      <div class="hint">Same KM points and products as the plan. The only change: don't squeeze a whole gel down in one go — open it and take it in 3–4 small bites over ~2–3 minutes. The bottle's ~50 ml every ~2 km is already close to the nibble cadence, so it's unchanged.</div>
+      <table>
+        <thead><tr><th>When</th><th>Action</th><th class="num">Carbs</th><th>Execution note</th></tr></thead>
+        <tbody>
+          <tr><td>−10 min → gun</td><td>Maurten Gel 100</td><td class="num">25 g</td><td>Nibble from −10 min through the warm-up/strides — fine to still be finishing it as the gun goes.</td></tr>
+          <tr><td>Start → KM 19.6</td><td>Bottle #1 · Drink Mix 320</td><td class="num">80 g</td><td>~50 ml at KM 1,3,5,7,9,11,13,15,17,19 — unchanged, already nibble-paced.</td></tr>
+          <tr><td>KM 8</td><td>Maurten Gel 160</td><td class="num">40 g</td><td>3–4 bites over ~2–3 min around KM 8, not one swallow.</td></tr>
+          <tr><td>KM 16</td><td>Maurten Gel 160</td><td class="num">40 g</td><td>Same nibble technique.</td></tr>
+          <tr><td>KM 19.6</td><td>Pick up Bottle #2 · Drink Mix 320</td><td class="num">80 g</td><td>Self-catering — label BIB + SURNAME + "KM 19.6 – MAURTEN 320". Can't be guaranteed found — carry an emergency gel.</td></tr>
+          <tr><td>KM 21 → 39</td><td>Bottle #2</td><td class="num">incl. above</td><td>~50 ml at KM 21,23,25,27,29,31,33,35,37,39 — unchanged.</td></tr>
+          <tr><td>KM 26</td><td>Maurten Gel 160</td><td class="num">40 g</td><td>Nibble technique.</td></tr>
+          <tr><td>KM 34</td><td>Maurten Gel 160</td><td class="num">40 g</td><td>Nibble technique — keeps carbs steady before the hard final 8 km.</td></tr>
+          <tr><td>KM 40</td><td>Maurten Gel 100</td><td class="num">25 g</td><td>Nibble if consistent, but forgiving either way — ~2.5 km to the line. Skip/partial if Powerade-fuelled already.</td></tr>
+        </tbody>
+      </table>
+      <div class="note">Fallback if 90 g/h hasn't felt fully comfortable in a 2h+ rehearsal by race week: swap the KM 26 and KM 34 Gel 160s for Gel 100s (saves 15 g each) → ~75–80 g/h, squarely inside The Coach's stated comfort range, same nibble technique, same KM rhythm.</div>
+    </div>
+
+    <div class="panel">
+      <h2>Fuel the training week, not just race day</h2>
+      <div class="hint">Most "bad session, must not be fit enough" days are under-fuelling — the day before, the pre-session window, or skipping the post-session refuel. This applies every week, not only race week.</div>
+      <ul style="margin:10px 0 0 18px;font-size:13.5px;color:var(--text-secondary);display:grid;gap:6px">
+        <li><b style="color:var(--text-primary)">Post-session refuel is non-negotiable.</b> Real carbs + protein within ~20 minutes of anything steady or harder — don't let a busy afternoon turn into "I'll eat properly later."</li>
+        <li><b style="color:var(--text-primary)">The night/day before a hard session matters.</b> If a quality session is Tuesday, Monday afternoon and evening should include a deliberately carb-forward meal — a weekly habit, separate from race-week carb-loading.</li>
+        <li><b style="color:var(--text-primary)">Pre-session eating has a dead zone.</b> Eat a real meal ~2 h before if you can. If you can't, eat nothing in the gap and instead nibble a gel from ~10 min before, through the warm-up — the danger zone is eating 20 min–2 h out, which is when exercise-induced hypoglycemia hits hardest.</li>
+        <li><b style="color:var(--text-primary)">Which sessions need fuel during the run.</b> Easy runs under ~45–60 min generally don't need a gel. Once you're at Steady and especially Threshold/VO2/Rep pace, or any run past ~1h40, fuel during the session with the same nibble technique — building toward the same rate you'll use on race day.</li>
+        <li><b style="color:var(--text-primary)">Consistency over the week beats a "perfect" race-day plan.</b> No amount of gel-precision on race day fixes a week that ran on empty.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2>Vienna aid stations — quick reference</h2>
+      <div class="hint">Current published VCM pattern. Positions are the 2026 layout — VCM says 2027 may shift slightly, re-check before race week.</div>
+      <table>
+        <thead><tr><th class="num">KM</th><th>Provision</th></tr></thead>
+        <tbody>${aid.map(([km, prov]) => `<tr${km === "19.6" ? ' style="font-weight:600"' : ""}><td class="num">${km}</td><td>${prov}</td></tr>`).join("")}</tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Shopping list &amp; mixing rules</h2>
+      <div class="cards" style="margin-top:8px">
+        <div class="card"><div class="k">Buy</div><div class="v" style="font-size:15px">Drink Mix 320</div><div class="d">Main fuel — best €/g carbs of the Maurten range</div></div>
+        <div class="card"><div class="k">Buy</div><div class="v" style="font-size:15px">Gel 160</div><div class="d">Main gel — better value and fewer packets than Gel 100</div></div>
+        <div class="card"><div class="k">Buy a few</div><div class="v" style="font-size:15px">Gel 100</div><div class="d">Pre-start, final top-up, emergency backup</div></div>
+      </div>
+      <div class="hint" style="margin-top:2px">Mix: 1 sachet Drink Mix 320 + exactly 500 ml water, shaken until fully dissolved. Can be pre-mixed up to ~24 h ahead, kept cool. Take salt capsules with plain water — never dissolved into the Maurten bottle; changing the formulation can interfere with the hydrogel.</div>
+    </div>
+
+    <div class="panel">
+      <h2>Principles</h2>
+      <ol style="margin:10px 0 0 18px;font-size:13.5px;color:var(--text-secondary);display:grid;gap:6px">
+        <li>Same totals as always: ~92 g/h in-race, 345 g total, Drink Mix 320 + Gel 160 + Gel 100 — no product changes.</li>
+        <li>Nibble every gel in 3–4 small bites over ~2–3 minutes — never swallow a whole gel in one go, race day or training.</li>
+        <li>Fuel the training week: post-session refuel within 20 minutes is non-negotiable; carb-forward meal the evening before any hard session two days out.</li>
+        <li>Pre-session/pre-race eating has a dead zone: real meal ~2 h before, or nothing + nibble from −10 min. Avoid the 20 min–2 h middle ground.</li>
+        <li>No flavoured electrolyte tablets in the 2 h pre-run window — plain water (+ a pinch of salt if needed) only, before the gun.</li>
+        <li>Confirm Stage 4 (90 g/h) comfort in a real 2h+ rehearsal before race week; the Gel 160 → Gel 100 swap at KM 26/34 is the built-in fallback to ~75–80 g/h.</li>
+        <li>If Bottle #2 goes missing: gels + course water/Powerade, same nibble technique, same targets.</li>
+        <li>Re-check the final 2027 VCM aid-station positions before race week.</li>
+      </ol>
+      ${fuelSrc ? `<div class="note" style="margin-top:14px">Source: <a href="${fuelSrc.url}" target="_blank" rel="noopener" style="color:var(--muted)">${fuelSrc.title}</a> — Stephen Scullion, read via transcript. Race: Vienna City Marathon, ${S.goal.raceDate || "18 Apr 2027"}.</div>` : ""}
+    </div>`;
+}
+
 let CAL = []; // [{week, days}] for modal lookups
 
 function renderCalendar() {
@@ -3182,6 +3274,7 @@ async function boot() {
   renderSessions();
   renderPlan();
   renderRace();
+  renderFuel();
   renderCoach();
   renderZones();
   activate("dashboard");
