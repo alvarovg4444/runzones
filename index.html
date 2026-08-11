@@ -2262,7 +2262,7 @@ function buildWeekDays(w) {
   const longDay = S.schedule?.longRunDay ?? 0;
   const easyEach = w.easyEach ?? Math.max(4, Math.round((w.km - w.longKm) / 3));
   const F = w.flags || {};
-  const FUEL = "Fuel: nibble ~10g carbs every 10 min, starting 10 min before";
+  const FUEL = "CARRY: 1 × Gel 160 + water bottle — nibble ⅓ at −10 min, rest in small bites every ~10 min through the session (never a whole gel at once)";
   const fuelPlan = (gPerH, extra) => [
     "Fuel BEFORE — day before: carb meals ~15:00 AND ~18:00 (white rice, clean carbs). Morning: breakfast 2 h out (oats/toast + banana), then ONLY water + a pinch of salt. Nothing solid in the final 2 h, no sugary drinks",
     `Fuel DURING — minute −10 (before you press start): first nibble ≈ 8–10 g = ⅓ gel / 2 chews / 3 gummy bears. Then 8–10 g EVERY 10 min from minute 10 (10, 20, 30…) to the end = ${gPerH} g/h. Sip water with every nibble. NEVER a whole gel at once — the insulin spike dumps your glucose${extra ? ". " + extra : ""}`,
@@ -2289,7 +2289,7 @@ function buildWeekDays(w) {
         ? "Protocol: first sip at −10 min, then ~50 ml every 10 min — empty the bottle by the end"
         : `Protocol: bottle #1 from −10 min, ~50 ml every 10 min${bottles > 1 ? "; bottle #2 for the second half" : ""}${gels ? `; Gel 160 nibbled in 3–4 small bites ${gels > 1 ? "— space them ~40 min apart" : "around halfway"}, never one swallow` : ""}`,
     ];
-    if (h > 1.9) lines.push("Over ~2 h: carry a separate PLAIN water bottle too (drink to thirst, more in heat). A pinch of salt or squeeze of lemon in the WATER is fine — NEVER in the Maurten bottle, it breaks the hydrogel");
+    if (h > 1.9) lines.push(`Over ~2 h: carry a separate PLAIN water bottle too. Total fluid target ≈ 400–800 ml/h (the Maurten bottles count toward it) — drink to thirst, more in heat, never force it. A pinch of salt (~0.5 g per 500 ml) or squeeze of lemon in the WATER is fine — NEVER in the Maurten bottle, it breaks the hydrogel`);
     return lines;
   };
   const fuelPlanLong = (km, lo, hi, paceSec, extra) => {
@@ -2424,13 +2424,13 @@ function buildWeekDays(w) {
             day.arch = "vo2"; day.title = "VO2 injection"; day.tag = `≈${easyEach + 4} km`;
             day.steps = [ACT, "Warm-up: 3 km easy + strides",
               `Pick one: 5×3 min @ ${paceRange(4)} / 10×400m / 10×60s uphill — vary it (3-min jog recoveries)`,
-              "Inject the meat, then settle back into base for ~10 days", "Cool-down: 1–2 km jog"];
+              "Inject the meat, then settle back into base for ~10 days", FUEL, "Cool-down: 1–2 km jog"];
           } else {
             day.arch = "threshold"; day.title = "Threshold foundations"; day.tag = `≈${easyEach + 4} km`;
             day.steps = [ACT, "Warm-up: 3 km easy + strides",
               `3×10 min @ bottom of threshold ${fmtPace(pz(3).maxSecPerKm)}, 2 min jog between`,
               "3–4 word conversation test — if you can't, you're over threshold",
-              "Cool-down: 1–2 km jog"];
+              FUEL, "Cool-down: 1–2 km jog"];
           }
         } else if (w.phase === "Build") {
           day.arch = "threshold"; day.title = "Threshold + secret finisher"; day.tag = `≈${easyEach + 5} km`;
@@ -2471,13 +2471,15 @@ function buildWeekDays(w) {
             `Main: ${easyEach} km steady @ ${fmtPace(pz(2).maxSecPerKm + 15)}–${fmtPace(pz(2).maxSecPerKm - 5)} (or 2×20 min, 5 min easy between)`,
             "Coach's mindset: 'today I work' — no stops, hold the pace",
             "3–4 word conversation test; watch HR drift (>10 beats at fixed pace = start easier)",
-            "Warm-up / cool-down: 1 km easy at each end (that's the extra 2 km in the total)"];
+            "Warm-up / cool-down: 1 km easy at each end (that's the extra 2 km in the total)",
+            "CARRY: 1 × Gel 160 + water — The Coach fuels steady days ('get in and get out with the least cost possible'): nibble from −10 min"];
         }
       } else {
         day.arch = "easy"; day.title = "Easy run"; day.tag = `${easyEach} km`;
         day.steps = [ACT,
           `${easyEach} km @ ${paceRange(1)} (Z2, ${hrRange(1)})`,
           "Luxury run: conversational, zero pressure — if in doubt, slower",
+          "CARRY: nothing — easy runs under ~60 min need no fuel (water only if hot)",
           "Finish with 6×20s strides, full recovery walks"];
       }
     } else if (gymDays[String(dow)]) {
@@ -3106,11 +3108,23 @@ function renderFuel() {
     <div class="panel">
       <h2>Shopping list &amp; mixing rules</h2>
       <div class="cards" style="margin-top:8px">
-        <div class="card"><div class="k">Buy</div><div class="v" style="font-size:15px">Drink Mix 320</div><div class="d">Main fuel — best €/g carbs of the Maurten range</div></div>
-        <div class="card"><div class="k">Buy</div><div class="v" style="font-size:15px">Gel 160</div><div class="d">Main gel — better value and fewer packets than Gel 100</div></div>
+        <div class="card"><div class="k">Buy</div><div class="v" style="font-size:15px">Drink Mix 320</div><div class="d">Main fuel — best €/g carbs of the Maurten range (~€4.30/100 g)</div></div>
+        <div class="card"><div class="k">Buy</div><div class="v" style="font-size:15px">Gel 160</div><div class="d">Main gel — better value and fewer packets than Gel 100 (~€11.50/100 g)</div></div>
         <div class="card"><div class="k">Buy a few</div><div class="v" style="font-size:15px">Gel 100</div><div class="d">Pre-start, final top-up, emergency backup</div></div>
+        <div class="card"><div class="k">Later (~Dec)</div><div class="v" style="font-size:15px">Gel Mix 480</div><div class="d">120 g in one 350 ml soft flask (mix with 200 ml water) — ~€6.50/100 g, between drink mix and gels</div></div>
       </div>
       <div class="hint" style="margin-top:2px">Mix: 1 sachet Drink Mix 320 + exactly 500 ml water, shaken until fully dissolved. Can be pre-mixed up to ~24 h ahead, kept cool. Take salt capsules with plain water — never dissolved into the Maurten bottle; changing the formulation can interfere with the hydrogel.</div>
+      <div class="hint" style="margin-top:8px"><b>Gel Mix 480 — when it earns its place:</b> once long runs cross ~2.5 h (Build/Specific, around December) the kit becomes "2 bottles + gel" = a full litre to carry. Swapping bottle #2 for one Gel Mix flask gives 1 bottle (80 g) + 1 flask (120 g) = 200 g in far less bulk — needs the HydraPak 350 ml flask and plain water alongside (it's concentrated, not a hydration drink). Bonus: a practiced flask is a self-carried race-day plan B if the KM 19.6 self-catering bottle is never found. If carrying two bottles doesn't bother you, skip it — DM320 stays the best value. <b>Caffeine versions (DM320 CAF 100, Gel 100 CAF 100):</b> not for training — decide the race caffeine strategy around February and test it in the Specific-phase dress rehearsals only.</div>
+    </div>
+
+    <div class="panel">
+      <h2>Water, salt, lemon — hydration rules</h2>
+      <div class="hint">The Maurten bottles are the carb schedule; the plain-water bottle is the hydration. Keeping them separate lets you drink more without overshooting carbs.</div>
+      <ul style="margin:10px 0 0 18px;font-size:13.5px;color:var(--text-secondary);display:grid;gap:6px">
+        <li><b style="color:var(--text-primary)">How much water per hour:</b> sweat rates vary hugely (0.5–1.5+ L/h), so the honest answer is thirst-led with guardrails — total fluid ≈ 400–800 ml/h (Maurten bottles count toward it): lower end in cool weather, upper end in heat. Under ~75 min you barely need any. Never force drinking to hit a number — on 3 h+ efforts, OVER-drinking plain water is the dangerous direction (hyponatremia), not slight under-drinking. Personalize with the sweat test: weigh naked before/after a 1 h run; each kg lost ≈ 1 L/h sweat rate.</li>
+        <li><b style="color:var(--text-primary)">Salt in the water — real physiological job:</b> replaces the sodium leaving in sweat, keeps blood sodium stable when you drink a lot (the anti-hyponatremia margin), helps the gut absorb and the body retain the fluid, and maintains a normal thirst signal. Starting dose: a pinch ≈ 0.5 g salt (~200 mg sodium) per 500 ml on runs over ~2 h; visible salt crust on cap/skin = heavy salty sweater = lean higher. Salt alone doesn't hydrate — it makes the water you drink work better. Fine-tune only after the sweat-rate test; NEVER in the Maurten bottle.</li>
+        <li><b style="color:var(--text-primary)">Lemon in the water — taste, nothing more:</b> a squeeze adds ~1 g carbs, no electrolytes, no performance effect. Its real value is palatability: flavoured water gets drunk, plain water gets forgotten — and the sour cuts through the sweetness fatigue of carb fuel late in long runs. Harmless and useful if it makes you drink; just keep it out of the Maurten bottle like everything else.</li>
+      </ul>
     </div>
 
     <div class="panel">
