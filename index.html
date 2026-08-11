@@ -2276,6 +2276,7 @@ function buildWeekDays(w) {
     const date = addDays(w.start, d - 1);
     const day = { date, dow, kind: "rest", arch: "rest", title: "Rest", steps: [], tag: "" };
 
+    const ov = (S.overrides || []).find(o => o.date === localKey(date)); // one-off week adaptations (injury, travel…)
     const raceInfo = (S.races || []).find(r => r.date === localKey(date));
     const nearRace = (S.races || []).find(r => { const t = parseISO(r.date) - date; return t > 0 && t <= 3.6 * dayMs; });
     const raceAhead = (S.races || []).find(r => { const t = parseISO(r.date) - date; return t > 0 && t <= 6.5 * dayMs; });
@@ -2286,7 +2287,14 @@ function buildWeekDays(w) {
         "Finish with 4×20s strides at race rhythm, full walk recoveries",
         "Nothing hard this close to a race: you can't gain fitness in 3 days, only lose freshness"];
     };
-    if (raceInfo && !w.isRace) {
+    if (ov && !ov.append) {
+      // Full-day override from settings.json — replaces the generated session.
+      day.kind = ov.kind || "run";
+      day.arch = ov.arch || (ov.kind === "gym" ? "gym" : ov.kind === "rest" ? "rest" : "easy");
+      day.title = ov.title || "Adapted day"; day.tag = ov.tag || "";
+      day.steps = (ov.gym ? (GYM_TEMPLATES[ov.gym] || []).slice() : []).concat(ov.steps || []);
+      if (ov.exKey) day.exKey = ov.exKey;
+    } else if (raceInfo && !w.isRace) {
       day.kind = "race"; day.arch = "race"; day.exKey = "tune";
       day.title = raceInfo.title; day.tag = raceInfo.tag;
       day.steps = raceInfo.steps.slice();
@@ -2467,6 +2475,7 @@ function buildWeekDays(w) {
       }
     }
     if (day.arch === "long" && afterRace) day.steps.push(`Days after ${afterRace.name}: genuinely easy today, cut it short if anything aches — recovery ladder rules`);
+    if (ov && ov.append) day.steps.push(...ov.append); // append-mode override: keep the generated session, add notes
     day.target = day.raceTarget || dayTarget(day, w, gp);
     days.push(day);
   }
