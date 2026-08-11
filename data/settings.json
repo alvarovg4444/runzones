@@ -208,5 +208,79 @@
     "evalAs": "sustained"
    }
   }
+ ],
+ "overrides": [
+  {
+   "date": "2026-08-11",
+   "kind": "gym",
+   "gym": "Chest",
+   "title": "Gym — Chest (moved: shin recovery)",
+   "tag": "45–60 min",
+   "steps": [
+    "Chest pulled forward from Saturday — zero leg involvement, shins get day 1 of full impact rest",
+    "Biking is fine (impact-free); skip anything that twinges",
+    "Post-gym: protein within 20 min"
+   ]
+  },
+  {
+   "date": "2026-08-12",
+   "kind": "gym",
+   "title": "Gym — Legs (shin-safe)",
+   "tag": "45–60 min",
+   "steps": [
+    "Squats 4×8 (or goblet squats)",
+    "Romanian deadlift 3×10",
+    "Walking lunges 3×12/leg",
+    "Single-leg glute bridge 3×10/leg",
+    "Plank 3×45s",
+    "NO calf raises, NO jumping this week (shins) — squats, RDLs, bridges, hips are all fine",
+    "Day 2 of zero impact — this 48h window is what breaks the shin-pain cycle",
+    "Post-gym: protein within 20 min"
+   ]
+  },
+  {
+   "date": "2026-08-13",
+   "kind": "run",
+   "arch": "threshold",
+   "title": "Threshold (moved from Tue) — PAIN TEST FIRST",
+   "tag": "≈10 km",
+   "steps": [
+    "GATE before running: pain-free walk ✓ + pain-free single-leg hops on the sore leg + no sharp pain pressing along the shin. Fail ANY → easy 6–8 km max and the threshold is skipped this week, not rescheduled",
+    "Warm-up: 3 km easy + strides",
+    "3×10 min @ bottom of threshold 5:25, 2 min jog between — soft surface where possible",
+    "Warm-up ache that fades = OK. Pain that grows during a rep = stop the session, jog home easy",
+    "Fuel: nibble ~10g carbs every 10 min, starting 10 min before",
+    "Cool-down: 1–2 km jog"
+   ]
+  },
+  {
+   "date": "2026-08-14",
+   "kind": "run",
+   "arch": "easy",
+   "title": "Easy run + Back gym",
+   "tag": "5–6 km",
+   "steps": [
+    "5–6 km easy Z2 (6:00–6:55) — this is Thursday's displaced volume, only if Thursday was pain-free",
+    "Then Back gym as planned: pull-ups/rows/face pulls — no leg cost",
+    "Any shin pain on this easy run → stop, and Sunday's long run is off the table"
+   ]
+  },
+  {
+   "date": "2026-08-15",
+   "kind": "rest",
+   "title": "Rest — freshness for the long run",
+   "tag": "",
+   "steps": [
+    "Full rest day (Chest already done Tuesday) — walk or easy bike is fine",
+    "The original week had no rest day before the long run; this one does. That is the freshness win"
+   ]
+  },
+  {
+   "date": "2026-08-16",
+   "append": [
+    "SHIN GATE: only run this if Thu + Fri were pain-free. Warm-up ache that fades is OK; pain that grows = stop and walk home",
+    "Soft surface where possible. If in doubt, skip — 36 weeks out, one long run costs nothing; a stress reaction costs six"
+   ]
+  }
  ]
 }
