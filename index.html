@@ -2149,7 +2149,10 @@ function buildPlan() {
     if (isRace) {
       phase = "Race week"; km = Math.round(p.peakWeeklyKm * 0.3);
     } else if (weeksToGo <= TAPER) {
-      phase = "Taper"; km = Math.round(p.peakWeeklyKm * [0.35, 0.5, 0.7][weeksToGo - 1]);
+      // Scullion hybrid taper: at ~60 km/wk a hard volume taper makes no sense — keep volume
+      // honest (0.8/0.65/0.5 of peak, was 0.7/0.5/0.35), keep frequency, trim intensity;
+      // the real cut is only the final ~3 days (race week).
+      phase = "Taper"; km = Math.round(p.peakWeeklyKm * [0.5, 0.65, 0.8][weeksToGo - 1]);
     } else if (weeksToGo <= TAPER + SPEC) {
       phase = "Specific";
       km = Math.round(p.peakWeeklyKm * ((i + 1) % p.cutbackEvery === 0 ? 0.72 : 1));
@@ -2173,7 +2176,11 @@ function buildPlan() {
     }
 
     const longKm = isRace ? S.goal.distanceKm
-      : Math.round(clamp(km * 0.48, 12, p.longRunPeakKm) * (phase === "Taper" ? 0.7 : 1));
+      : phase === "Taper"
+        // Taper Sundays stay meaningful (~72/55/36% of peak long run ≈ 23/18/12 km at 32):
+        // closes the "a month without a long run" gap while still shedding fatigue.
+        ? Math.round(p.longRunPeakKm * [0.36, 0.55, 0.72][weeksToGo - 1])
+        : Math.round(clamp(km * 0.48, 12, p.longRunPeakKm));
     const runsN = 4;
     const easyEach = Math.max(4, Math.round((km - longKm) / 3));
 
@@ -2182,7 +2189,8 @@ function buildPlan() {
     if (isRace) {
       sessions.push({ key: true, txt: `RACE DAY — ${S.goal.raceName}: ${S.goal.targetTime} target (${fmtPace(gp)}), bank ${S.goal.bankTime}` });
     } else if (phase === "Taper") {
-      sessions.push({ key: true, txt: `MP touch mid-week, everything else short + easy — save the big day` });
+      sessions.push({ key: true, txt: `Hybrid taper (The Coach): keep frequency + honest volume, trim intensity — the real cut is only the final 3 days` });
+      sessions.push({ txt: `MP touch Tue · strides + pogos to hold muscle tension · Sunday stays a real (smaller) long run` });
     } else if (phase === "Specific") {
       sessions.push({ key: true, txt: `${flags.ugly ? "UGLY-ZONE week: " : ""}Alternating tempo Tue · big MP session Thu · long run with race-pace work Sun` });
       sessions.push({ txt: `Target: ≥10 km at race pace (${fmtPace(gp + 12)}–${fmtPace(gp - 8)}) across the week` });
@@ -2291,6 +2299,22 @@ function buildWeekDays(w) {
         "Nibble 8–10 g every 10 min, exactly like every long run since autumn",
         `30–42 km: the part you rehearsed in the ugly-zone days`,
         `Target ${S.goal.targetTime} · bank ${S.goal.bankTime} · floor sub-4`];
+    } else if (w.isRace && runDays.includes(dow)) {
+      // Race week = the REAL taper (The Coach): short runs, but stay switched ON —
+      // drills/strides keep muscle tension; the harsh cut is only these final days.
+      day.kind = "run"; day.arch = "easy";
+      if (dow === 2) {
+        day.title = "Race week — easy + strides"; day.tag = "5 km";
+        day.steps = ["5 km easy Z2", "Drills + 6×20s strides at race rhythm — keep the legs elastic",
+          "The Coach: don't switch off race week — if anything, switch ON. You're about to go into battle"];
+      } else if (dow === 4) {
+        day.title = "Race week — sharpen"; day.tag = "4 km";
+        day.steps = ["4 km very easy", "4×20s strides + 2×10 pogo hops — tension, not fitness",
+          "The harsh cut starts now: nothing that costs anything from here"];
+      } else {
+        day.title = "Race week — short easy"; day.tag = "5 km";
+        day.steps = ["5 km easy Z2, nothing more", "Hydrate, big carb meals start Thursday"];
+      }
     } else if (runDays.includes(dow) && !w.isRace) {
       day.kind = "run";
       if (dow === longDay) {
@@ -2331,11 +2355,24 @@ function buildWeekDays(w) {
               "These km count toward the ≥10 km/week at race pace target",
               ...fuelPlan("60–80", "Dress rehearsal: exact race products, exact race timing")];
           }
-        } else { // Taper
+        } else { // Taper — Scullion hybrid: Sunday stays a real long run, shrinking, not vanishing
           day.arch = "long"; day.title = "Long run — taper"; day.tag = `${w.longKm} km`;
-          day.steps = [`${w.longKm} km relaxed Z2 — keep the Sunday rhythm, lose the fatigue`,
-            "Fuel exactly like race day: nibble 8–10 g at −10 min, then every 10 min, race products only — 60–80 g/h",
-            "Legs should feel better every week now"];
+          if (w.weeksToGo === 3) {
+            day.steps = [ACT,
+              `${w.longKm} km mostly Z2 — middle 4–5 km @ ${fmtPace(gp)} (last proper MP block before the race)`,
+              "The Coach: don't let the body switch off — this closes the long-run gap to 2 weeks, not 4",
+              "Fuel exactly like race day: nibble 8–10 g at −10 min, then every 10 min, race products only — 60–80 g/h"];
+          } else if (w.weeksToGo === 2) {
+            day.steps = [ACT,
+              `${w.longKm} km relaxed Z2 — final 3 km @ ${fmtPace(gp)}, nothing more`,
+              "Keep the Sunday rhythm and the fueling routine; lose the fatigue",
+              "Fuel exactly like race day: nibble 8–10 g at −10 min, then every 10 min — 60–80 g/h"];
+          } else {
+            day.steps = [
+              `${w.longKm} km fully relaxed Z2 — race is in 7 days, this is rhythm only`,
+              "Finish with 4×20s strides at race rhythm — keep the pop, don't chase fitness",
+              "Practice the exact race-morning routine: breakfast −2 h, water + salt, first nibble at −10 min"];
+          }
         }
       } else if (dow === 2) {
         // ---- Tuesday: quality slot ----
@@ -2390,8 +2427,10 @@ function buildWeekDays(w) {
             F.ugly ? "This one should reach the place where you want to stop — that's the training" : "Controlled discomfort, not racing — HR guide only for the first half",
             "Counts toward ≥10 km/week at race pace", FUEL, "Cool-down 1 km"];
         } else if (w.phase === "Taper") {
-          day.arch = "easy"; day.title = "Short easy run"; day.tag = `${Math.max(4, easyEach - 2)} km`;
-          day.steps = ["Easy Z2, nothing more — freshness is the goal now"];
+          day.arch = "easy"; day.title = "Easy + muscle tension"; day.tag = `${Math.max(4, easyEach - 2)} km`;
+          day.steps = [`${Math.max(4, easyEach - 2)} km easy Z2`,
+            "Then drills + 6×20s strides + 2×10 pogo hops — The Coach: massages/soft running drain muscle tension; drills and strides put the 'pop' back",
+            "Don't switch off — tapering volume, intensity AND frequency at once is what makes race-day legs feel lethargic"];
         } else {
           day.arch = "steady"; day.title = "Steady aerobic"; day.tag = `${easyEach + 2} km`;
           day.steps = [ACT,
@@ -2410,13 +2449,21 @@ function buildWeekDays(w) {
     } else if (gymDays[String(dow)]) {
       const g = gymDays[String(dow)];
       if ((w.isRace || w.phase === "Taper") && (dow === 5 || dow === 6) && w.weeksToGo <= 1) {
-        day.kind = "rest"; day.arch = "rest"; day.title = "Rest (race week)"; day.steps = ["Legs up, hydrate, carbs, prepare kit"];
+        if (w.isRace && dow === 6) {
+          // Day before the marathon: The Coach's wake-up, not a full shutdown
+          day.kind = "run"; day.arch = "easy"; day.title = "Wake-up jog (day before)"; day.tag = "≈4 km";
+          day.steps = ["15 min very easy jog", `1 km building to just under threshold (≈${fmtPace(pz(3).maxSecPerKm + 10)}) — 2–3 min of effort wakes the system, costs nothing`,
+            "4×20s strides, walk back — then off your feet", "Legs up, hydrate, carbs, lay out the kit, bottles mixed and in the fridge"];
+        } else {
+          day.kind = "rest"; day.arch = "rest"; day.title = "Rest (race week)"; day.steps = ["Legs up, hydrate, carbs, prepare kit"];
+        }
       } else {
         day.kind = "gym"; day.arch = "gym"; day.title = `Gym — ${g}`; day.tag = "45–60 min";
         day.steps = (GYM_TEMPLATES[g] || []).slice();
         day.steps.push("Finisher (boring basics): calf raises + adductor squeezes + clams + hip control");
         day.steps.push("Post-gym: protein within 20 min");
         if (w.phase === "Taper") { day.steps = day.steps.slice(0, 3); day.steps.push("Taper: light weights, stop 2 reps short"); }
+        if (w.isRace) { day.steps = ["Race week: mobility + core only — nothing that creates soreness", "Skip anything heavy; the gym can't help Sunday anymore, only hurt it"]; day.tag = "20–30 min"; }
       }
     }
     if (day.arch === "long" && afterRace) day.steps.push(`Days after ${afterRace.name}: genuinely easy today, cut it short if anything aches — recovery ladder rules`);
