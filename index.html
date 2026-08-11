@@ -253,6 +253,7 @@
   <section class="tab" id="tab-sessions"></section>
   <section class="tab" id="tab-plan"></section>
   <section class="tab" id="tab-race"></section>
+  <section class="tab" id="tab-fuel"></section>
   <section class="tab" id="tab-coach"></section>
   <section class="tab" id="tab-zones"></section>
 </main>
@@ -2148,7 +2149,10 @@ function buildPlan() {
     if (isRace) {
       phase = "Race week"; km = Math.round(p.peakWeeklyKm * 0.3);
     } else if (weeksToGo <= TAPER) {
-      phase = "Taper"; km = Math.round(p.peakWeeklyKm * [0.35, 0.5, 0.7][weeksToGo - 1]);
+      // Scullion hybrid taper: at ~60 km/wk a hard volume taper makes no sense — keep volume
+      // honest (0.8/0.65/0.5 of peak, was 0.7/0.5/0.35), keep frequency, trim intensity;
+      // the real cut is only the final ~3 days (race week).
+      phase = "Taper"; km = Math.round(p.peakWeeklyKm * [0.5, 0.65, 0.8][weeksToGo - 1]);
     } else if (weeksToGo <= TAPER + SPEC) {
       phase = "Specific";
       km = Math.round(p.peakWeeklyKm * ((i + 1) % p.cutbackEvery === 0 ? 0.72 : 1));
@@ -2172,7 +2176,11 @@ function buildPlan() {
     }
 
     const longKm = isRace ? S.goal.distanceKm
-      : Math.round(clamp(km * 0.48, 12, p.longRunPeakKm) * (phase === "Taper" ? 0.7 : 1));
+      : phase === "Taper"
+        // Taper Sundays stay meaningful (~72/55/36% of peak long run ≈ 23/18/12 km at 32):
+        // closes the "a month without a long run" gap while still shedding fatigue.
+        ? Math.round(p.longRunPeakKm * [0.36, 0.55, 0.72][weeksToGo - 1])
+        : Math.round(clamp(km * 0.48, 12, p.longRunPeakKm));
     const runsN = 4;
     const easyEach = Math.max(4, Math.round((km - longKm) / 3));
 
@@ -2181,7 +2189,8 @@ function buildPlan() {
     if (isRace) {
       sessions.push({ key: true, txt: `RACE DAY — ${S.goal.raceName}: ${S.goal.targetTime} target (${fmtPace(gp)}), bank ${S.goal.bankTime}` });
     } else if (phase === "Taper") {
-      sessions.push({ key: true, txt: `MP touch mid-week, everything else short + easy — save the big day` });
+      sessions.push({ key: true, txt: `Hybrid taper (The Coach): keep frequency + honest volume, trim intensity — the real cut is only the final 3 days` });
+      sessions.push({ txt: `MP touch Tue · strides + pogos to hold muscle tension · Sunday stays a real (smaller) long run` });
     } else if (phase === "Specific") {
       sessions.push({ key: true, txt: `${flags.ugly ? "UGLY-ZONE week: " : ""}Alternating tempo Tue · big MP session Thu · long run with race-pace work Sun` });
       sessions.push({ txt: `Target: ≥10 km at race pace (${fmtPace(gp + 12)}–${fmtPace(gp - 8)}) across the week` });
@@ -2290,6 +2299,22 @@ function buildWeekDays(w) {
         "Nibble 8–10 g every 10 min, exactly like every long run since autumn",
         `30–42 km: the part you rehearsed in the ugly-zone days`,
         `Target ${S.goal.targetTime} · bank ${S.goal.bankTime} · floor sub-4`];
+    } else if (w.isRace && runDays.includes(dow)) {
+      // Race week = the REAL taper (The Coach): short runs, but stay switched ON —
+      // drills/strides keep muscle tension; the harsh cut is only these final days.
+      day.kind = "run"; day.arch = "easy";
+      if (dow === 2) {
+        day.title = "Race week — easy + strides"; day.tag = "5 km";
+        day.steps = ["5 km easy Z2", "Drills + 6×20s strides at race rhythm — keep the legs elastic",
+          "The Coach: don't switch off race week — if anything, switch ON. You're about to go into battle"];
+      } else if (dow === 4) {
+        day.title = "Race week — sharpen"; day.tag = "4 km";
+        day.steps = ["4 km very easy", "4×20s strides + 2×10 pogo hops — tension, not fitness",
+          "The harsh cut starts now: nothing that costs anything from here"];
+      } else {
+        day.title = "Race week — short easy"; day.tag = "5 km";
+        day.steps = ["5 km easy Z2, nothing more", "Hydrate, big carb meals start Thursday"];
+      }
     } else if (runDays.includes(dow) && !w.isRace) {
       day.kind = "run";
       if (dow === longDay) {
@@ -2330,11 +2355,24 @@ function buildWeekDays(w) {
               "These km count toward the ≥10 km/week at race pace target",
               ...fuelPlan("60–80", "Dress rehearsal: exact race products, exact race timing")];
           }
-        } else { // Taper
+        } else { // Taper — Scullion hybrid: Sunday stays a real long run, shrinking, not vanishing
           day.arch = "long"; day.title = "Long run — taper"; day.tag = `${w.longKm} km`;
-          day.steps = [`${w.longKm} km relaxed Z2 — keep the Sunday rhythm, lose the fatigue`,
-            "Fuel exactly like race day: nibble 8–10 g at −10 min, then every 10 min, race products only — 60–80 g/h",
-            "Legs should feel better every week now"];
+          if (w.weeksToGo === 3) {
+            day.steps = [ACT,
+              `${w.longKm} km mostly Z2 — middle 4–5 km @ ${fmtPace(gp)} (last proper MP block before the race)`,
+              "The Coach: don't let the body switch off — this closes the long-run gap to 2 weeks, not 4",
+              "Fuel exactly like race day: nibble 8–10 g at −10 min, then every 10 min, race products only — 60–80 g/h"];
+          } else if (w.weeksToGo === 2) {
+            day.steps = [ACT,
+              `${w.longKm} km relaxed Z2 — final 3 km @ ${fmtPace(gp)}, nothing more`,
+              "Keep the Sunday rhythm and the fueling routine; lose the fatigue",
+              "Fuel exactly like race day: nibble 8–10 g at −10 min, then every 10 min — 60–80 g/h"];
+          } else {
+            day.steps = [
+              `${w.longKm} km fully relaxed Z2 — race is in 7 days, this is rhythm only`,
+              "Finish with 4×20s strides at race rhythm — keep the pop, don't chase fitness",
+              "Practice the exact race-morning routine: breakfast −2 h, water + salt, first nibble at −10 min"];
+          }
         }
       } else if (dow === 2) {
         // ---- Tuesday: quality slot ----
@@ -2389,8 +2427,10 @@ function buildWeekDays(w) {
             F.ugly ? "This one should reach the place where you want to stop — that's the training" : "Controlled discomfort, not racing — HR guide only for the first half",
             "Counts toward ≥10 km/week at race pace", FUEL, "Cool-down 1 km"];
         } else if (w.phase === "Taper") {
-          day.arch = "easy"; day.title = "Short easy run"; day.tag = `${Math.max(4, easyEach - 2)} km`;
-          day.steps = ["Easy Z2, nothing more — freshness is the goal now"];
+          day.arch = "easy"; day.title = "Easy + muscle tension"; day.tag = `${Math.max(4, easyEach - 2)} km`;
+          day.steps = [`${Math.max(4, easyEach - 2)} km easy Z2`,
+            "Then drills + 6×20s strides + 2×10 pogo hops — The Coach: massages/soft running drain muscle tension; drills and strides put the 'pop' back",
+            "Don't switch off — tapering volume, intensity AND frequency at once is what makes race-day legs feel lethargic"];
         } else {
           day.arch = "steady"; day.title = "Steady aerobic"; day.tag = `${easyEach + 2} km`;
           day.steps = [ACT,
@@ -2409,13 +2449,21 @@ function buildWeekDays(w) {
     } else if (gymDays[String(dow)]) {
       const g = gymDays[String(dow)];
       if ((w.isRace || w.phase === "Taper") && (dow === 5 || dow === 6) && w.weeksToGo <= 1) {
-        day.kind = "rest"; day.arch = "rest"; day.title = "Rest (race week)"; day.steps = ["Legs up, hydrate, carbs, prepare kit"];
+        if (w.isRace && dow === 6) {
+          // Day before the marathon: The Coach's wake-up, not a full shutdown
+          day.kind = "run"; day.arch = "easy"; day.title = "Wake-up jog (day before)"; day.tag = "≈4 km";
+          day.steps = ["15 min very easy jog", `1 km building to just under threshold (≈${fmtPace(pz(3).maxSecPerKm + 10)}) — 2–3 min of effort wakes the system, costs nothing`,
+            "4×20s strides, walk back — then off your feet", "Legs up, hydrate, carbs, lay out the kit, bottles mixed and in the fridge"];
+        } else {
+          day.kind = "rest"; day.arch = "rest"; day.title = "Rest (race week)"; day.steps = ["Legs up, hydrate, carbs, prepare kit"];
+        }
       } else {
         day.kind = "gym"; day.arch = "gym"; day.title = `Gym — ${g}`; day.tag = "45–60 min";
         day.steps = (GYM_TEMPLATES[g] || []).slice();
         day.steps.push("Finisher (boring basics): calf raises + adductor squeezes + clams + hip control");
         day.steps.push("Post-gym: protein within 20 min");
         if (w.phase === "Taper") { day.steps = day.steps.slice(0, 3); day.steps.push("Taper: light weights, stop 2 reps short"); }
+        if (w.isRace) { day.steps = ["Race week: mobility + core only — nothing that creates soreness", "Skip anything heavy; the gym can't help Sunday anymore, only hurt it"]; day.tag = "20–30 min"; }
       }
     }
     if (day.arch === "long" && afterRace) day.steps.push(`Days after ${afterRace.name}: genuinely easy today, cut it short if anything aches — recovery ladder rules`);
@@ -2688,11 +2736,11 @@ window.__ckDismiss = () => { const s = checkpointSuggestion(); if (s) { try { lo
 
 function renderAll() {
   __planIdx = null;
-  renderDashboard(); renderCalendar(); renderFitness(); renderSessions(); renderPlan(); renderRace(); renderCoach(); renderZones();
+  renderDashboard(); renderCalendar(); renderFitness(); renderSessions(); renderPlan(); renderRace(); renderFuel(); renderCoach(); renderZones();
 }
 
 /* ---------- rendering ---------- */
-const TABS = [["dashboard", "Dashboard"], ["calendar", "Calendar"], ["fitness", "Fitness profile"], ["sessions", "Sessions"], ["plan", "Plan"], ["race", "Race recipe"], ["coach", "Coach"], ["zones", "Zones"]];
+const TABS = [["dashboard", "Dashboard"], ["calendar", "Calendar"], ["fitness", "Fitness profile"], ["sessions", "Sessions"], ["plan", "Plan"], ["race", "Race recipe"], ["fuel", "Fuel"], ["coach", "Coach"], ["zones", "Zones"]];
 
 function renderNav() {
   const nav = $("#nav");
@@ -2955,6 +3003,97 @@ function renderRace() {
     </div>`;
 }
 
+function renderFuel() {
+  const el = $("#tab-fuel");
+  const fuelSrc = (KB.sources || []).find(s => s.id === "fuel");
+  const aid = [
+    ["3.9", "Water refill"], ["4.8", "Water + Powerade"], ["7.4", "Water refill"], ["9.5", "Water + Powerade"],
+    ["10.5", "Water refill"], ["11.7", "Water refill"], ["12.5", "Water refill"], ["13.1", "Water refill"],
+    ["15.0", "Water + Powerade + banana"], ["17.8", "Water refill"], ["19.6", "Water + Powerade + banana — Bottle #2"],
+    ["21.8", "Water refill"], ["24.8", "Water + Powerade + banana"], ["26.1", "Water refill"], ["27.2", "Water refill"],
+    ["28.5", "Water refill"], ["29.4", "Water + Powerade + banana"], ["31.4", "Water"], ["33.5", "ESN Hydro Energy Gel point (2026)"],
+    ["34.0", "Water + Powerade + banana + cola"], ["37.7", "Water refill"], ["38.6", "Water"],
+    ["39.6", "Water + Powerade + banana + cola"], ["40.8", "Water refill"],
+  ];
+  el.innerHTML = `
+    <div class="panel">
+      <h2>Fuel — Vienna race plan vs The Coach's nibble protocol</h2>
+      <div class="hint">Your Maurten-first race plan (same totals and products as always) re-checked against The Coach's dedicated fueling video. Nothing about the carb total changed — only how each gel is taken, plus a training-week layer the race-day plan didn't have before.</div>
+      <div class="cards" style="margin-top:8px">
+        <div class="card"><div class="k">Race carb target</div><div class="v">~92<span class="unit"> g/h</span></div><div class="d">345 g in-race + 25 g pre-start, banked ${S.goal.bankTime || "3:45:00"} scenario. The Coach trains toward a 60–80 g/h baseline and flags 100–120 g/h as a newer extreme — 92 is reasonable but conditional on Stage 4 gut training actually feeling easy.</div></div>
+        <div class="card"><div class="k">Technique</div><div class="v">Nibble, not bolus</div><div class="d">3–4 small bites over ~2–3 min per gel — never one swallow. Slamming a full gel spikes insulin and dumps glucose; the bottle's 50 ml sips already do this right.</div></div>
+        <div class="card"><div class="k">Pre-run electrolytes</div><div class="v">Water + salt only</div><div class="d">No flavoured/sugary electrolyte tabs in the 2 h before the gun — same glucose-control logic as the eat-2h-before-or-nothing rule.</div></div>
+        <div class="card"><div class="k">Post-session refuel</div><div class="v">≤ 20 min</div><div class="d">Non-negotiable, every hard session, all year — not just race day.</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Race-day execution — nibble-adjusted</h2>
+      <div class="hint">Same KM points and products as the plan. The only change: don't squeeze a whole gel down in one go — open it and take it in 3–4 small bites over ~2–3 minutes. The bottle's ~50 ml every ~2 km is already close to the nibble cadence, so it's unchanged.</div>
+      <table>
+        <thead><tr><th>When</th><th>Action</th><th class="num">Carbs</th><th>Execution note</th></tr></thead>
+        <tbody>
+          <tr><td>−10 min → gun</td><td>Maurten Gel 100</td><td class="num">25 g</td><td>Nibble from −10 min through the warm-up/strides — fine to still be finishing it as the gun goes.</td></tr>
+          <tr><td>Start → KM 19.6</td><td>Bottle #1 · Drink Mix 320</td><td class="num">80 g</td><td>~50 ml at KM 1,3,5,7,9,11,13,15,17,19 — unchanged, already nibble-paced.</td></tr>
+          <tr><td>KM 8</td><td>Maurten Gel 160</td><td class="num">40 g</td><td>3–4 bites over ~2–3 min around KM 8, not one swallow.</td></tr>
+          <tr><td>KM 16</td><td>Maurten Gel 160</td><td class="num">40 g</td><td>Same nibble technique.</td></tr>
+          <tr><td>KM 19.6</td><td>Pick up Bottle #2 · Drink Mix 320</td><td class="num">80 g</td><td>Self-catering — label BIB + SURNAME + "KM 19.6 – MAURTEN 320". Can't be guaranteed found — carry an emergency gel.</td></tr>
+          <tr><td>KM 21 → 39</td><td>Bottle #2</td><td class="num">incl. above</td><td>~50 ml at KM 21,23,25,27,29,31,33,35,37,39 — unchanged.</td></tr>
+          <tr><td>KM 26</td><td>Maurten Gel 160</td><td class="num">40 g</td><td>Nibble technique.</td></tr>
+          <tr><td>KM 34</td><td>Maurten Gel 160</td><td class="num">40 g</td><td>Nibble technique — keeps carbs steady before the hard final 8 km.</td></tr>
+          <tr><td>KM 40</td><td>Maurten Gel 100</td><td class="num">25 g</td><td>Nibble if consistent, but forgiving either way — ~2.5 km to the line. Skip/partial if Powerade-fuelled already.</td></tr>
+        </tbody>
+      </table>
+      <div class="note">Fallback if 90 g/h hasn't felt fully comfortable in a 2h+ rehearsal by race week: swap the KM 26 and KM 34 Gel 160s for Gel 100s (saves 15 g each) → ~75–80 g/h, squarely inside The Coach's stated comfort range, same nibble technique, same KM rhythm.</div>
+    </div>
+
+    <div class="panel">
+      <h2>Fuel the training week, not just race day</h2>
+      <div class="hint">Most "bad session, must not be fit enough" days are under-fuelling — the day before, the pre-session window, or skipping the post-session refuel. This applies every week, not only race week.</div>
+      <ul style="margin:10px 0 0 18px;font-size:13.5px;color:var(--text-secondary);display:grid;gap:6px">
+        <li><b style="color:var(--text-primary)">Post-session refuel is non-negotiable.</b> Real carbs + protein within ~20 minutes of anything steady or harder — don't let a busy afternoon turn into "I'll eat properly later."</li>
+        <li><b style="color:var(--text-primary)">The night/day before a hard session matters.</b> If a quality session is Tuesday, Monday afternoon and evening should include a deliberately carb-forward meal — a weekly habit, separate from race-week carb-loading.</li>
+        <li><b style="color:var(--text-primary)">Pre-session eating has a dead zone.</b> Eat a real meal ~2 h before if you can. If you can't, eat nothing in the gap and instead nibble a gel from ~10 min before, through the warm-up — the danger zone is eating 20 min–2 h out, which is when exercise-induced hypoglycemia hits hardest.</li>
+        <li><b style="color:var(--text-primary)">Which sessions need fuel during the run.</b> Easy runs under ~45–60 min generally don't need a gel. Once you're at Steady and especially Threshold/VO2/Rep pace, or any run past ~1h40, fuel during the session with the same nibble technique — building toward the same rate you'll use on race day.</li>
+        <li><b style="color:var(--text-primary)">Consistency over the week beats a "perfect" race-day plan.</b> No amount of gel-precision on race day fixes a week that ran on empty.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2>Vienna aid stations — quick reference</h2>
+      <div class="hint">Current published VCM pattern. Positions are the 2026 layout — VCM says 2027 may shift slightly, re-check before race week.</div>
+      <table>
+        <thead><tr><th class="num">KM</th><th>Provision</th></tr></thead>
+        <tbody>${aid.map(([km, prov]) => `<tr${km === "19.6" ? ' style="font-weight:600"' : ""}><td class="num">${km}</td><td>${prov}</td></tr>`).join("")}</tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Shopping list &amp; mixing rules</h2>
+      <div class="cards" style="margin-top:8px">
+        <div class="card"><div class="k">Buy</div><div class="v" style="font-size:15px">Drink Mix 320</div><div class="d">Main fuel — best €/g carbs of the Maurten range</div></div>
+        <div class="card"><div class="k">Buy</div><div class="v" style="font-size:15px">Gel 160</div><div class="d">Main gel — better value and fewer packets than Gel 100</div></div>
+        <div class="card"><div class="k">Buy a few</div><div class="v" style="font-size:15px">Gel 100</div><div class="d">Pre-start, final top-up, emergency backup</div></div>
+      </div>
+      <div class="hint" style="margin-top:2px">Mix: 1 sachet Drink Mix 320 + exactly 500 ml water, shaken until fully dissolved. Can be pre-mixed up to ~24 h ahead, kept cool. Take salt capsules with plain water — never dissolved into the Maurten bottle; changing the formulation can interfere with the hydrogel.</div>
+    </div>
+
+    <div class="panel">
+      <h2>Principles</h2>
+      <ol style="margin:10px 0 0 18px;font-size:13.5px;color:var(--text-secondary);display:grid;gap:6px">
+        <li>Same totals as always: ~92 g/h in-race, 345 g total, Drink Mix 320 + Gel 160 + Gel 100 — no product changes.</li>
+        <li>Nibble every gel in 3–4 small bites over ~2–3 minutes — never swallow a whole gel in one go, race day or training.</li>
+        <li>Fuel the training week: post-session refuel within 20 minutes is non-negotiable; carb-forward meal the evening before any hard session two days out.</li>
+        <li>Pre-session/pre-race eating has a dead zone: real meal ~2 h before, or nothing + nibble from −10 min. Avoid the 20 min–2 h middle ground.</li>
+        <li>No flavoured electrolyte tablets in the 2 h pre-run window — plain water (+ a pinch of salt if needed) only, before the gun.</li>
+        <li>Confirm Stage 4 (90 g/h) comfort in a real 2h+ rehearsal before race week; the Gel 160 → Gel 100 swap at KM 26/34 is the built-in fallback to ~75–80 g/h.</li>
+        <li>If Bottle #2 goes missing: gels + course water/Powerade, same nibble technique, same targets.</li>
+        <li>Re-check the final 2027 VCM aid-station positions before race week.</li>
+      </ol>
+      ${fuelSrc ? `<div class="note" style="margin-top:14px">Source: <a href="${fuelSrc.url}" target="_blank" rel="noopener" style="color:var(--muted)">${fuelSrc.title}</a> — Stephen Scullion, read via transcript. Race: Vienna City Marathon, ${S.goal.raceDate || "18 Apr 2027"}.</div>` : ""}
+    </div>`;
+}
+
 let CAL = []; // [{week, days}] for modal lookups
 
 function renderCalendar() {
@@ -3182,6 +3321,7 @@ async function boot() {
   renderSessions();
   renderPlan();
   renderRace();
+  renderFuel();
   renderCoach();
   renderZones();
   activate("dashboard");
