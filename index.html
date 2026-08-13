@@ -2027,8 +2027,13 @@ const SESSION_TARGETS = () => ({
    paceSecPerKm from the sync is MOVING pace (traffic lights excluded);
    best20min/bestKm come from intervals.icu laps. */
 const sustainedPace = (r) => Math.min(r.paceSecPerKm ?? Infinity, r.best20minSecPerKm ?? Infinity);
-/* rep sessions: rolling stream 1k best (crosses lap boundaries) sees sub-km reps that km-laps can't */
-const repPace       = (r) => Math.min(sustainedPace(r), r.bestKmSecPerKm ?? Infinity, (r.bestEfforts && r.bestEfforts["1k"]) || Infinity);
+/* rep sessions: reps shorter than 1 km are invisible to rolling-km metrics (any full km
+   spans rep + jog recovery). Read the actual lap paces: fastest lap ≥ 400 m IS the rep. */
+const repPace = (r) => {
+  let best = Math.min(sustainedPace(r), r.bestKmSecPerKm ?? Infinity, (r.bestEfforts && r.bestEfforts["1k"]) || Infinity);
+  for (const l of (r.laps || [])) if (l[0] >= 400 && l[1] > 0) best = Math.min(best, l[1] / (l[0] / 1000));
+  return best;
+};
 function scoreExecution(r) {
   /* The Coach's rule: judge the run against what was ON THE PLAN that day.
      Only when nothing was planned do we fall back to classifying by name. */
