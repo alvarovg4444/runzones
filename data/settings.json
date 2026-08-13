@@ -241,28 +241,29 @@
   {
    "date": "2026-08-13",
    "kind": "run",
-   "arch": "threshold",
-   "title": "Threshold (moved from Tue) — PAIN TEST FIRST",
-   "tag": "≈10 km",
+   "arch": "vo2",
+   "title": "VO2 injection 5×3 min (swapped in — legs green)",
+   "tag": "≈8.6 km",
    "steps": [
-    "GATE before running: pain-free walk ✓ + pain-free single-leg hops on the sore leg + no sharp pain pressing along the shin. Fail ANY → easy 6–8 km max and the threshold is skipped this week, not rescheduled",
-    "Warm-up: 3 km easy + strides",
-    "3×10 min @ bottom of threshold 5:25, 2 min jog between — soft surface where possible",
-    "Warm-up ache that fades = OK. Pain that grows during a rep = stop the session, jog home easy",
-    "Fuel: nibble ~10g carbs every 10 min, starting 10 min before",
-    "Cool-down: 1–2 km jog"
+    "Swapped by choice: legs and recovery felt great, so Tuesday's VO2 session ran today instead of the moved threshold",
+    "5 × ~3 min @ VO2 with jog recoveries — reps 4:40–4:54, HR 158–163, max 170",
+    "Shin verdict: VO2-pace impact with zero pain = the scare has cleared; Sunday gate stays as formality",
+    "Threshold is skipped this week, not rescheduled — it returns naturally next week"
    ]
   },
   {
    "date": "2026-08-14",
    "kind": "run",
-   "arch": "easy",
-   "title": "Easy run + Chest gym",
-   "tag": "5–6 km",
+   "arch": "steady",
+   "title": "Steady aerobic (moved from Thu) + Chest gym",
+   "tag": "≈9 km",
    "steps": [
-    "5–6 km easy Z2 (6:00–6:55) — this is Thursday's displaced volume, only if Thursday was pain-free",
-    "Then Chest gym (moved from Saturday): bench/incline/push-ups — no leg cost",
-    "Any shin pain on this easy run → stop, and Sunday's long run is off the table"
+    "Main: 7 km steady @ 5:55–6:15 (or 2×20 min, 5 min easy between) — 'today I work', no stops",
+    "3–4 word conversation test; watch HR drift (>10 beats at fixed pace = start easier)",
+    "Warm-up / cool-down: 1 km easy at each end",
+    "CARRY: 1 × Gel 160 + water (or a DM320 bottle until gels arrive) — nibble from −10 min",
+    "Then Chest gym: bench/incline/push-ups — no leg cost",
+    "Day after VO2: if legs feel the session, downgrade to easy without guilt — Sunday matters more"
    ]
   },
   {
