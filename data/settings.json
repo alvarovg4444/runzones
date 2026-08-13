@@ -132,12 +132,13 @@
    }
   },
   {
-   "date": "2026-12-06",
-   "name": "Adventlauf 10k",
-   "title": "RACE — Adventlauf 10k (THE checkpoint)",
+   "date": "2026-12-13",
+   "name": "1. VCM Winterlauf 10k",
+   "title": "RACE — 1. VCM Winterlauf 10k (THE checkpoint)",
    "tag": "10 km race · ~16 km day",
    "steps": [
-    "Job: the season's honest fitness checkpoint — 3 easy days before, then race it properly",
+    "Job: the season's honest fitness checkpoint — replaced Adventlauf (handball tournament Dec 4). Flat, AIMS-measured Prater Hauptallee = perfect for accurate zone recalibration",
+    "9 days after the handball tournament: legs fully back, no excuses",
     "Warm-up: 3 km easy + drills + 4 strides",
     "Km 1–3 @ 5:05/km — controlled, breathing quiet",
     "Km 4–7 @ 4:58/km — goal marathon pace, locked",
@@ -281,6 +282,36 @@
    "append": [
     "SHIN GATE: only run this if Thu + Fri were pain-free. Warm-up ache that fades is OK; pain that grows = stop and walk home",
     "Soft surface where possible. If in doubt, skip — 36 weeks out, one long run costs nothing; a stress reaction costs six"
+   ]
+  },
+  {
+   "date": "2026-12-04",
+   "kind": "rest",
+   "arch": "rest",
+   "title": "HANDBALL TOURNAMENT",
+   "tag": "",
+   "steps": [
+    "Tournament day — this IS the week's hard stimulus; the planned gym is cancelled",
+    "Warm up properly before playing (sprints + cuts on cold legs is how runners get hurt)",
+    "Between games: keep moving, carbs + fluids like a long run — nibble protocol works here too",
+    "After: real meal within the hour, legs up"
+   ]
+  },
+  {
+   "date": "2026-12-05",
+   "kind": "rest",
+   "arch": "rest",
+   "title": "Recovery (day after handball)",
+   "tag": "",
+   "steps": [
+    "Full rest or 20–30 min walk/easy bike — nothing more",
+    "Handball soreness is different from running soreness (lateral/jumping load): let ankles, knees and adductors report in before Sunday"
+   ]
+  },
+  {
+   "date": "2026-12-06",
+   "append": [
+    "TWO DAYS AFTER HANDBALL: downgrade to relaxed Z2, cut it short if anything aches — the checkpoint race is next Sunday, that's what matters this week"
    ]
   }
  ]
