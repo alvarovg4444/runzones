@@ -2027,7 +2027,8 @@ const SESSION_TARGETS = () => ({
    paceSecPerKm from the sync is MOVING pace (traffic lights excluded);
    best20min/bestKm come from intervals.icu laps. */
 const sustainedPace = (r) => Math.min(r.paceSecPerKm ?? Infinity, r.best20minSecPerKm ?? Infinity);
-const repPace       = (r) => Math.min(sustainedPace(r), r.bestKmSecPerKm ?? Infinity);
+/* rep sessions: rolling stream 1k best (crosses lap boundaries) sees sub-km reps that km-laps can't */
+const repPace       = (r) => Math.min(sustainedPace(r), r.bestKmSecPerKm ?? Infinity, (r.bestEfforts && r.bestEfforts["1k"]) || Infinity);
 function scoreExecution(r) {
   /* The Coach's rule: judge the run against what was ON THE PLAN that day.
      Only when nothing was planned do we fall back to classifying by name. */
@@ -2061,7 +2062,8 @@ function scoreExecution(r) {
   if (z != null) {
     const [zlo, zhi] = t.hr;
     if (z > zhi) { score -= (z - zhi) * 14; notes.push(`HR drifted to Z${z}`); }
-    else if (z < zlo) { score -= (zlo - z) * 8; notes.push(`HR below Z${zlo}`); }
+    /* rep sessions: jog recoveries dilute avg HR — a "low" average is expected, not a fault */
+    else if (z < zlo && evalAs !== "rep") { score -= (zlo - z) * 8; notes.push(`HR below Z${zlo}`); }
   }
   return { target: t, planned, evalAs, evalPace: (evalPace === Infinity ? null : evalPace), score: Math.round(clamp(score, 0, 100)), notes };
 }
@@ -2724,6 +2726,10 @@ function checkpointSuggestion() {
   const curMid = (pz(3).minSecPerKm + pz(3).maxSecPerKm) / 2;
   const diff = Math.round(curMid - best.tEst); // + = you got faster
   if (Math.abs(diff) < 6) return null;
+  /* SLOWER suggestions only from real races/TTs: an interval workout's "sustained pace"
+     includes jog recoveries, which reads as a slow continuous effort and would wrongly
+     drag the zones down. Faster evidence is valid from any run; slower needs a race. */
+  if (diff < 0 && !(S.races || []).some(rr => rr.date === best.run.date)) return null;
   const t = Math.round(best.tEst);
   const zones = [
     { zone: "Recovery", minSecPerKm: t + 110, maxSecPerKm: t + 190 },
