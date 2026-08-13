@@ -304,6 +304,25 @@
     "IF YOU PLAYED HANDBALL YESTERDAY: cap this at 8–10 km relaxed Z2, or skip entirely if anything (ankles/knees/adductors) complains — day-after-tournament + full long run is an injury bet, and the checkpoint race is in 7 days",
     "If you skipped the tournament: run the long run as planned"
    ]
+  },
+  {
+   "date": "2026-09-12",
+   "kind": "rest",
+   "arch": "rest",
+   "title": "Handball tournament (light)",
+   "tag": "",
+   "steps": [
+    "Tournament day — replaces the Chest gym; you expect it to be easy on the legs",
+    "Warm up properly before the first game anyway — sprints + cuts on cold legs is the risk, not the volume",
+    "Carbs + fluids between games (nibble protocol), real meal within the hour after"
+   ]
+  },
+  {
+   "date": "2026-09-13",
+   "append": [
+    "DAY AFTER HANDBALL: run as planned, but let the first 2 km be the assessment — heavy legs or any ankle/knee/adductor complaint = shorten without guilt",
+    "Start a notch slower than usual; handball soreness often only shows up once you're warm"
+   ]
   }
  ]
 }
