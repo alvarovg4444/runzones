@@ -285,33 +285,24 @@
    ]
   },
   {
-   "date": "2026-12-04",
-   "kind": "rest",
-   "arch": "rest",
-   "title": "HANDBALL TOURNAMENT",
-   "tag": "",
-   "steps": [
-    "Tournament day — this IS the week's hard stimulus; the planned gym is cancelled",
-    "Warm up properly before playing (sprints + cuts on cold legs is how runners get hurt)",
-    "Between games: keep moving, carbs + fluids like a long run — nibble protocol works here too",
-    "After: real meal within the hour, legs up"
-   ]
-  },
-  {
    "date": "2026-12-05",
    "kind": "rest",
    "arch": "rest",
-   "title": "Recovery (day after handball)",
+   "title": "HANDBALL TOURNAMENT (80% likely)",
    "tag": "",
    "steps": [
-    "Full rest or 20–30 min walk/easy bike — nothing more",
-    "Handball soreness is different from running soreness (lateral/jumping load): let ankles, knees and adductors report in before Sunday"
+    "Tournament day — if you play, this IS the week's hard stimulus (planned Chest gym is cancelled)",
+    "Warm up properly before the first game — sprints + cuts on cold legs is how runners get hurt",
+    "Between games: keep moving, carbs + fluids like a long run — the nibble protocol works here too",
+    "After: real meal within the hour, legs up",
+    "If you end up NOT playing: do the normal Chest gym instead, and Sunday's long run runs as planned"
    ]
   },
   {
    "date": "2026-12-06",
    "append": [
-    "TWO DAYS AFTER HANDBALL: downgrade to relaxed Z2, cut it short if anything aches — the checkpoint race is next Sunday, that's what matters this week"
+    "IF YOU PLAYED HANDBALL YESTERDAY: cap this at 8–10 km relaxed Z2, or skip entirely if anything (ankles/knees/adductors) complains — day-after-tournament + full long run is an injury bet, and the checkpoint race is in 7 days",
+    "If you skipped the tournament: run the long run as planned"
    ]
   }
  ]
