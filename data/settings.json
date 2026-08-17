@@ -1,311 +1,319 @@
 {
-  "athlete": {
-     "name": "Alvaro",
-     "maxHr": 185,
-     "restingHr": 55,
-     "units": "metric"
+ "athlete": {
+  "name": "Alvaro",
+  "maxHr": 185,
+  "restingHr": 55,
+  "units": "metric"
+ },
+ "goal": {
+  "raceName": "Marathon",
+  "raceDate": "2027-04-18",
+  "distanceKm": 42.195,
+  "targetTime": "3:30:00",
+  "bankTime": "3:45:00",
+  "floorTime": "3:59:00",
+  "note": "Strategy: train for 3:30 so that a rough day still banks 3:45 and a bad day stays under 4:00. Race date assumed 2027 - edit if different."
+ },
+ "hrZones": [
+  {
+   "zone": "Z1",
+   "name": "Recovery",
+   "minHr": 111,
+   "maxHr": 129
   },
-  "goal": {
-     "raceName": "Marathon",
-     "raceDate": "2027-04-18",
-     "distanceKm": 42.195,
-     "targetTime": "3:30:00",
-     "bankTime": "3:45:00",
-     "floorTime": "3:59:00",
-     "note": "Strategy: train for 3:30 so that a rough day still banks 3:45 and a bad day stays under 4:00. Race date assumed 2027 - edit if different."
+  {
+   "zone": "Z2",
+   "name": "Easy / Aerobic",
+   "minHr": 130,
+   "maxHr": 148
   },
-  "hrZones": [
-     {
-         "zone": "Z1",
-         "name": "Recovery",
-         "minHr": 111,
-         "maxHr": 129
-     },
-     {
-         "zone": "Z2",
-         "name": "Easy / Aerobic",
-         "minHr": 130,
-         "maxHr": 148
-     },
-     {
-         "zone": "Z3",
-         "name": "Steady / Marathon",
-         "minHr": 149,
-         "maxHr": 161
-     },
-     {
-         "zone": "Z4",
-         "name": "Threshold",
-         "minHr": 162,
-         "maxHr": 172
-     },
-     {
-         "zone": "Z5",
-         "name": "VO2max",
-         "minHr": 173,
-         "maxHr": 185
-     }
+  {
+   "zone": "Z3",
+   "name": "Steady / Marathon",
+   "minHr": 149,
+   "maxHr": 161
+  },
+  {
+   "zone": "Z4",
+   "name": "Threshold",
+   "minHr": 162,
+   "maxHr": 172
+  },
+  {
+   "zone": "Z5",
+   "name": "VO2max",
+   "minHr": 173,
+   "maxHr": 185
+  }
+ ],
+ "paceZones": [
+  {
+   "zone": "Recovery",
+   "minSecPerKm": 420,
+   "maxSecPerKm": 500
+  },
+  {
+   "zone": "Easy",
+   "minSecPerKm": 360,
+   "maxSecPerKm": 415
+  },
+  {
+   "zone": "Steady/MP",
+   "minSecPerKm": 330,
+   "maxSecPerKm": 360
+  },
+  {
+   "zone": "Threshold",
+   "minSecPerKm": 305,
+   "maxSecPerKm": 325
+  },
+  {
+   "zone": "VO2 Interval",
+   "minSecPerKm": 285,
+   "maxSecPerKm": 305
+  },
+  {
+   "zone": "Repetition",
+   "minSecPerKm": 270,
+   "maxSecPerKm": 285
+  }
+ ],
+ "zonesNote": "Zones are anchored to CURRENT fitness (threshold ~5:15/km, from real runs - 10.4km @5:17 HR162, benchmark 4:54 @HR149), not to the goal. They only move when the data says so: the dashboard checkpoint banner proposes new zones after a faster 5K/10K/half, and the Build-phase test half recalibrates everything. Reference: 3:30 marathon shape eventually needs threshold ~4:50/km - the plan walks you there via evidence, never by decree. Coach's rule: threshold must FEEL sustainable 50-70 min; if a rep cooks you, it was too fast.",
+ "plan": {
+  "currentWeeklyKm": 34,
+  "peakWeeklyKm": 62,
+  "runsPerWeekStart": 3,
+  "runsPerWeekPeak": 4,
+  "longRunPeakKm": 32,
+  "cutbackEvery": 4,
+  "taperWeeks": 3,
+  "planStartDate": "2026-08-06",
+  "note": "Scullion on-ramp logic: track TIME per week, not run count - bike minutes count. Impact capped at 3 days while aerobic time grows ~15min/week. Peak plan (62km, 4 runs) unchanged - target: 4th day back mid-Sep, ~45-50km by Leopoldilauf (Nov 8), 55+ by Dec when the 16-week specific block starts."
+ },
+ "schedule": {
+  "comment": "JS day numbers: 0=Sunday 1=Monday ... 6=Saturday. PHASE: 3-run on-ramp (from 2026-08-17): Tue quality, Thu easy, Sun long. Mon = optional easy bike 40-60min (pressure valve, skip if anything is sore). GATE 1: Monday easy run returns after 2 consecutive weeks with zero shin/hamstring/hip-flexor complaints (earliest Mon Sep 7; a niggle lasting past next morning resets the clock). GATE 2: VO2 returns as one injection every 2nd week (replacing that week's threshold) once the 4th run day has survived 2 weeks. PAIN RULE every run: warm-up ache that fades = go; pain that grows = stop; altered stride = stop immediately.",
+  "runDays": [
+   2,
+   4,
+   0
   ],
-  "paceZones": [
-     {
-         "zone": "Recovery",
-         "minSecPerKm": 420,
-         "maxSecPerKm": 500
-     },
-     {
-         "zone": "Easy",
-         "minSecPerKm": 360,
-         "maxSecPerKm": 415
-     },
-     {
-         "zone": "Steady/MP",
-         "minSecPerKm": 330,
-         "maxSecPerKm": 360
-     },
-     {
-         "zone": "Threshold",
-         "minSecPerKm": 305,
-         "maxSecPerKm": 325
-     },
-     {
-         "zone": "VO2 Interval",
-         "minSecPerKm": 285,
-         "maxSecPerKm": 305
-     },
-     {
-         "zone": "Repetition",
-         "minSecPerKm": 270,
-         "maxSecPerKm": 285
-     }
-  ],
-  "zonesNote": "Zones are anchored to CURRENT fitness (threshold ~5:15/km, from real runs - 10.4km @5:17 HR162, benchmark 4:54 @HR149), not to the goal. They only move when the data says so: the dashboard checkpoint banner proposes new zones after a faster 5K/10K/half, and the Build-phase test half recalibrates everything. Reference: 3:30 marathon shape eventually needs threshold ~4:50/km - the plan walks you there via evidence, never by decree. Coach's rule: threshold must FEEL sustainable 50-70 min; if a rep cooks you, it was too fast.",
-  "plan": {
-     "currentWeeklyKm": 34,
-     "peakWeeklyKm": 62,
-     "runsPerWeekStart": 4,
-     "runsPerWeekPeak": 4,
-     "longRunPeakKm": 32,
-     "cutbackEvery": 4,
-     "taperWeeks": 3,
-     "planStartDate": "2026-08-06"
+  "longRunDay": 0,
+  "gymDays": {
+   "3": "Legs",
+   "5": "Back",
+   "6": "Chest"
+  }
+ },
+ "races": [
+  {
+   "date": "2026-11-08",
+   "name": "Leopoldilauf Halbmarathon",
+   "title": "RACE \u2014 Leopoldilauf Half (baseline)",
+   "tag": "21.1 km race \u00b7 ~26 km day",
+   "steps": [
+    "Job: honest baseline, 23 weeks out \u2014 information, not glory. You come off a cutback week; no extra taper",
+    "Warm-up: 3 km very easy + drills + 4 strides, timed to finish ~10 min before the 10:00 gun",
+    "Loop 1 (7 km) @ 5:30/km \u2014 must feel embarrassingly easy",
+    "Loop 2 (7 km) @ 5:20/km \u2014 settle in and work",
+    "Loop 3 (7 km) @ 5:10/km or faster on feel \u2014 earn the finish \u00b7 \u22481:52:30 (band 1:52\u20131:55)",
+    "Fuel: breakfast 2 h before \u00b7 water + salt only \u00b7 nibble ~10 g carbs from 10 min before, ~40 g/h during",
+    "Cool-down 1\u20132 km jog \u00b7 next 2\u20133 days easy \u2014 the recovery ladder applies"
+   ],
+   "target": {
+    "pace": [
+     305,
+     332
+    ],
+    "hr": [
+     3,
+     5
+    ],
+    "evalAs": "sustained"
+   }
   },
-  "schedule": {
-     "comment": "JS day numbers: 0=Sunday 1=Monday ... 6=Saturday. Wed+Sat are no-run days.",
-     "runDays": [
-         1,
-         2,
-         4,
-         0
-     ],
-     "longRunDay": 0,
-     "gymDays": {
-         "3": "Legs",
-         "5": "Back",
-         "6": "Chest"
-     }
+  {
+   "date": "2026-12-13",
+   "name": "1. VCM Winterlauf 10k",
+   "title": "RACE \u2014 1. VCM Winterlauf 10k (THE checkpoint)",
+   "tag": "10 km race \u00b7 ~16 km day",
+   "steps": [
+    "Job: the season's honest fitness checkpoint \u2014 replaced Adventlauf (handball tournament Dec 4). Flat, AIMS-measured Prater Hauptallee = perfect for accurate zone recalibration",
+    "9 days after the handball tournament: legs fully back, no excuses",
+    "Warm-up: 3 km easy + drills + 4 strides",
+    "Km 1\u20133 @ 5:05/km \u2014 controlled, breathing quiet",
+    "Km 4\u20137 @ 4:58/km \u2014 goal marathon pace, locked",
+    "Km 8\u201310 @ 4:48/km \u2014 empty the tank \u00b7 \u224849:30 (band 49:30\u201351:00) \u00b7 sub-50 = goal MP held for 10 km",
+    "Fuel: breakfast 2 h before \u00b7 water + salt \u00b7 nibble from 10 min before the gun",
+    "Cool-down 2\u20133 km very easy \u00b7 the result recalibrates your zones"
+   ],
+   "target": {
+    "pace": [
+     288,
+     308
+    ],
+    "hr": [
+     4,
+     5
+    ],
+    "evalAs": "sustained"
+   }
   },
-  "races": [
-     {
-         "date": "2026-11-08",
-         "name": "Leopoldilauf Halbmarathon",
-         "title": "RACE — Leopoldilauf Half (baseline)",
-         "tag": "21.1 km race · ~26 km day",
-         "steps": [
-              "Job: honest baseline, 23 weeks out — information, not glory. You come off a cutback week; no extra taper",
-              "Warm-up: 3 km very easy + drills + 4 strides, timed to finish ~10 min before the 10:00 gun",
-              "Loop 1 (7 km) @ 5:30/km — must feel embarrassingly easy",
-              "Loop 2 (7 km) @ 5:20/km — settle in and work",
-              "Loop 3 (7 km) @ 5:10/km or faster on feel — earn the finish · ≈1:52:30 (band 1:52–1:55)",
-              "Fuel: breakfast 2 h before · water + salt only · nibble ~10 g carbs from 10 min before, ~40 g/h during",
-              "Cool-down 1–2 km jog · next 2–3 days easy — the recovery ladder applies"
-         ],
-         "target": {
-              "pace": [
-                    305,
-                    332
-              ],
-              "hr": [
-                    3,
-                    5
-              ],
-              "evalAs": "sustained"
-         }
-     },
-     {
-         "date": "2026-12-13",
-         "name": "1. VCM Winterlauf 10k",
-         "title": "RACE — 1. VCM Winterlauf 10k (THE checkpoint)",
-         "tag": "10 km race · ~16 km day",
-         "steps": [
-              "Job: the season's honest fitness checkpoint — replaced Adventlauf (handball tournament Dec 4). Flat, AIMS-measured Prater Hauptallee = perfect for accurate zone recalibration",
-              "9 days after the handball tournament: legs fully back, no excuses",
-              "Warm-up: 3 km easy + drills + 4 strides",
-              "Km 1–3 @ 5:05/km — controlled, breathing quiet",
-              "Km 4–7 @ 4:58/km — goal marathon pace, locked",
-              "Km 8–10 @ 4:48/km — empty the tank · ≈49:30 (band 49:30–51:00) · sub-50 = goal MP held for 10 km",
-              "Fuel: breakfast 2 h before · water + salt · nibble from 10 min before the gun",
-              "Cool-down 2–3 km very easy · the result recalibrates your zones"
-         ],
-         "target": {
-              "pace": [
-                    288,
-                    308
-              ],
-              "hr": [
-                    4,
-                    5
-              ],
-              "evalAs": "sustained"
-         }
-     },
-     {
-         "date": "2026-12-31",
-         "name": "San Silvestre Vallecana 10k",
-         "title": "RACE — San Silvestre 10k (fun, hard)",
-         "tag": "10 km race · ~15 km day",
-         "steps": [
-              "Job: hard festive effort — race on EFFORT; the crowd decides what the clock says",
-              "Evening race: main meal ~14:00, light carb snack 2 h before, nibble from 10 min before",
-              "Warm-up: 2–3 km easy + strides, as space allows",
-              "First 5 km: controlled ~5:00/km effort — don't fight the crowd, surf it",
-              "Second 5 km: build 4:55 → 4:45 — pass people all the way · 48:30–50:30 with clear road",
-              "Enjoy it — finishing the year racing is the point. Sunday's long run after this: short and genuinely easy"
-         ],
-         "target": {
-              "pace": [
-                    285,
-                    312
-              ],
-              "hr": [
-                    3,
-                    5
-              ],
-              "evalAs": "sustained"
-         }
-     },
-     {
-         "date": "2027-02-14",
-         "name": "Eisbärlauf Halbmarathon",
-         "title": "TEST RACE — Eisbärlauf Half",
-         "tag": "21.1 km race · ~26 km day",
-         "steps": [
-              "The Build-phase exam — this result decides the Specific phase and recalibrates every zone",
-              "Warm-up: 3 km easy + drills + 4 strides",
-              "Loop 1 (7 km) @ 5:05/km — patient",
-              "Loop 2 (7 km) @ 4:57/km — the race pace of the day",
-              "Loop 3 (7 km) @ 4:48/km on courage · ≈1:44:20 · 1:44–1:46 untapered = green light for 3:30",
-              "Full race rehearsal: breakfast 2 h before · water + salt · nibble from −10 min · 40–60 g carbs/h · race shoes",
-              "Cool-down 1–2 km · then the recovery ladder: walk days → test jog → gym re-engagement"
-         ],
-         "target": {
-              "pace": [
-                    288,
-                    306
-              ],
-              "hr": [
-                    3,
-                    5
-              ],
-              "evalAs": "sustained"
-         }
-     }
-  ],
-  "overrides": [
-     {
-         "date": "2026-12-05",
-         "kind": "rest",
-         "arch": "rest",
-         "title": "HANDBALL TOURNAMENT (80% likely)",
-         "tag": "",
-         "steps": [
-              "Tournament day — if you play, this IS the week's hard stimulus (planned Chest gym is cancelled)",
-              "Warm up properly before the first game — sprints + cuts on cold legs is how runners get hurt",
-              "Between games: keep moving, carbs + fluids like a long run — the nibble protocol works here too",
-              "After: real meal within the hour, legs up",
-              "If you end up NOT playing: do the normal Chest gym instead, and Sunday's long run runs as planned"
-         ]
-     },
-     {
-         "date": "2026-12-06",
-         "append": [
-              "IF YOU PLAYED HANDBALL YESTERDAY: cap this at 8–10 km relaxed Z2, or skip entirely if anything (ankles/knees/adductors) complains — day-after-tournament + full long run is an injury bet, and the checkpoint race is in 7 days",
-              "If you skipped the tournament: run the long run as planned"
-         ]
-     },
-     {
-         "date": "2026-09-12",
-         "kind": "rest",
-         "arch": "rest",
-         "title": "Handball tournament (light)",
-         "tag": "",
-         "steps": [
-              "Tournament day — replaces the Chest gym; you expect it to be easy on the legs",
-              "Warm up properly before the first game anyway — sprints + cuts on cold legs is the risk, not the volume",
-              "Carbs + fluids between games (nibble protocol), real meal within the hour after"
-         ]
-     },
-     {
-         "date": "2026-09-13",
-         "append": [
-              "DAY AFTER HANDBALL: run as planned, but let the first 2 km be the assessment — heavy legs or any ankle/knee/adductor complaint = shorten without guilt",
-          "Start a notch slower than usual; handball soreness often only shows up once you're warm"
-      ]
-     },
-     {
-         "date": "2026-08-17",
-         "append": [
-              "GENUINELY easy today — yesterday was effectively a Z3 progression run in ~36°C (2nd half avg HR 154, decoupling +3.8%). HR under 140, pace 6:30+, shorten without guilt if the hamstrings still talk",
-              "After the run: hip-flexor micro-session #1 — banded psoas march 2×10/side + half-kneeling hip-flexor isometric holds 3×20–30s/side. Effort ≤3/10, no aggressive stretching. Green = any ache settled by tomorrow morning"
-         ]
-     },
-     {
-         "date": "2026-08-18",
-         "append": [
-              "Hip-flexor check-in: Monday's micro-session should have settled overnight. If it did — all green. If not — skip hip work until Friday and keep this run easy-easy",
-              "Left hip flexor rule for every run this week: pain that grows while running = stop. Warm-up ache that fades = OK"
-         ]
-     },
-     {
-         "date": "2026-08-19",
-         "kind": "gym",
-         "gym": "Legs",
-         "title": "Gym — Legs (hamstring volume capped)",
-         "tag": "45–60 min",
-         "steps": [
-              "Pattern from last two weeks: legs Wednesday → hamstring DOMS peaks Friday (cost the Aug 14 steady run). Fix: cap hamstring eccentrics — RDL 2×8 at a lighter weight (was 3×10), everything else unchanged",
-              "Squats 4×8 · Walking lunges 3×12/leg · Single-leg glute bridge 3×10/leg · Plank 3×45s",
-              "Calf raises may return light (shin cleared): 2×12, stop if any shin echo",
-              "Leave feeling worked, not wrecked — tomorrow is the first threshold session in weeks; the gym serves the running",
-              "Post-gym: protein within 20 min"
-         ]
-     },
-     {
-         "date": "2026-08-20",
-         "kind": "run",
-         "arch": "threshold",
-         "title": "Threshold returns — 3×8 min (conservative re-entry)",
-         "tag": "≈9 km",
-         "steps": [
-              "Dose deliberately small for the first threshold back: 3 × 8 min @ 5:05–5:25 (HR guide Z4 162–172), 2 min jog recoveries",
-              "Warm-up 2 km easy + 2–3 strides. HIP FLEXOR GATE: if it speaks in the warm-up and doesn't fade → convert to steady 5:55–6:15. One session costs nothing 35 weeks out",
-              "Heat rule: don't chase pace — if HR runs away mid-rep or it's another 30°+ morning, cut to 2×8 and call it a win",
-              "CARRY: DM320 bottle (pre-chilled) — threshold day = fuel-during day; keep the 50ml/~10min sips",
-              "Cool-down 1–2 km easy — no fast finish"
-         ]
-     },
-     {
-         "date": "2026-08-21",
-         "append": [
-              "After Back gym: hip-flexor micro-session #2 (same dose as Monday) — only if Monday's settled by the next morning; otherwise rest it and reassess Sunday"
-         ]
-     },
-     {
-         "date": "2026-08-23",
-         "append": [
-              "HONEST Z2 — last week's lesson: HR cap 148, no km under 6:00. The Warsaw feeling lives at the end of the plan, not mid-August",
-              "Heat: start early. Pre-chill the DM320 and carry/plan plain water alongside it — then judge the 'heavy' feel again at true Z2 before changing anything in the race plan",
-              "Hold ~90 min — the 90→100 min bump waits until the heatwave breaks"
-         ]
-     }
-  ]
+  {
+   "date": "2026-12-31",
+   "name": "San Silvestre Vallecana 10k",
+   "title": "RACE \u2014 San Silvestre 10k (fun, hard)",
+   "tag": "10 km race \u00b7 ~15 km day",
+   "steps": [
+    "Job: hard festive effort \u2014 race on EFFORT; the crowd decides what the clock says",
+    "Evening race: main meal ~14:00, light carb snack 2 h before, nibble from 10 min before",
+    "Warm-up: 2\u20133 km easy + strides, as space allows",
+    "First 5 km: controlled ~5:00/km effort \u2014 don't fight the crowd, surf it",
+    "Second 5 km: build 4:55 \u2192 4:45 \u2014 pass people all the way \u00b7 48:30\u201350:30 with clear road",
+    "Enjoy it \u2014 finishing the year racing is the point. Sunday's long run after this: short and genuinely easy"
+   ],
+   "target": {
+    "pace": [
+     285,
+     312
+    ],
+    "hr": [
+     3,
+     5
+    ],
+    "evalAs": "sustained"
+   }
+  },
+  {
+   "date": "2027-02-14",
+   "name": "Eisb\u00e4rlauf Halbmarathon",
+   "title": "TEST RACE \u2014 Eisb\u00e4rlauf Half",
+   "tag": "21.1 km race \u00b7 ~26 km day",
+   "steps": [
+    "The Build-phase exam \u2014 this result decides the Specific phase and recalibrates every zone",
+    "Warm-up: 3 km easy + drills + 4 strides",
+    "Loop 1 (7 km) @ 5:05/km \u2014 patient",
+    "Loop 2 (7 km) @ 4:57/km \u2014 the race pace of the day",
+    "Loop 3 (7 km) @ 4:48/km on courage \u00b7 \u22481:44:20 \u00b7 1:44\u20131:46 untapered = green light for 3:30",
+    "Full race rehearsal: breakfast 2 h before \u00b7 water + salt \u00b7 nibble from \u221210 min \u00b7 40\u201360 g carbs/h \u00b7 race shoes",
+    "Cool-down 1\u20132 km \u00b7 then the recovery ladder: walk days \u2192 test jog \u2192 gym re-engagement"
+   ],
+   "target": {
+    "pace": [
+     288,
+     306
+    ],
+    "hr": [
+     3,
+     5
+    ],
+    "evalAs": "sustained"
+   }
+  }
+ ],
+ "overrides": [
+  {
+   "date": "2026-12-05",
+   "kind": "rest",
+   "arch": "rest",
+   "title": "HANDBALL TOURNAMENT (80% likely)",
+   "tag": "",
+   "steps": [
+    "Tournament day \u2014 if you play, this IS the week's hard stimulus (planned Chest gym is cancelled)",
+    "Warm up properly before the first game \u2014 sprints + cuts on cold legs is how runners get hurt",
+    "Between games: keep moving, carbs + fluids like a long run \u2014 the nibble protocol works here too",
+    "After: real meal within the hour, legs up",
+    "If you end up NOT playing: do the normal Chest gym instead, and Sunday's long run runs as planned"
+   ]
+  },
+  {
+   "date": "2026-12-06",
+   "append": [
+    "IF YOU PLAYED HANDBALL YESTERDAY: cap this at 8\u201310 km relaxed Z2, or skip entirely if anything (ankles/knees/adductors) complains \u2014 day-after-tournament + full long run is an injury bet, and the checkpoint race is in 7 days",
+    "If you skipped the tournament: run the long run as planned"
+   ]
+  },
+  {
+   "date": "2026-09-12",
+   "kind": "rest",
+   "arch": "rest",
+   "title": "Handball tournament (light)",
+   "tag": "",
+   "steps": [
+    "Tournament day \u2014 replaces the Chest gym; you expect it to be easy on the legs",
+    "Warm up properly before the first game anyway \u2014 sprints + cuts on cold legs is the risk, not the volume",
+    "Carbs + fluids between games (nibble protocol), real meal within the hour after"
+   ]
+  },
+  {
+   "date": "2026-09-13",
+   "append": [
+    "DAY AFTER HANDBALL: run as planned, but let the first 2 km be the assessment \u2014 heavy legs or any ankle/knee/adductor complaint = shorten without guilt",
+    "Start a notch slower than usual; handball soreness often only shows up once you're warm"
+   ]
+  },
+  {
+   "date": "2026-08-21",
+   "append": [
+    "After Back gym: hip-flexor micro-session #2 (same dose as Thursday) \u2014 only if Thursday's settled by the next morning; otherwise rest it and reassess Sunday"
+   ]
+  },
+  {
+   "date": "2026-08-23",
+   "append": [
+    "HONEST Z2 \u2014 last week's lesson: HR cap 148, no km under 6:00. The Warsaw feeling lives at the end of the plan, not mid-August",
+    "Heat: start early. Pre-chill the DM320 and carry/plan plain water alongside it \u2014 then judge the 'heavy' feel again at true Z2 before changing anything in the race plan",
+    "Hold ~90 min \u2014 the 90\u2192100 min bump waits until the heatwave breaks"
+   ]
+  },
+  {
+   "date": "2026-08-18",
+   "kind": "run",
+   "arch": "threshold",
+   "title": "Threshold returns \u2014 3\u00d78 min (moved from Thu; conservative re-entry)",
+   "tag": "\u22489 km",
+   "steps": [
+    "Moved to Tuesday by choice: Monday became full rest (shins grumbled after the hot long run) \u2014 quality lands on the freshest legs of the week",
+    "3 \u00d7 8 min @ 5:05\u20135:25 (HR guide Z4 162\u2013172), 2 min jog recoveries. First threshold in weeks \u2014 the dose is deliberately small",
+    "SHIN GATE in full force: warm-up ache that fades in the first 2 km = run it. Pain still there at threshold pace or growing mid-rep = stop, jog home, session moves on or dies without guilt",
+    "HIP FLEXOR GATE: speaks in the warm-up and doesn't fade \u2192 convert to steady 5:55\u20136:15",
+    "Soft surface if possible \u00b7 no hip-flexor micro-session today (one variable at a time on a quality day)",
+    "CARRY: DM320 bottle (pre-chilled) \u2014 threshold day = fuel-during day; 50ml/~10min sips \u00b7 Cool-down 1\u20132 km easy, no fast finish"
+   ]
+  },
+  {
+   "date": "2026-08-19",
+   "kind": "gym",
+   "gym": "Legs",
+   "title": "Gym \u2014 Legs (recomposed: strong, not wrecked)",
+   "tag": "45\u201360 min",
+   "steps": [
+    "Composition change, not less leg work \u2014 Scullion: 'tightness means gym, not stretching' and 'you're not cutting training because your calves get tired, you're adding a calf routine so they don't'",
+    "Keep progressive: Squats 4\u00d78 \u00b7 Walking lunges 3\u00d712/leg",
+    "CAP the eccentric soreness driver: RDL 2\u00d78 moderate (was 3\u00d710 heavy) \u2014 DOMS from this ate two run days in two weeks",
+    "ADD the boring basics circuit: calf raises 3\u00d712 (shins cleared \u2014 start light) \u00b7 glute bridges 3\u00d710/leg \u00b7 clams 2\u00d715/side \u00b7 banded psoas march 2\u00d710/side \u00b7 adductor squeezes 2\u00d710\u00d710s",
+    "Finish worked, not wrecked \u2014 Thursday's run should not be hostage to today",
+    "Post-gym: protein within 20 min"
+   ]
+  },
+  {
+   "date": "2026-08-20",
+   "append": [
+    "Luxury run (Scullion): 40 min, pace and pulse don't matter \u2014 'I'm spending time running'. HR under 140, 6:30+, shorten without guilt",
+    "Optional if legs feel good: 4\u00d720s relaxed strides at the end \u2014 keeps leg speed for free while VO2 is parked",
+    "After the run: hip-flexor micro-session #1 \u2014 banded psoas march 2\u00d710/side + half-kneeling isometric holds 3\u00d720\u201330s/side, \u22643/10 effort"
+   ]
+  },
+  {
+   "date": "2026-08-24",
+   "kind": "rest",
+   "arch": "rest",
+   "title": "Optional easy bike 40\u201360 min (the pressure valve)",
+   "tag": "",
+   "steps": [
+    "Monday in the 3-run template = optional non-impact aerobic time. Bike minutes count toward weekly volume (Scullion tracks TIME per week, cross-training included)",
+    "Anything sore from the weekend \u2192 skip entirely, zero guilt. This day exists to absorb exactly that",
+    "Easy-steady effort, conversational \u2014 this is volume, not a session"
+   ]
+  }
+ ]
 }
