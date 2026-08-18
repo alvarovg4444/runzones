@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-08-16T09:55:49Z",
+  "lastSync": "2026-08-18T17:01:42Z",
   "source": "intervals-icu-sync",
   "activities": [
     {
@@ -1099,6 +1099,83 @@
         "1k": 335,
         "5k": 1777,
         "10k": 3579
+      }
+    },
+    {
+      "id": "icu-i177231663",
+      "date": "2026-08-18",
+      "name": "Vienna - RZ Threshold 3x8min",
+      "type": "run",
+      "distanceKm": 8.35,
+      "movingTimeS": 2912,
+      "elapsedTimeS": 2992,
+      "avgHr": 149,
+      "maxHr": 176,
+      "ascentM": 77,
+      "source": "intervals.icu",
+      "paceSecPerKm": 349,
+      "bestKmSecPerKm": 308,
+      "best20minSecPerKm": 318,
+      "laps": [
+        [
+          1001,
+          478,
+          115
+        ],
+        [
+          1001,
+          404,
+          134
+        ],
+        [
+          1005,
+          315,
+          157
+        ],
+        [
+          548,
+          166,
+          167
+        ],
+        [
+          293,
+          120,
+          153
+        ],
+        [
+          995,
+          306,
+          164
+        ],
+        [
+          552,
+          173,
+          165
+        ],
+        [
+          297,
+          120,
+          153
+        ],
+        [
+          993,
+          308,
+          166
+        ],
+        [
+          555,
+          171,
+          170
+        ],
+        [
+          997,
+          386,
+          148
+        ]
+      ],
+      "bestEfforts": {
+        "1k": 306,
+        "5k": 1603
       }
     }
   ]
