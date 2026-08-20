@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-08-18T17:01:42Z",
+  "lastSync": "2026-08-20T07:26:02Z",
   "source": "intervals-icu-sync",
   "activities": [
     {
@@ -1176,6 +1176,68 @@
       "bestEfforts": {
         "1k": 306,
         "5k": 1603
+      }
+    },
+    {
+      "id": "icu-i177806209",
+      "date": "2026-08-20",
+      "name": "Vienna - RZ Steady Aerobic 6km",
+      "type": "run",
+      "distanceKm": 7.19,
+      "movingTimeS": 2697,
+      "elapsedTimeS": 2821,
+      "avgHr": 137,
+      "maxHr": 151,
+      "ascentM": 72,
+      "source": "intervals.icu",
+      "paceSecPerKm": 375,
+      "bestKmSecPerKm": 353,
+      "best20minSecPerKm": 357,
+      "laps": [
+        [
+          613,
+          301,
+          108
+        ],
+        [
+          1002,
+          358,
+          137
+        ],
+        [
+          1000,
+          357,
+          139
+        ],
+        [
+          1001,
+          358,
+          143
+        ],
+        [
+          998,
+          360,
+          143
+        ],
+        [
+          1001,
+          356,
+          146
+        ],
+        [
+          1000,
+          353,
+          144
+        ],
+        [
+          569,
+          305,
+          127
+        ]
+      ],
+      "bestEfforts": {
+        "1k": 351,
+        "5k": 1781
       }
     }
   ]
