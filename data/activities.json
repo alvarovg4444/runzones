@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-08-27T22:33:39Z",
+  "lastSync": "2026-08-30T07:22:22Z",
   "source": "intervals-icu-sync",
   "activities": [
     {
@@ -1495,6 +1495,78 @@
       "bestEfforts": {
         "1k": 350,
         "5k": 1791
+      }
+    },
+    {
+      "id": "icu-i181214898",
+      "date": "2026-08-30",
+      "name": "Altmünster - Long Run 16km",
+      "type": "run",
+      "distanceKm": 9.37,
+      "movingTimeS": 3717,
+      "elapsedTimeS": 3729,
+      "avgHr": 129,
+      "maxHr": 141,
+      "ascentM": 44,
+      "source": "intervals.icu",
+      "paceSecPerKm": 397,
+      "bestKmSecPerKm": 382,
+      "best20minSecPerKm": 386,
+      "laps": [
+        [
+          722,
+          338,
+          102
+        ],
+        [
+          996,
+          391,
+          124
+        ],
+        [
+          1000,
+          387,
+          130
+        ],
+        [
+          1001,
+          393,
+          133
+        ],
+        [
+          997,
+          389,
+          129
+        ],
+        [
+          1003,
+          390,
+          133
+        ],
+        [
+          1000,
+          388,
+          132
+        ],
+        [
+          1000,
+          382,
+          135
+        ],
+        [
+          1001,
+          403,
+          133
+        ],
+        [
+          651,
+          268,
+          129
+        ]
+      ],
+      "bestEfforts": {
+        "1k": 379,
+        "5k": 1938
       }
     }
   ]
