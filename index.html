@@ -2034,6 +2034,39 @@ const repPace = (r) => {
   for (const l of (r.laps || [])) if (l[0] >= 400 && l[1] > 0) best = Math.min(best, l[1] / (l[0] / 1000));
   return best;
 };
+/* Core of the run: strip warm-up / cool-down laps so easy pace and HR are
+   judged on the run itself, not diluted by the jog out and back. Leading /
+   trailing laps are peeled while clearly slower than the body of the run
+   (or a leading lap's HR is clearly below it). At most 25% of the distance
+   comes off each end; runs without usable laps are judged whole. */
+function coreStats(r) {
+  const whole = { distKm: r.distanceKm, timeS: r.movingTimeS,
+                  pace: r.paceSecPerKm ?? null, hr: r.avgHr ?? null, trimmed: false };
+  const laps = (r.laps || []).filter(l => l[0] > 100 && l[1] > 0);
+  if (laps.length < 3 || !r.paceSecPerKm) return whole;
+  const paceOf = l => l[1] / (l[0] / 1000);
+  const midP = laps.slice(1, -1).map(paceOf).sort((x, y) => x - y);
+  const medPace = midP[Math.floor(midP.length / 2)];
+  const midH = laps.slice(1, -1).map(l => l[2]).filter(h => h > 0).sort((x, y) => x - y);
+  const medHr = midH.length ? midH[Math.floor(midH.length / 2)] : null;
+  const slack = Math.max(45, medPace * 0.12);
+  const cap = 0.25 * laps.reduce((s, l) => s + l[0], 0);
+  let a = 0, b = laps.length - 1, cut = 0;
+  while (a < b && cut + laps[a][0] <= cap &&
+         (paceOf(laps[a]) > medPace + slack || (medHr && laps[a][2] > 0 && laps[a][2] < medHr - 12)))
+    { cut += laps[a][0]; a++; }
+  cut = 0;
+  while (b > a && cut + laps[b][0] <= cap && paceOf(laps[b]) > medPace + slack)
+    { cut += laps[b][0]; b--; }
+  if (a === 0 && b === laps.length - 1) return whole;
+  const seg = laps.slice(a, b + 1);
+  const dist = seg.reduce((s, l) => s + l[0], 0), time = seg.reduce((s, l) => s + l[1], 0);
+  const hrT = seg.filter(l => l[2] > 0);
+  const hr = hrT.length
+    ? Math.round(hrT.reduce((s, l) => s + l[2] * l[1], 0) / hrT.reduce((s, l) => s + l[1], 0))
+    : r.avgHr;
+  return { distKm: dist / 1000, timeS: time, pace: time / (dist / 1000), hr, trimmed: true };
+}
 function scoreExecution(r) {
   /* The Coach's rule: judge the run against what was ON THE PLAN that day.
      Only when nothing was planned do we fall back to classifying by name. */
@@ -2057,18 +2090,34 @@ function scoreExecution(r) {
   }
   let score = 100; const notes = [];
   if (pd && !pd.target) notes.push(`unscheduled — plan said ${pd.title}`);
-  const evalPace = evalAs === "rep" ? repPace(r) : evalAs === "sustained" ? sustainedPace(r) : r.paceSecPerKm;
+  const core = coreStats(r);
+  if (core.trimmed) notes.push(`judged on the core ${core.distKm.toFixed(1)} km \u2014 warm-up/cool-down trimmed`);
+  const evalPace = evalAs === "rep" ? repPace(r) : evalAs === "sustained" ? sustainedPace(r) : (core.pace ?? r.paceSecPerKm);
   if (evalPace != null && evalPace !== Infinity) {
     const [lo, hi] = t.pace;
     if (evalPace < lo) { const over = lo - evalPace; score -= Math.min(45, over * 0.55); notes.push(`${Math.round(over)}s/km too fast — don't race the training`); }
     else if (evalPace > hi) { const under = evalPace - hi; score -= Math.min(35, under * 0.35); notes.push(`${Math.round(under)}s/km slower than prescribed`); }
   }
-  const z = hrZoneOf(r.avgHr);
+  const z = hrZoneOf(core.hr ?? r.avgHr);
   if (z != null) {
     const [zlo, zhi] = t.hr;
     if (z > zhi) { score -= (z - zhi) * 14; notes.push(`HR drifted to Z${z}`); }
     /* rep sessions: jog recoveries dilute avg HR — a "low" average is expected, not a fault */
     else if (z < zlo && evalAs !== "rep") { score -= (zlo - z) * 8; notes.push(`HR below Z${zlo}`); }
+  }
+  /* Completion: a run judged only on pace/HR scores well even when cut short.
+     Compare against the planned day's distance whenever its tag names one. */
+  if (planned && planned.tag) {
+    const m = String(planned.tag).match(/(\d+(?:\.\d+)?)\s*km/);
+    if (m && parseFloat(m[1]) > 0) {
+      const plannedKm = parseFloat(m[1]);
+      const ratio = r.distanceKm / plannedKm;
+      const floor = String(planned.tag).indexOf("\u2248") >= 0 ? 0.8 : 0.85;
+      if (ratio < floor) {
+        score -= Math.min(45, Math.round((floor - ratio) * 150));
+        notes.push(`cut short: ${fmtKm(r.distanceKm)} of ${plannedKm} km planned`);
+      }
+    }
   }
   return { target: t, planned, evalAs, evalPace: (evalPace === Infinity ? null : evalPace), score: Math.round(clamp(score, 0, 100)), notes };
 }
@@ -2255,6 +2304,13 @@ function plannedFor(dateStr) {
   if (!__planIdx) {
     __planIdx = {};
     const plan = buildPlan();
+    /* the plan is anchored to the current Monday, so last week's runs would fall
+       out of it the moment a new week starts; rebuild the previous week as a
+       mirror of the current one so recent runs stay judged against their plan. */
+    if (plan.length) {
+      const prev = { ...plan[0], start: addDays(plan[0].start, -7), current: false };
+      for (const d of buildWeekDays(prev)) __planIdx[localKey(d.date)] = { day: d, week: prev };
+    }
     for (const w of plan) for (const d of buildWeekDays(w)) __planIdx[localKey(d.date)] = { day: d, week: w };
   }
   return __planIdx[dateStr] || null;
@@ -2685,7 +2741,7 @@ function openRunModal(id) {
     <div class="msub">${parseISO(r.date).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}${ex.score == null ? " · pre-plan history" : ` · score <b style=\"color:${scoreColor(ex.score)}\">${ex.score} — ${scoreWord(ex.score)}</b>`}</div>
     <h4>${ex.planned ? "What the plan asked for" : "No session planned this day"}</h4>
     ${ex.planned
-      ? `<p><b>${ex.planned.title}</b>${ex.planned.tag ? ` · ${ex.planned.tag}` : ""} — prescribed ${fmtPace(ex.target.pace[0])}–${fmtPace(ex.target.pace[1])}, HR Z${ex.target.hr[0]}–Z${ex.target.hr[1]}. Judged on ${ex.evalAs === "rep" ? "your best km lap (rep quality)" : ex.evalAs === "sustained" ? "your best sustained stretch (≥18 min)" : "whole-run moving pace"}.</p>`
+      ? `<p><b>${ex.planned.title}</b>${ex.planned.tag ? ` · ${ex.planned.tag}` : ""} — prescribed ${fmtPace(ex.target.pace[0])}–${fmtPace(ex.target.pace[1])}, HR Z${ex.target.hr[0]}–Z${ex.target.hr[1]}. Judged on ${ex.evalAs === "rep" ? "your best km lap (rep quality)" : ex.evalAs === "sustained" ? "your best sustained stretch (≥18 min)" : "the core run’s moving pace (warm-up/cool-down trimmed)"}.</p>`
       : (hit && hit.day ? `<p>The plan said <b>${hit.day.title}</b>. This run was extra — judged as a ${ex.target.label.toLowerCase()}.</p>` : `<p>Judged as a ${ex.target.label.toLowerCase()} from its profile.</p>`)}
     <h4>What you did</h4>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:6px">
