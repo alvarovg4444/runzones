@@ -2968,10 +2968,12 @@ function ingredientOf(r) {
   if (arch === "vo2" || /interval|vo2|track|hill|\brep/.test(n)) return "vo2";
   if (arch === "race" || /einstufung|\btest\b|race|wettkampf|\b5k\b|\b10k\b/.test(n)) return r.distanceKm >= 8 ? "threshold" : "vo2";
   if (arch === "steady" || arch === "mp" || /steady|marathon|\bmp\b/.test(n)) {
-    /* a run called "steady" that was run at easy effort is base volume — judge the effort, not the label */
+    /* "steady" counts when the core run sits inside the plan's own steady-session band
+       (pace up to Steady max + 15 s, i.e. what dayTarget prescribes) or the pulse reached Z3.
+       A "steady" that was jogged well outside that band is base volume. */
     const c = coreStats(r);
-    const easyEffort = c.hr ? c.hr < S.hrZones[2].minHr - 4 : (c.pace && c.pace > pz(2).maxSecPerKm + 10);
-    return easyEffort ? "base" : "steady";
+    const inBand = (c.pace && c.pace <= pz(2).maxSecPerKm + 15) || (c.hr && c.hr >= S.hrZones[2].minHr - 4);
+    return inBand ? "steady" : "base";
   }
   return "base";
 }
@@ -3043,7 +3045,9 @@ function freshnessLedger() {
   const upcoming = [];
   for (const w of buildPlan().slice(0, 4)) for (const d of buildWeekDays(w)) if (d.date > now && d.kind === "run") upcoming.push(d);
   return ING.map(ing => {
-    const mine = tagged.filter(t => t.ing === ing.id);
+    /* easy base = any easy-effort running, so a Z2 long run keeps the base fresh too */
+    const isEasyLong = t => t.ing === "long" && (() => { const c = coreStats(t.r); return c.hr ? c.hr <= S.hrZones[1].maxHr + 2 : true; })();
+    const mine = tagged.filter(t => t.ing === ing.id || (ing.id === "base" && isEasyLong(t)));
     const last = mine.at(-1);
     const days = last ? Math.round((now - parseISO(last.r.date)) / dayMs) : null;
     const status = days == null ? "missing" : days <= ing.fresh ? "fresh" : days <= ing.stale ? "fading" : "stale";
