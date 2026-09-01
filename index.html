@@ -3103,8 +3103,9 @@ function weekProjection() {
   const daily = [];
   for (let i = 0; i < 7; i++) {
     const d = addDays(mon, i), k = localKey(d);
+    const pd = days.find(x => x.date.getTime() === d.getTime()) || null;
     daily.push({ date: d, km: thisRuns.filter(r => r.date === k).reduce((s, r) => s + r.distanceKm, 0),
-                 planned: days.find(x => x.date.getTime() === d.getTime()) || null, past: d < today, isToday: d.getTime() === today.getTime() });
+                 planned: pd, plannedKm: pd ? kmOf(pd) : 0, past: d < today, isToday: d.getTime() === today.getTime() });
   }
   return { done, remaining, planned, projected: done + remaining, lastAtPoint, lastTotal, daily, count: thisRuns.length, week: cur || null };
 }
@@ -3164,7 +3165,7 @@ function barChartSVG(o) {
     g += `<text x="${padL - 8}" y="${y(t) + 4}" text-anchor="end" font-size="11" fill="var(--label2)" style="font-variant-numeric:tabular-nums">${o.yFmt ? o.yFmt(t) : t}</text>`;
   }
   if (o.target) g += `<line x1="${padL}" y1="${y(o.target.v)}" x2="${W - padR}" y2="${y(o.target.v)}" stroke="var(--label3)" stroke-width="1.5" stroke-dasharray="4 4"/>` +
-    `<text x="${W - padR}" y="${y(o.target.v) - 5}" text-anchor="end" font-size="10.5" fill="var(--label2)">${o.target.label}</text>`;
+    `<text x="${padL + 4}" y="${y(o.target.v) - 5}" text-anchor="start" font-size="10.5" fill="var(--label2)">${o.target.label}</text>`;
   bars.forEach((b, i) => {
     const cx = padL + slot * i + slot / 2, h = Math.max(b.v > 0 ? 3 : 0, ih * b.v / maxV), r = Math.min(5, bw / 2);
     if (h > 0) g += `<path d="M${(cx - bw / 2).toFixed(1)},${padT + ih} v${-(h - r)} q0,${-r} ${r},${-r} h${bw - 2 * r} q${r},0 ${r},${r} v${h - r} z" fill="${b.color || "var(--blue)"}"${b.faded ? ' fill-opacity="0.45"' : ""} class="hit" data-tip="${b.tip || ""}"/>`;
@@ -3298,12 +3299,12 @@ function runRowHTML(r) {
 }
 
 function weekStripSVG(daily) {
-  const W = chartW(), H = 78, slot = W / 7, maxKm = Math.max(8, ...daily.map(d => Math.max(d.km, d.planned && d.planned.kind === "run" ? (String(d.planned.tag || "").match(/(\d+(?:\.\d+)?)\s*km/) || [0, 6])[1] * 1 : 0)));
+  const W = chartW(), H = 78, slot = W / 7, maxKm = Math.max(8, ...daily.map(d => Math.max(d.km, d.plannedKm || 0)));
   let g = "";
   daily.forEach((d, i) => {
     const cx = slot * i + slot / 2, base = 52, ih = 40;
     const kind = d.planned ? d.planned.kind : "rest";
-    const pl = d.planned && kind === "run" ? +((String(d.planned.tag || "").match(/(\d+(?:\.\d+)?)\s*km/) || [0, 6])[1]) : 0;
+    const pl = kind === "run" ? (d.plannedKm || 0) : 0;
     const dn = d.date.toLocaleDateString("en-GB", { weekday: "short" }).slice(0, 2);
     if (pl > 0) { const h = ih * pl / maxKm; g += `<rect x="${cx - 11}" y="${base - h}" width="22" height="${h}" rx="5" fill="var(--fill)" class="hit" data-tip="${d.planned.title}|planned ≈ ${pl} km"/>`; }
     if (d.km > 0) { const h = Math.max(4, ih * d.km / maxKm); g += `<rect x="${cx - 11}" y="${base - h}" width="22" height="${h}" rx="5" fill="var(--blue)" class="hit" data-tip="${fmtDate(d.date, { weekday: "long" })}|${fmtKm(d.km)} km run"/>`; }
