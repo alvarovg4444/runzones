@@ -6,262 +6,341 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RunZones · Alvaro</title>
 <style>
+  /* ===== RunZones · Health-style design system ===== */
   :root {
     color-scheme: light;
-    --surface-1: #fcfcfb;
-    --page: #f9f9f7;
-    --text-primary: #0b0b0b;
-    --text-secondary: #52514e;
-    --muted: #898781;
-    --grid: #e1e0d9;
-    --baseline: #c3c2b7;
-    --border: rgba(11,11,11,0.10);
-    --series-1: #2a78d6;
-    --series-2: #eb6834;
-    --series-3: #1baf7a;
-    --seq-200: #9ec5f4;
-    --seq-450: #2a78d6;
-    --good: #0ca30c;
-    --good-text: #006300;
-    --warning: #fab219;
-    --serious: #ec835a;
-    --critical: #d03b3b;
-    --chip-bg: #f0efec;
+    --bg: #F2F2F7; --card: #FFFFFF; --card2: #F2F2F7; --inset: rgba(120,120,128,0.10);
+    --label: #000000; --label2: rgba(60,60,67,0.62); --label3: rgba(60,60,67,0.36);
+    --sep: rgba(60,60,67,0.14); --fill: rgba(120,120,128,0.16); --fill2: rgba(120,120,128,0.26);
+    --blue:#007AFF; --green:#34C759; --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --teal:#30B0C7;
+    --indigo:#5856D6; --purple:#AF52DE; --pink:#FF2D55; --mint:#00C7BE; --gray:#8E8E93; --cyan:#32ADE6;
+    --z0:#007AFF; --z1:#30B0C7; --z2:#34C759; --z3:#FF9500; --z4:#FF3B30; --z5:#AF52DE;
+    --good:#34C759; --good-text:#1E8E3E; --warning:#FF9500; --serious:#FF6B00; --critical:#FF3B30;
+    /* legacy aliases used by older render code */
+    --surface-1: var(--card); --page: var(--bg); --text-primary: var(--label); --text-secondary: var(--label2);
+    --muted: #8E8E93; --grid: var(--sep); --baseline: rgba(60,60,67,0.28); --border: transparent;
+    --series-1: var(--blue); --series-2: var(--orange); --series-3: var(--green); --seq-200: #9ECBFF; --seq-450: var(--blue);
+    --chip-bg: var(--fill);
+    --shadow: 0 1px 2px rgba(0,0,0,0.04);
+    --r: 16px; --r-s: 12px;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --surface-1: #1a1a19;
-      --page: #0d0d0d;
-      --text-primary: #ffffff;
-      --text-secondary: #c3c2b7;
-      --muted: #898781;
-      --grid: #2c2c2a;
-      --baseline: #383835;
-      --border: rgba(255,255,255,0.10);
-      --series-1: #3987e5;
-      --series-2: #d95926;
-      --series-3: #199e70;
-      --seq-200: #184f95;
-      --seq-450: #3987e5;
-      --good: #0ca30c;
-      --good-text: #0ca30c;
-      --chip-bg: #383835;
+      --bg:#000000; --card:#1C1C1E; --card2:#2C2C2E; --inset: rgba(120,120,128,0.22);
+      --label:#FFFFFF; --label2: rgba(235,235,245,0.62); --label3: rgba(235,235,245,0.32);
+      --sep: rgba(84,84,88,0.55); --fill: rgba(120,120,128,0.26); --fill2: rgba(120,120,128,0.40);
+      --blue:#0A84FF; --green:#30D158; --red:#FF453A; --orange:#FF9F0A; --yellow:#FFD60A; --teal:#40C8E0;
+      --indigo:#5E5CE6; --purple:#BF5AF2; --pink:#FF375F; --mint:#63E6E2; --gray:#8E8E93; --cyan:#64D2FF;
+      --z0:#0A84FF; --z1:#40C8E0; --z2:#30D158; --z3:#FF9F0A; --z4:#FF453A; --z5:#BF5AF2;
+      --good:#30D158; --good-text:#30D158; --warning:#FF9F0A; --serious:#FF7A1A; --critical:#FF453A;
+      --seq-200:#1E3A5F; --shadow: none;
     }
   }
-  * { box-sizing: border-box; margin: 0; }
-  body {
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: var(--page); color: var(--text-primary);
-    line-height: 1.45;
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg:#000000; --card:#1C1C1E; --card2:#2C2C2E; --inset: rgba(120,120,128,0.22);
+    --label:#FFFFFF; --label2: rgba(235,235,245,0.62); --label3: rgba(235,235,245,0.32);
+    --sep: rgba(84,84,88,0.55); --fill: rgba(120,120,128,0.26); --fill2: rgba(120,120,128,0.40);
+    --blue:#0A84FF; --green:#30D158; --red:#FF453A; --orange:#FF9F0A; --yellow:#FFD60A; --teal:#40C8E0;
+    --indigo:#5E5CE6; --purple:#BF5AF2; --pink:#FF375F; --mint:#63E6E2; --gray:#8E8E93; --cyan:#64D2FF;
+    --z0:#0A84FF; --z1:#40C8E0; --z2:#30D158; --z3:#FF9F0A; --z4:#FF453A; --z5:#BF5AF2;
+    --good:#30D158; --good-text:#30D158; --warning:#FF9F0A; --serious:#FF7A1A; --critical:#FF453A;
+    --seq-200:#1E3A5F; --shadow: none;
   }
-  header {
-    padding: 20px 24px 0; max-width: 1060px; margin: 0 auto;
-  }
-  header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
-  header .sub { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
-  nav {
-    display: flex; gap: 4px; margin-top: 16px; border-bottom: 1px solid var(--grid);
-    overflow-x: auto;
-  }
-  nav button {
-    flex: 0 0 auto;
-    appearance: none; background: none; border: none; cursor: pointer;
-    font: inherit; font-size: 14px; color: var(--text-secondary);
-    padding: 8px 14px; border-bottom: 2px solid transparent; white-space: nowrap;
-  }
-  nav button.active { color: var(--text-primary); font-weight: 600; border-bottom-color: var(--series-1); }
-  main { max-width: 1060px; margin: 0 auto; padding: 20px 24px 60px; }
-  section.tab { display: none; }
-  section.tab.active { display: block; }
 
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
-  .card {
-    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
-    padding: 14px 16px;
+  * { box-sizing: border-box; margin: 0; min-width: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-family: var(--font); background: var(--bg); color: var(--label); line-height: 1.42; font-size: 15px;
+         -webkit-font-smoothing: antialiased; }
+  a { color: var(--blue); }
+  button { font-family: inherit; }
+  svg text { font-family: inherit; }
+
+  /* ---- app frame ---- */
+  #app { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; }
+  #side { position: sticky; top: 0; height: 100vh; padding: 22px 12px; border-right: 1px solid var(--sep); background: var(--bg); overflow-y: auto; }
+  #side .brand { display: flex; align-items: center; gap: 10px; padding: 4px 10px 18px; }
+  #side .brand .logo { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg, var(--pink), var(--orange)); display: grid; place-items: center; }
+  #side .brand .logo svg { width: 18px; height: 18px; }
+  #side .brand b { font-size: 16px; letter-spacing: -0.01em; }
+  #side .brand small { display: block; font-size: 11.5px; color: var(--label2); font-weight: 500; }
+  .navlist { display: grid; gap: 2px; }
+  .navbtn { display: flex; align-items: center; gap: 10px; width: 100%; appearance: none; border: none; background: none; cursor: pointer;
+            padding: 8px 10px; border-radius: 10px; font-size: 14.5px; font-weight: 500; color: var(--label); text-align: left; }
+  .navbtn .ic { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: var(--acc, var(--blue)); color: #fff; flex: 0 0 auto; }
+  .navbtn .ic svg { width: 15px; height: 15px; }
+  .navbtn:hover { background: var(--fill); }
+  .navbtn.active { background: color-mix(in srgb, var(--acc, var(--blue)) 16%, transparent); color: var(--label); font-weight: 600; }
+  #side .sidefoot { margin-top: 18px; padding: 10px; font-size: 11.5px; color: var(--label3); line-height: 1.5; }
+
+  #content { padding: 0 0 90px; }
+  .pagehead { max-width: 1040px; margin: 0 auto; padding: 26px 28px 8px; }
+  .pagehead .crumb { font-size: 13px; color: var(--label2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.03em; }
+  .pagehead h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-top: 2px; }
+  .pagehead .psub { font-size: 14px; color: var(--label2); margin-top: 6px; }
+  main { max-width: 1040px; margin: 0 auto; padding: 8px 28px 40px; }
+  section.tab { display: none; } section.tab.active { display: block; animation: fadein .18s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px);} to { opacity: 1; transform: none; } }
+
+  /* bottom tab bar (mobile) */
+  #tabbar { display: none; }
+  @media (max-width: 900px) {
+    #app { grid-template-columns: 1fr; }
+    #side { display: none; }
+    #content { padding-bottom: 96px; }
+    #tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none;
+              padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--card) 86%, transparent);
+              backdrop-filter: saturate(180%) blur(18px); -webkit-backdrop-filter: saturate(180%) blur(18px); border-top: 1px solid var(--sep); }
+    #tabbar::-webkit-scrollbar { display: none; }
+    #tabbar .tb { flex: 0 0 auto; min-width: 64px; appearance: none; border: none; background: none; cursor: pointer; display: grid; justify-items: center; gap: 3px;
+                  padding: 4px 6px; border-radius: 10px; font-size: 10.5px; font-weight: 600; color: var(--label2); }
+    #tabbar .tb .ic { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--fill); color: var(--label2); }
+    #tabbar .tb .ic svg { width: 16px; height: 16px; }
+    #tabbar .tb.active { color: var(--acc); } #tabbar .tb.active .ic { background: var(--acc); color: #fff; }
+    .pagehead { padding: 18px 16px 6px; } .pagehead h1 { font-size: 30px; }
+    main { padding: 6px 16px 30px; }
   }
-  .card .k { font-size: 12px; color: var(--text-secondary); }
+
+  /* ---- cards ---- */
+  .panel { background: var(--card); border-radius: var(--r); padding: 18px 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .panel h2 { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .panel .hint { font-size: 13px; color: var(--label2); margin-bottom: 14px; line-height: 1.45; }
+  .note { font-size: 12.5px; color: var(--label2); margin-top: 10px; line-height: 1.5; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .card { background: var(--card); border-radius: var(--r-s); padding: 14px 16px; box-shadow: var(--shadow); }
+  .panel .cards .card { background: var(--card2); box-shadow: none; }
+  .card .k { font-size: 13px; color: var(--label2); font-weight: 500; }
   .card .v { font-size: 26px; font-weight: 700; margin-top: 2px; letter-spacing: -0.02em; }
-  .card .d { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .card .v .unit { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
+  .card .v .unit { font-size: 14px; font-weight: 500; color: var(--label2); margin-left: 2px; }
+  .card .d { font-size: 12px; color: var(--label2); margin-top: 3px; line-height: 1.4; }
 
-  .panel {
-    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
-    padding: 18px; margin-bottom: 20px;
-  }
-  .panel h2 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-  .panel .hint { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 14px; }
+  /* Health-style metric card */
+  .hgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 16px; }
+  .hgrid .span2 { grid-column: 1 / -1; }
+  @media (max-width: 720px) { .hgrid { grid-template-columns: 1fr; } }
+  .hcard { background: var(--card); border-radius: var(--r); padding: 14px 16px 12px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 6px; position: relative; }
+  .hcard.tap { cursor: pointer; } .hcard.tap:active { transform: scale(0.995); }
+  .hhead { display: flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 600; color: var(--acc, var(--label)); }
+  .hhead .hic { width: 18px; height: 18px; display: grid; place-items: center; } .hhead .hic svg { width: 17px; height: 17px; }
+  .hhead .hwhen { margin-left: auto; font-size: 12.5px; font-weight: 500; color: var(--label2); }
+  .hhead .chev { color: var(--label3); font-size: 14px; margin-left: 4px; }
+  .hval { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+  .hval .hunit { font-size: 14px; font-weight: 600; color: var(--label2); margin-left: 4px; letter-spacing: 0; }
+  .hsub { font-size: 12.5px; color: var(--label2); margin-top: -2px; }
+  .hchart { margin-top: 4px; }
+  .hchart svg { width: 100%; height: auto; display: block; }
+  .hfoot { font-size: 12.5px; color: var(--label2); line-height: 1.45; border-top: 1px solid var(--sep); padding-top: 8px; margin-top: 4px; }
+  .hfoot b { color: var(--label); font-weight: 600; }
+  .hstats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-top: 4px; }
+  .hstats div { background: var(--card2); border-radius: 10px; padding: 8px 10px; }
+  .hstats .k { font-size: 11px; color: var(--label2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+  .hstats .v { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .hero { font-size: 44px; font-weight: 800; letter-spacing: -0.03em; }
+  .hero-sub { color: var(--label2); font-size: 13px; }
 
+  /* segmented control */
+  .seg { display: inline-flex; background: var(--fill); border-radius: 9px; padding: 2px; gap: 2px; }
+  .seg button { appearance: none; border: none; background: none; cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--label2);
+                padding: 4px 11px; border-radius: 7px; }
+  .seg button.on { background: var(--card); color: var(--label); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+
+  /* status pills */
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 99px; background: var(--fill); color: var(--label2); }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .pill.good { background: color-mix(in srgb, var(--green) 16%, transparent); color: var(--good-text); }
+  .pill.warn { background: color-mix(in srgb, var(--orange) 18%, transparent); color: var(--orange); }
+  .pill.bad { background: color-mix(in srgb, var(--red) 16%, transparent); color: var(--red); }
+  .pill.info { background: color-mix(in srgb, var(--blue) 14%, transparent); color: var(--blue); }
+
+  /* list rows (Health "Highlights" style) */
+  .rows { display: grid; }
+  .row { display: grid; grid-template-columns: 34px minmax(0,1fr) auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--sep); }
+  .row:last-child { border-bottom: none; }
+  .row .ric { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--acc, var(--blue)) 16%, transparent); color: var(--acc, var(--blue)); }
+  .row .ric svg { width: 18px; height: 18px; }
+  .row .rt { font-size: 15px; font-weight: 600; }
+  .row .rs { font-size: 12.5px; color: var(--label2); margin-top: 1px; }
+  .row .rr { text-align: right; font-size: 13px; color: var(--label2); font-variant-numeric: tabular-nums; }
+  .row .rr b { display: block; font-size: 16px; color: var(--label); font-weight: 700; }
+  .row .rr .rrs { display: block; font-size: 12px; margin-bottom: 3px; }
+  .row .rs { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .row.tap { cursor: pointer; } .row.tap:hover .rt { color: var(--blue); }
+  .strip { display: flex; gap: 3px; align-items: center; }
+  .strip i { width: 9px; height: 9px; border-radius: 3px; background: var(--fill2); display: inline-block; }
+  .strip i.on { background: var(--acc, var(--blue)); }
+
+  /* tables */
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  th { text-align: left; color: var(--muted); font-weight: 500; font-size: 12px; padding: 6px 10px; border-bottom: 1px solid var(--grid); }
-  td { padding: 8px 10px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  th { text-align: left; color: var(--label2); font-weight: 600; font-size: 12px; padding: 8px 10px; border-bottom: 1px solid var(--sep); }
+  td { padding: 10px 10px; border-bottom: 1px solid var(--sep); font-variant-numeric: tabular-nums; }
   tr:last-child td { border-bottom: none; }
   td.num, th.num { text-align: right; }
-
-  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 2px 9px; border-radius: 99px; background: var(--chip-bg); color: var(--text-secondary); }
+  tbody tr[onclick]:hover td { background: var(--inset); }
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; padding: 3px 9px; border-radius: 99px; background: var(--fill); color: var(--label2); white-space: nowrap; }
   .chip .dot { width: 8px; height: 8px; border-radius: 50%; }
 
-  .sysrow { display: grid; grid-template-columns: 170px 1fr 44px; gap: 12px; align-items: center; padding: 7px 0; }
-  .sysrow .name { font-size: 13.5px; }
-  .sysrow .why { font-size: 11.5px; color: var(--muted); }
-  .sysbar { height: 10px; background: var(--chip-bg); border-radius: 5px; overflow: hidden; }
-  .sysbar > div { height: 100%; border-radius: 5px 4px 4px 5px; background: var(--series-1); }
-  .sysrow .score { font-size: 13.5px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+  /* systems */
+  .sysrow { display: grid; grid-template-columns: 180px 1fr 44px; gap: 12px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--sep); }
+  .sysrow:last-of-type { border-bottom: none; }
+  .sysrow .name { font-size: 14px; font-weight: 600; }
+  .sysrow .why { font-size: 11.5px; color: var(--label2); line-height: 1.35; }
+  .sysbar { height: 8px; background: var(--fill); border-radius: 4px; overflow: hidden; }
+  .sysbar > div { height: 100%; border-radius: 4px; background: var(--blue); transition: width .4s ease; }
+  .sysrow .score { font-size: 15px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
 
-  .weekcard { border: 1px solid var(--grid); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
-  .weekcard.current { border-color: var(--series-1); }
-  .weekcard .whead { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: 13px; }
-  .weekcard .whead b { font-size: 13.5px; }
+  /* plan */
+  .weekcard { background: var(--card2); border-radius: var(--r-s); padding: 12px 14px; margin-bottom: 10px; }
+  .weekcard.current { outline: 2px solid var(--blue); outline-offset: -2px; background: color-mix(in srgb, var(--blue) 7%, var(--card2)); }
+  .weekcard .whead { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: 13px; color: var(--label2); }
+  .weekcard .whead b { font-size: 14px; color: var(--label); }
   .weekcard ul { list-style: none; margin-top: 8px; display: grid; gap: 4px; }
-  .weekcard li { font-size: 12.5px; color: var(--text-secondary); padding-left: 14px; position: relative; }
-  .weekcard li::before { content: ""; position: absolute; left: 0; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--baseline); }
-  .weekcard li.key::before { background: var(--series-2); }
-  .phase { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .weekcard li { font-size: 12.5px; color: var(--label2); padding-left: 14px; position: relative; }
+  .weekcard li::before { content: ""; position: absolute; left: 0; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--label3); }
+  .weekcard li.key::before { background: var(--orange); }
+  .phase { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--label2); font-weight: 600; }
 
-  .hero { font-size: 44px; font-weight: 700; letter-spacing: -0.02em; }
-  .hero-sub { color: var(--text-secondary); font-size: 13px; }
-
-  #tooltip {
-    position: fixed; pointer-events: none; z-index: 10; display: none;
-    background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: 8px 11px; font-size: 12.5px;
-  }
-  #tooltip .t1 { font-weight: 600; }
-  #tooltip .t2 { color: var(--text-secondary); }
-  svg text { font-family: inherit; }
-  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); margin-top: 8px; flex-wrap: wrap; }
+  /* tooltip */
+  #tooltip { position: fixed; pointer-events: none; z-index: 60; display: none; background: var(--card); border-radius: 10px;
+             box-shadow: 0 6px 24px rgba(0,0,0,0.18); padding: 8px 11px; font-size: 12.5px; border: 1px solid var(--sep); }
+  #tooltip .t1 { font-weight: 600; } #tooltip .t2 { color: var(--label2); }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--label2); margin-top: 8px; flex-wrap: wrap; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
-  .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
 
-  .calweek { border: 1px solid var(--grid); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
-  .calweek.current { border-color: var(--series-1); }
+  /* calendar */
+  .calweek { background: var(--card2); border-radius: var(--r-s); padding: 12px 14px; margin-bottom: 12px; }
+  .calweek.current { outline: 2px solid var(--blue); outline-offset: -2px; }
   .daygrid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
-  .daycard { border: 1px solid var(--grid); border-radius: 8px; padding: 8px 9px; min-height: 64px; background: var(--page); min-width: 0; overflow: hidden; cursor: pointer; transition: border-color 0.12s; }
-  .daycard:hover { border-color: var(--series-1); }
+  .daycard { border-radius: 10px; padding: 9px 10px; min-height: 64px; background: var(--card); min-width: 0; overflow: hidden; cursor: pointer; transition: transform .12s, box-shadow .12s; box-shadow: var(--shadow); }
+  .daycard:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
   .daycard *, .weekcard * { overflow-wrap: break-word; }
   .dtitle, .dtag, .dsteps li { overflow-wrap: anywhere; }
-  .daycard.today { outline: 2px solid var(--series-1); outline-offset: -1px; }
-  .dhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  .dnum { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .dbadge { font-size: 9.5px; font-weight: 700; letter-spacing: 0.05em; color: #fff; border-radius: 4px; padding: 1px 6px; }
+  .daycard.today { outline: 2px solid var(--blue); outline-offset: -2px; }
+  .dhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .dnum { font-size: 11px; color: var(--label2); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .dbadge { font-size: 9.5px; font-weight: 700; letter-spacing: 0.05em; color: #fff; border-radius: 5px; padding: 2px 6px; }
   .dtitle { font-size: 12.5px; font-weight: 600; line-height: 1.3; }
-  .dtag { font-weight: 500; color: var(--text-secondary); font-size: 11.5px; }
+  .dtag { font-weight: 500; color: var(--label2); font-size: 11.5px; }
   .dsteps { list-style: none; margin-top: 6px; display: grid; gap: 3px; }
-  .dsteps li { font-size: 11px; color: var(--text-secondary); line-height: 1.35; padding-left: 10px; position: relative; }
-  .dsteps li::before { content: ""; position: absolute; left: 0; top: 6px; width: 4px; height: 4px; border-radius: 50%; background: var(--baseline); }
-  .daycard.pastday { opacity: 0.6; min-height: 0; padding: 6px 9px; }
+  .dsteps li { font-size: 11px; color: var(--label2); line-height: 1.35; padding-left: 10px; position: relative; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .dsteps li::before { content: ""; position: absolute; left: 0; top: 6px; width: 4px; height: 4px; border-radius: 50%; background: var(--label3); }
+  .daycard.pastday { opacity: 0.55; min-height: 0; padding: 6px 9px; }
   .daycard.pastday .dtitle { font-size: 11.5px; font-weight: 500; }
   .daycard.pastday:hover { opacity: 1; }
-  #todaypanel { border: 1px solid var(--series-1); }
-  #todaypanel .daycard { background: var(--surface-1); }
+  #todaypanel { outline: 2px solid var(--blue); outline-offset: -2px; }
+  #todaypanel .daycard { background: var(--card2); }
   @media (max-width: 1100px) { .daygrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   @media (max-width: 900px) { .daygrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .compactgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   @media (max-width: 640px) {
-    header, main { padding-left: 12px; padding-right: 12px; }
-    .sysrow { grid-template-columns: 96px 1fr 34px; gap: 8px; }
-    .sysrow .why { font-size: 10.5px; }
-    .daygrid, .compactgrid { grid-template-columns: 1fr; }
-    .daycard { min-height: 0; }
-    .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .card .v { font-size: 21px; }
-    .panel { padding: 12px; }
-    .whead { flex-direction: column; align-items: flex-start; }
+    .sysrow { grid-template-columns: 96px 1fr 34px; gap: 8px; } .sysrow .why { font-size: 10.5px; }
+    .daygrid, .compactgrid { grid-template-columns: 1fr; } .daycard { min-height: 0; }
+    .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .card .v { font-size: 21px; }
+    .panel { padding: 14px; } .whead { flex-direction: column; align-items: flex-start; }
     table { display: block; overflow-x: auto; white-space: nowrap; font-size: 12px; }
-    #modal { padding: 16px 14px; width: 96vw; max-height: 90vh; }
-    nav button { padding: 8px 10px; font-size: 13px; }
-    .pacebar { height: 34px; }
-    .pacebar .seglbl { display: none; }
+    .pacebar { height: 34px; } .pacebar .seglbl { display: none; }
+    .hval { font-size: 26px; }
   }
-  * { min-width: 0; }
   .panel, .card, .tipcard, .weekcard { overflow-wrap: break-word; word-break: normal; }
 
-  /* day detail modal */
+  /* modal — sheet */
   #modalWrap { position: fixed; inset: 0; z-index: 50; display: none; }
   #modalWrap.open { display: block; }
-  #modalWrap .backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
-  #modal {
-    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-    width: min(680px, 94vw); max-height: 86vh; overflow-y: auto;
-    background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px;
-    padding: 22px 24px; box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  #modalWrap .backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); }
+  #modal { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(700px, 94vw); max-height: 86vh; overflow-y: auto;
+           background: var(--card); border-radius: 20px; padding: 22px 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.35); animation: pop .18s ease; }
+  @keyframes pop { from { opacity: 0; transform: translate(-50%, -48%) scale(.98);} to { opacity: 1; transform: translate(-50%, -50%) scale(1);} }
+  @media (max-width: 640px) {
+    #modal { left: 0; right: 0; top: auto; bottom: 0; transform: none; width: 100%; max-height: 92vh; border-radius: 20px 20px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); animation: up .22s ease; }
+    @keyframes up { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
   }
-  #modal h3 { font-size: 17px; margin-bottom: 2px; }
-  #modal .msub { color: var(--text-secondary); font-size: 12.5px; margin-bottom: 12px; }
-  #modal h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 14px 0 6px; }
+  #modal h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 2px; padding-right: 36px; }
+  #modal .msub { color: var(--label2); font-size: 13px; margin-bottom: 12px; }
+  #modal h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--label2); margin: 16px 0 6px; font-weight: 600; }
   #modal ul { list-style: none; display: grid; gap: 5px; }
-  #modal li { font-size: 13px; color: var(--text-secondary); padding-left: 14px; position: relative; line-height: 1.45; }
-  #modal li::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--series-1); }
-  #modal p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
-  #modal .quote { border-left: 3px solid var(--series-2); padding: 6px 12px; margin-top: 6px; background: var(--chip-bg); border-radius: 0 8px 8px 0; }
-  #modal .quote b { display: block; font-size: 12.5px; color: var(--text-primary); margin-bottom: 2px; }
-  #modal .closex { position: sticky; float: right; top: 0; appearance: none; border: none; background: var(--chip-bg); color: var(--text-secondary); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; }
+  #modal li { font-size: 13.5px; color: var(--label2); padding-left: 14px; position: relative; line-height: 1.45; }
+  #modal li::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--blue); }
+  #modal p { font-size: 13.5px; color: var(--label2); line-height: 1.5; }
+  #modal .quote { border-left: 3px solid var(--orange); padding: 8px 12px; margin-top: 8px; background: var(--card2); border-radius: 0 10px 10px 0; }
+  #modal .quote b { display: block; font-size: 13px; color: var(--label); margin-bottom: 2px; }
+  #modal .closex { position: sticky; float: right; top: 0; appearance: none; border: none; background: var(--fill); color: var(--label2); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: 700; }
 
-  /* coach tab */
-  .tipcard { border: 1px solid var(--grid); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
-  .tipcard h3 { font-size: 14px; margin-bottom: 4px; }
-  .tipcard .ins { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
-  .tipcard .app { font-size: 12.5px; margin-top: 8px; padding: 7px 10px; border-radius: 8px; background: var(--chip-bg); color: var(--text-primary); }
+  /* coach */
+  .tipcard { background: var(--card2); border-radius: var(--r-s); padding: 14px 16px; margin-bottom: 10px; }
+  .tipcard h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.01em; }
+  .tipcard .ins { font-size: 13.5px; color: var(--label2); line-height: 1.5; }
+  .tipcard .app { font-size: 13px; margin-top: 8px; padding: 8px 11px; border-radius: 9px; background: var(--card); color: var(--label); line-height: 1.45; }
   .tipcard .app b { color: var(--good-text); }
-  .tipcard .src { font-size: 11.5px; color: var(--muted); margin-top: 6px; }
-  #ckbanner { border: 1px solid var(--series-2); background: var(--chip-bg); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
-  #ckbanner b { color: var(--text-primary); }
-  #ckbanner .row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-  #ckbanner button { appearance: none; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); border-radius: 8px; padding: 6px 12px; font: inherit; font-size: 12.5px; cursor: pointer; }
-  #ckbanner button.primary { background: var(--series-1); color: #fff; border-color: var(--series-1); }
-  .topic-h { font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 18px 0 8px; }
+  .tipcard .src { font-size: 11.5px; color: var(--label2); margin-top: 6px; }
+  #ckbanner { border-radius: var(--r); background: color-mix(in srgb, var(--orange) 14%, var(--card)); padding: 14px 16px; margin-bottom: 16px; font-size: 13.5px; }
+  #ckbanner b { color: var(--label); }
+  #ckbanner .row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; border: none; padding: 0; grid-template-columns: none; }
+  #ckbanner button { appearance: none; border: none; background: var(--card); color: var(--label); border-radius: 9px; padding: 7px 12px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+  #ckbanner button.primary { background: var(--blue); color: #fff; }
+  .topic-h { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--label2); margin: 20px 0 8px; font-weight: 600; }
 
-  /* zones tab — report-style cards + pace lookup */
+  /* zones */
   .zgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 12px; }
-  .zcard { border: 1px solid var(--grid); border-radius: 10px; padding: 14px 16px; border-left: 4px solid var(--zc, var(--series-1)); transition: box-shadow 0.15s, border-color 0.15s; }
-  .zcard.hitzone { border-color: var(--zc); box-shadow: 0 0 0 2px var(--zc); }
-  .zcard h3 { font-size: 15px; display: flex; align-items: center; gap: 8px; }
-  .ltbadge { font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border-radius: 5px; background: var(--chip-bg); color: var(--text-secondary); border: 1px solid var(--border); }
+  .zcard { background: var(--card2); border-radius: var(--r-s); padding: 14px 16px; border-left: 4px solid var(--zc, var(--blue)); transition: box-shadow 0.15s; }
+  .zcard.hitzone { box-shadow: 0 0 0 2px var(--zc); }
+  .zcard h3 { font-size: 15px; display: flex; align-items: center; gap: 8px; font-weight: 700; }
+  .ltbadge { font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border-radius: 6px; background: var(--fill); color: var(--label2); }
   .zcard .znum { display: flex; gap: 22px; margin: 8px 0 10px; }
-  .zcard .znum .k { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .zcard .znum .k { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--label2); font-weight: 600; }
   .zcard .znum .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
-  .zcard .zrow { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-top: 3px; }
-  .zcard .zrow b { color: var(--text-primary); font-weight: 600; }
-  .zcard .zwatch { font-size: 12.5px; margin-top: 9px; padding: 7px 10px; border-radius: 8px; background: var(--chip-bg); color: var(--text-secondary); line-height: 1.45; }
-  .zcard .zwatch b { color: var(--serious); }
-  /* pace → LT lookup */
+  .zcard .zrow { font-size: 12.5px; color: var(--label2); line-height: 1.5; margin-top: 3px; }
+  .zcard .zrow b { color: var(--label); font-weight: 600; }
+  .zcard .zwatch { font-size: 12.5px; margin-top: 9px; padding: 7px 10px; border-radius: 8px; background: var(--card); color: var(--label2); line-height: 1.45; }
+  .zcard .zwatch b { color: var(--orange); }
   #ltlookup .inrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  #ltlookup input { appearance: none; font: inherit; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; width: 110px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-1); color: var(--text-primary); }
-  #ltlookup .preset { appearance: none; border: 1px solid var(--border); background: var(--chip-bg); color: var(--text-secondary); border-radius: 99px; padding: 4px 11px; font: inherit; font-size: 12px; cursor: pointer; }
-  #ltlookup .preset:hover { color: var(--text-primary); }
+  #ltlookup input { appearance: none; font: inherit; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; width: 118px; padding: 7px 12px; border: none; border-radius: 10px; background: var(--card2); color: var(--label); }
+  #ltlookup .preset { appearance: none; border: none; background: var(--fill); color: var(--label); border-radius: 99px; padding: 6px 12px; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; }
   .pacebar { position: relative; height: 60px; margin: 18px 2px 4px; }
-  .pacebar .seg { position: absolute; top: 14px; height: 14px; border-radius: 3px; opacity: 0.85; }
-  .pacebar .seglbl { position: absolute; top: 31px; font-size: 10px; color: var(--muted); white-space: nowrap; }
+  .pacebar .seg { position: absolute; top: 14px; height: 14px; border-radius: 4px; opacity: 0.9; display: block; padding: 0; background: none; }
+  .pacebar .seglbl { position: absolute; top: 31px; font-size: 10px; color: var(--label2); white-space: nowrap; }
   .pacebar .seglbl.row2 { top: 44px; }
-  .pacebar .marker { position: absolute; top: 6px; width: 2px; height: 30px; background: var(--text-primary); transform: translateX(-1px); }
-  .pacebar .marker::after { content: ""; position: absolute; top: -5px; left: -4px; border: 5px solid transparent; border-top-color: var(--text-primary); }
-  #ltverdict { margin-top: 12px; border-left: 3px solid var(--series-2); background: var(--chip-bg); border-radius: 0 8px 8px 0; padding: 10px 14px; }
+  .pacebar .marker { position: absolute; top: 6px; width: 2px; height: 30px; background: var(--label); transform: translateX(-1px); }
+  .pacebar .marker::after { content: ""; position: absolute; top: -5px; left: -4px; border: 5px solid transparent; border-top-color: var(--label); }
+  #ltverdict { margin-top: 12px; border-left: 3px solid var(--orange); background: var(--card2); border-radius: 0 10px 10px 0; padding: 10px 14px; }
   #ltverdict .big { font-size: 15px; font-weight: 700; }
-  #ltverdict .sub { font-size: 12.5px; color: var(--text-secondary); margin-top: 3px; line-height: 1.5; }
+  #ltverdict .sub { font-size: 12.5px; color: var(--label2); margin-top: 3px; line-height: 1.5; }
+  .hit { cursor: pointer; } svg .hit:hover { opacity: .85; }
+  #headSub { font-size: 11.5px; line-height: 1.5; }
 </style>
 </head>
 <body>
-<header>
-  <h1>RunZones <span style="color:var(--muted);font-weight:400">· personal</span></h1>
-  <div class="sub" id="headSub">Marathon build</div>
-  <nav id="nav"></nav>
-</header>
-<main>
-  <section class="tab" id="tab-dashboard"></section>
-  <section class="tab" id="tab-calendar"></section>
-  <section class="tab" id="tab-fitness"></section>
-  <section class="tab" id="tab-sessions"></section>
-  <section class="tab" id="tab-plan"></section>
-  <section class="tab" id="tab-race"></section>
-  <section class="tab" id="tab-fuel"></section>
-  <section class="tab" id="tab-coach"></section>
-  <section class="tab" id="tab-zones"></section>
-</main>
+<div id="app">
+  <aside id="side">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="5" r="1.6"/><path d="M6 21l3.5-6 2.5 2 1 4"/><path d="M9.5 15l1.5-5 3.5-.5 2.5 3 2.5-1"/><path d="M14.5 9.5L13 14"/></svg></div>
+      <div><b>RunZones</b><small>Marathon build · personal</small></div>
+    </div>
+    <div class="navlist" id="nav"></div>
+    <div class="sidefoot"><div id="headSub"></div><div class="themeseg" style="margin-top:12px"></div></div>
+  </aside>
+  <div id="content">
+    <div class="pagehead"><div class="crumb" id="pcrumb">RunZones</div><h1 id="ptitle">Summary</h1><div class="psub" id="psub"></div></div>
+    <main>
+      <section class="tab" id="tab-dashboard"></section>
+      <section class="tab" id="tab-calendar"></section>
+      <section class="tab" id="tab-fitness"></section>
+      <section class="tab" id="tab-sessions"></section>
+      <section class="tab" id="tab-plan"></section>
+      <section class="tab" id="tab-race"></section>
+      <section class="tab" id="tab-fuel"></section>
+      <section class="tab" id="tab-coach"></section>
+      <section class="tab" id="tab-zones"></section>
+    </main>
+  </div>
+</div>
+<nav id="tabbar" aria-label="Sections"></nav>
 <div id="tooltip"></div>
 <div id="modalWrap"><div class="backdrop"></div><div id="modal"></div></div>
 
 <script>
 "use strict";
+try { const __t = localStorage.getItem("rz_theme"); if (__t === "light" || __t === "dark") document.documentElement.dataset.theme = __t; } catch (e) {}
 /* ============================================================
    Seed data (embedded so the app also works when opened as a
    local file). When hosted, data/*.json overrides this seed —
@@ -1977,7 +2056,7 @@ function riegelCurve() {
 }
 
 /* ---------- pace → zone / lactate-threshold position ---------- */
-const ZONE_COLORS = ["var(--seq-200)", "var(--series-1)", "var(--series-3)", "var(--warning)", "var(--serious)", "var(--critical)"];
+const ZONE_COLORS = ["var(--z0)", "var(--z1)", "var(--z2)", "var(--z3)", "var(--z4)", "var(--z5)"];
 const ZONE_LT = [
   { badge: null,          lt: "Well below LT1", ltDesc: "pure aerobic — fat-burning, conversational, recovery fuel economy" },
   { badge: null,          lt: "Below LT1",      ltDesc: "aerobic foundation — where ~80% of your running should live" },
@@ -2838,144 +2917,634 @@ window.__ckCopy = async () => {
 };
 window.__ckDismiss = () => { const s = checkpointSuggestion(); if (s) { try { localStorage.setItem(DKEY, s.run.id); } catch (e) {} } renderAll(); };
 
+/* ============================================================
+   v3 · Health-style analytics modules
+   Aerobic efficiency · ingredient freshness · 28-day profile ·
+   weekly HR response · week projection  (+ small SVG chart kit)
+   ============================================================ */
+
+/* ---- icons (SF-Symbols-like, 24×24 strokes) ---- */
+const ICONS = {
+  summary:  '<path d="M12 21s-7-4.6-9.3-9A5.2 5.2 0 0 1 12 6.5a5.2 5.2 0 0 1 9.3 5.5C19 16.4 12 21 12 21z"/>',
+  calendar: '<rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M8 3v4M16 3v4"/>',
+  trends:   '<path d="M3 17l5.5-6 4 4L21 7"/><path d="M16 7h5v5"/>',
+  sessions: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="M3.5 6l1.2 1.2L7 5M3.5 12l1.2 1.2L7 11M3.5 18l1.2 1.2L7 17"/>',
+  plan:     '<path d="M6 19v-7a4 4 0 0 1 4-4h4a4 4 0 0 0 4-4V3"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="4" r="2"/>',
+  race:     '<path d="M5 21V4"/><path d="M5 4h13l-3 4 3 4H5"/>',
+  fuel:     '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+  coach:    '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.6 1 1.4 1 2.5h6c0-1.1.3-1.9 1-2.5A6 6 0 0 0 12 3z"/>',
+  zones:    '<path d="M4 16a8 8 0 0 1 16 0"/><path d="M12 16l4-5"/><path d="M4 16h1M19 16h1"/>',
+  run:      '<circle cx="13.5" cy="5" r="1.6"/><path d="M6 21l3.5-6 2.5 2 1 4"/><path d="M9.5 15l1.5-5 3.5-.5 2.5 3 2.5-1"/><path d="M14.5 9.5L13 14"/>',
+  heart:    '<path d="M12 21s-7-4.6-9.3-9A5.2 5.2 0 0 1 12 6.5a5.2 5.2 0 0 1 9.3 5.5C19 16.4 12 21 12 21z"/>',
+  waves:    '<path d="M3 9c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M3 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>',
+  bolt:     '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  flame:    '<path d="M12 3c1 3 4 4.5 4 8.5a4 4 0 0 1-8 0c0-1.5.5-2.5 1-3.5.5 1 1.2 1.5 2 1.5 0-2-.5-4.5 1-6.5z"/>',
+  route:    '<circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8 17h6a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/>',
+  clock:    '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  gauge:    '<path d="M4 16a8 8 0 0 1 16 0"/><path d="M12 16l4-5"/>',
+  medal:    '<circle cx="12" cy="14" r="5.5"/><path d="M8.5 9.5L6 3h4l2 4 2-4h4l-2.5 6.5"/>',
+  pulse:    '<path d="M3 12h4l2.5-6 4 12 2.5-6H21"/>',
+  moon:     '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  sun:      '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+};
+const icon = (k, cls) => `<svg${cls ? ` class="${cls}"` : ""} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k] || ICONS.run}</svg>`;
+
+/* ---- ingredients (Scullion-style ledger) ---- */
+const ING = [
+  { id: "base",      name: "Easy base",      icon: "heart", color: "var(--blue)",   fresh: 7,  stale: 14, desc: "Easy Z1–Z2 running — the volume everything else stands on." },
+  { id: "steady",    name: "Steady / MP",    icon: "waves", color: "var(--green)",  fresh: 10, stale: 21, desc: "Controlled running around LT1 — marathon stamina and fuel economy." },
+  { id: "threshold", name: "Threshold",      icon: "bolt",  color: "var(--orange)", fresh: 10, stale: 21, desc: "LT2 work — raises the pace you can hold." },
+  { id: "vo2",       name: "VO₂ intervals",  icon: "flame", color: "var(--red)",    fresh: 14, stale: 28, desc: "Hard 3–8 min reps — the top of the aerobic chain." },
+  { id: "long",      name: "Long run",       icon: "route", color: "var(--purple)", fresh: 10, stale: 21, desc: "The weekly durability session." },
+];
+const ING_BY = Object.fromEntries(ING.map(i => [i.id, i]));
+const ARCH_ING = { easy: "base", steady: "steady", long: "long", threshold: "threshold", vo2: "vo2", alt: "threshold", mp: "steady", race: "threshold" };
+
+function ingredientOf(r) {
+  const hit = plannedFor(r.date); const arch = hit && hit.day && hit.day.arch;
+  const n = (r.name || "").toLowerCase();
+  if (r.distanceKm >= 13 || /long/.test(n) || arch === "long") return "long";
+  if (arch === "threshold" || arch === "alt" || /threshold|tempo|schwelle|cruise/.test(n)) return "threshold";
+  if (arch === "vo2" || /interval|vo2|track|hill|\brep/.test(n)) return "vo2";
+  if (arch === "race" || /einstufung|\btest\b|race|wettkampf|\b5k\b|\b10k\b/.test(n)) return r.distanceKm >= 8 ? "threshold" : "vo2";
+  if (arch === "steady" || arch === "mp" || /steady|marathon|\bmp\b/.test(n)) {
+    /* a run called "steady" that was run at easy effort is base volume — judge the effort, not the label */
+    const c = coreStats(r);
+    const easyEffort = c.hr ? c.hr < S.hrZones[2].minHr - 4 : (c.pace && c.pace > pz(2).maxSecPerKm + 10);
+    return easyEffort ? "base" : "steady";
+  }
+  return "base";
+}
+
+/* ---- aerobic efficiency: speed per heartbeat on easy-effort runs ---- */
+function efficiencyRuns() {
+  const lo = S.hrZones[1].minHr - 4, hi = S.hrZones[1].maxHr + 2;
+  return runs().map(r => ({ r, c: coreStats(r) }))
+    .filter(({ c }) => c.hr && c.pace && c.distKm >= 4 && c.hr >= lo && c.hr <= hi)
+    .map(({ r, c }) => ({ r, hr: c.hr, pace: c.pace, distKm: c.distKm, ef: (1000 / c.pace * 60) / c.hr, date: parseISO(r.date) }));
+}
+const paceAtHr = (ef, hr) => 60000 / (ef * hr); // sec/km a given EF implies at that HR
+function efficiencySeries(rangeWeeks) {
+  const all = efficiencyRuns();
+  const cutoff = rangeWeeks ? addDays(mondayOf(new Date()), -(rangeWeeks - 1) * 7) : null;
+  const sel = cutoff ? all.filter(p => p.date >= cutoff) : all;
+  const byWeek = new Map();
+  for (const p of sel) {
+    const k = localKey(mondayOf(p.date));
+    const w = byWeek.get(k) || { start: mondayOf(p.date), efSum: 0, km: 0, n: 0, runs: [] };
+    w.efSum += p.ef * p.distKm; w.km += p.distKm; w.n++; w.runs.push(p); byWeek.set(k, w);
+  }
+  const weeks = [...byWeek.values()].map(w => ({ ...w, ef: w.efSum / w.km })).sort((a, b) => a.start - b.start);
+  let slope = null;
+  if (weeks.length >= 3) {
+    const xs = weeks.map(w => (w.start - weeks[0].start) / (7 * dayMs)), ys = weeks.map(w => w.ef), n = xs.length;
+    const mx = xs.reduce((a, b) => a + b, 0) / n, my = ys.reduce((a, b) => a + b, 0) / n;
+    let sxy = 0, sxx = 0; for (let i = 0; i < n; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) ** 2; }
+    slope = sxx ? sxy / sxx : 0;
+  }
+  const latest = weeks.at(-1) || null;
+  const best = weeks.reduce((b, w) => !b || w.ef > b.ef ? w : b, null);
+  const now3 = all.slice(-3), prev = all.filter(p => p.date < addDays(new Date(), -28)).slice(-3); // comparison ignores the chart range
+  const wavg = arr => arr.length ? arr.reduce((s, p) => s + p.ef * p.distKm, 0) / arr.reduce((s, p) => s + p.distKm, 0) : null;
+  const efNow = wavg(now3), efPrev = wavg(prev);
+  return { runs: sel, weeks, latest, best, slope, efNow, efPrev,
+           changePct: efNow && efPrev ? (efNow / efPrev - 1) * 100 : null,
+           trendPct4w: slope != null && latest ? slope * 4 / latest.ef * 100 : null,
+           conf: sel.length >= 8 ? "high" : sel.length >= 4 ? "medium" : "low" };
+}
+
+/* ---- 28-day performance profile (recent proof, separate from all-time PBs) ---- */
+function profile28() {
+  const now = new Date();
+  const recent = runs().filter(r => now - parseISO(r.date) <= 28 * dayMs);
+  const pbs = bestEffortsAll();
+  const age = r => Math.round((now - parseISO(r.date)) / dayMs);
+  const items = EFFORT_DISTS.slice(0, 3).map(([label, distM]) => {
+    let cur = null;
+    for (const r of recent) { const p = bestEffortFor(r, distM); if (p != null && (!cur || p < cur.pace)) cur = { pace: p, run: r }; }
+    const pb = pbs.find(e => e.distM === distM);
+    return { key: label, label, distM, cur, timeS: cur ? Math.round(cur.pace * distM / 1000) : null,
+             pbPace: pb && pb.paceSecPerKm, pbTime: pb && pb.timeS, pbRun: pb && pb.run,
+             daysLeft: cur ? Math.max(0, 28 - age(cur.run)) : null };
+  });
+  let b20 = null, pb20 = null;
+  for (const r of recent) if (r.best20minSecPerKm && (!b20 || r.best20minSecPerKm < b20.pace)) b20 = { pace: r.best20minSecPerKm, run: r };
+  for (const r of runs()) if (r.best20minSecPerKm && (!pb20 || r.best20minSecPerKm < pb20.pace)) pb20 = { pace: r.best20minSecPerKm, run: r };
+  items.push({ key: "20min", label: "20 min", distM: null, cur: b20, timeS: null, pbPace: pb20 && pb20.pace, pbTime: null, pbRun: pb20 && pb20.run,
+               daysLeft: b20 ? Math.max(0, 28 - age(b20.run)) : null });
+  return items;
+}
+
+/* ---- ingredient freshness ledger ---- */
+function freshnessLedger() {
+  const now = new Date(); now.setHours(12, 0, 0, 0);
+  const tagged = runs().map(r => ({ r, ing: ingredientOf(r) }));
+  const mon = mondayOf(now), weeks8 = []; for (let i = 7; i >= 0; i--) weeks8.push(addDays(mon, -i * 7));
+  const upcoming = [];
+  for (const w of buildPlan().slice(0, 4)) for (const d of buildWeekDays(w)) if (d.date > now && d.kind === "run") upcoming.push(d);
+  return ING.map(ing => {
+    const mine = tagged.filter(t => t.ing === ing.id);
+    const last = mine.at(-1);
+    const days = last ? Math.round((now - parseISO(last.r.date)) / dayMs) : null;
+    const status = days == null ? "missing" : days <= ing.fresh ? "fresh" : days <= ing.stale ? "fading" : "stale";
+    const n28 = mine.filter(t => now - parseISO(t.r.date) <= 28 * dayMs).length;
+    const strip = weeks8.map(ws => mine.some(t => { const d = parseISO(t.r.date); return d >= ws && d < addDays(ws, 7); }));
+    const next = upcoming.find(d => ARCH_ING[d.arch] === ing.id) || null;
+    return { ...ing, last: last ? last.r : null, days, status, n28, strip, next };
+  });
+}
+const FRESH_WORD = { fresh: "Fresh", fading: "Fading", stale: "Stale", missing: "Missing" };
+const FRESH_PILL = { fresh: "good", fading: "warn", stale: "bad", missing: "" };
+
+/* ---- weekly HR response on easy-effort running ---- */
+function hrResponse(nWeeks = 8) {
+  const mon = mondayOf(new Date()), weeks = [];
+  for (let i = nWeeks - 1; i >= 0; i--) {
+    const start = addDays(mon, -i * 7), end = addDays(start, 7);
+    const sel = runs().filter(r => { const d = parseISO(r.date); return d >= start && d < end; })
+      .map(r => ({ r, c: coreStats(r), ing: ingredientOf(r) }))
+      .filter(x => ["base", "steady", "long"].includes(x.ing) && x.c.hr && x.c.pace && x.c.hr <= S.hrZones[2].minHr + 4);
+    const km = sel.reduce((s, x) => s + x.c.distKm, 0);
+    weeks.push({ start, label: `${start.getDate()}.${start.getMonth() + 1}.`, n: sel.length, km, runs: sel,
+                 hr: km ? sel.reduce((s, x) => s + x.c.hr * x.c.distKm, 0) / km : null,
+                 pace: km ? sel.reduce((s, x) => s + x.c.pace * x.c.distKm, 0) / km : null, current: i === 0 });
+  }
+  const have = weeks.filter(w => w.hr);
+  const recent = have.slice(-2), prior = have.slice(-6, -2);
+  let read = null;
+  if (recent.length && prior.length) {
+    const avg = (arr, k) => arr.reduce((s, w) => s + w[k], 0) / arr.length;
+    const dHr = avg(recent, "hr") - avg(prior, "hr"), dPace = avg(recent, "pace") - avg(prior, "pace");
+    const expHr = -dPace / 2.7;            // same efficiency: ~1 bpm per 2.7 s/km in the easy range
+    const resid = dHr - expHr;
+    read = { dHr, dPace, resid, recentHr: avg(recent, "hr"), recentPace: avg(recent, "pace"), priorHr: avg(prior, "hr"), priorPace: avg(prior, "pace"),
+             verdict: resid >= 3 ? "creeping" : resid <= -3 ? "improving" : "stable" };
+  }
+  return { weeks, read };
+}
+
+/* ---- this week: done, planned, projected, vs the same point last week ---- */
+function weekProjection() {
+  const now = new Date(), mon = mondayOf(now), today = new Date(now); today.setHours(0, 0, 0, 0);
+  const dow = (now.getDay() + 6) % 7;
+  const thisRuns = runs().filter(r => parseISO(r.date) >= mon);
+  const done = thisRuns.reduce((s, r) => s + r.distanceKm, 0);
+  const cur = buildPlan()[0], days = cur ? buildWeekDays(cur) : [];
+  const archKm = { easy: cur && cur.easyEach || 6, steady: 7, threshold: 9, vo2: 8.5, alt: 10, mp: 10, long: cur && cur.longKm || 14, race: 10 };
+  const kmOf = d => { if (d.kind !== "run" && d.arch !== "race") return 0; const m = String(d.tag || "").match(/(\d+(?:\.\d+)?)\s*km/); return m ? parseFloat(m[1]) : (archKm[d.arch] || 6); };
+  const todayKey = localKey(today);
+  const remaining = days.filter(d => d.kind === "run" && (d.date > today || (d.date.getTime() === today.getTime() && !thisRuns.some(r => r.date === todayKey))))
+                        .reduce((s, d) => s + kmOf(d), 0);
+  const planned = days.filter(d => d.kind === "run").reduce((s, d) => s + kmOf(d), 0);
+  const lastMon = addDays(mon, -7), lastSame = addDays(lastMon, dow + 1);
+  const lastRuns = runs().filter(r => { const d = parseISO(r.date); return d >= lastMon && d < mon; });
+  const lastAtPoint = lastRuns.filter(r => parseISO(r.date) < lastSame).reduce((s, r) => s + r.distanceKm, 0);
+  const lastTotal = lastRuns.reduce((s, r) => s + r.distanceKm, 0);
+  const daily = [];
+  for (let i = 0; i < 7; i++) {
+    const d = addDays(mon, i), k = localKey(d);
+    daily.push({ date: d, km: thisRuns.filter(r => r.date === k).reduce((s, r) => s + r.distanceKm, 0),
+                 planned: days.find(x => x.date.getTime() === d.getTime()) || null, past: d < today, isToday: d.getTime() === today.getTime() });
+  }
+  return { done, remaining, planned, projected: done + remaining, lastAtPoint, lastTotal, daily, count: thisRuns.length, week: cur || null };
+}
+
+/* charts render 1:1 with the column they sit in, so labels stay readable on a phone */
+const chartW = () => { const m = document.querySelector("main"); return clamp(((m && m.clientWidth) || 900) - 72, 320, 900); };
+let __chartW = 0;
+function watchChartWidth() {
+  __chartW = chartW(); let t = null;
+  window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => { if (Math.abs(chartW() - __chartW) > 60) { __chartW = chartW(); renderAll(); } }, 150); });
+}
+
+/* ---- SVG chart kit (2px lines, hairline grid, ≤24px bars, tooltips via data-tip) ---- */
+const svgTag = (W, H, label) => `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}" style="width:100%;height:auto;display:block">`;
+const niceTicks = (lo, hi, n = 3) => { const span = hi - lo || 1; const raw = span / n; const p = Math.pow(10, Math.floor(Math.log10(raw))); const step = [1, 2, 2.5, 5, 10].map(m => m * p).find(s => s >= raw) || raw; const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(6)); return out; };
+
+function lineChartSVG(o) {
+  /* o: { pts:[{x:Date|number, y, tip, dot}], color, yFmt, invert, W, H, xLabel(pt), baseline:{y,label}, area } */
+  const W = o.W || 600, H = o.H || 170, padL = o.padL ?? 46, padR = 14, padT = 14, padB = 26;
+  const iw = W - padL - padR, ih = H - padT - padB, pts = o.pts;
+  if (!pts.length) return `<div class="note">Not enough data yet.</div>`;
+  const xs = pts.map(p => +p.x), ys = pts.map(p => p.y).concat(o.baseline ? [o.baseline.y] : []);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs); if (x1 === x0) { x0 -= 1; x1 += 1; }
+  const pad = (Math.max(...ys) - Math.min(...ys)) * 0.25 || Math.abs(ys[0]) * 0.05 || 1;
+  const y0 = Math.min(...ys) - pad, y1 = Math.max(...ys) + pad;
+  const X = v => padL + (v - x0) / (x1 - x0) * iw;
+  const Y = v => o.invert ? padT + (v - y0) / (y1 - y0) * ih : padT + ih - (v - y0) / (y1 - y0) * ih;
+  let g = "";
+  for (const t of niceTicks(y0, y1, 3)) {
+    g += `<line x1="${padL}" y1="${Y(t)}" x2="${W - padR}" y2="${Y(t)}" stroke="var(--sep)" stroke-width="1"/>`;
+    g += `<text x="${padL - 8}" y="${Y(t) + 4}" text-anchor="end" font-size="11" fill="var(--label2)" style="font-variant-numeric:tabular-nums">${o.yFmt ? o.yFmt(t) : t}</text>`;
+  }
+  if (o.baseline) g += `<line x1="${padL}" y1="${Y(o.baseline.y)}" x2="${W - padR}" y2="${Y(o.baseline.y)}" stroke="var(--label3)" stroke-width="1.5" stroke-dasharray="4 4"/>` +
+    `<text x="${W - padR}" y="${Y(o.baseline.y) - 5}" text-anchor="end" font-size="10.5" fill="var(--label2)">${o.baseline.label}</text>`;
+  const path = pts.map((p, i) => `${i ? "L" : "M"}${X(+p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join("");
+  if (o.area) g += `<path d="${path}L${X(+pts.at(-1).x).toFixed(1)},${padT + ih}L${X(+pts[0].x).toFixed(1)},${padT + ih}Z" fill="${o.color}" opacity="0.10"/>`;
+  g += `<path d="${path}" fill="none" stroke="${o.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  pts.forEach((p, i) => {
+    const last = i === pts.length - 1;
+    g += `<circle cx="${X(+p.x)}" cy="${Y(p.y)}" r="${last ? 4.5 : 3.2}" fill="${last ? o.color : "var(--card)"}" stroke="${o.color}" stroke-width="2" class="hit" data-tip="${p.tip || ""}"/>`;
+    if (o.xLabel && (i === 0 || last || pts.length <= 8 || i % Math.ceil(pts.length / 6) === 0))
+      g += `<text x="${X(+p.x)}" y="${H - 8}" text-anchor="${i === 0 ? "start" : last ? "end" : "middle"}" font-size="10.5" fill="var(--label2)">${o.xLabel(p)}</text>`;
+  });
+  return svgTag(W, H, o.label || "line chart") + g + "</svg>";
+}
+
+function barChartSVG(o) {
+  /* o: { bars:[{label, v, tip, color, faded}], W, H, yFmt, valueLabels, target:{v,label} } */
+  const W = o.W || 600, H = o.H || 170, padL = o.padL ?? 40, padR = 10, padT = 16, padB = 24;
+  const iw = W - padL - padR, ih = H - padT - padB, bars = o.bars;
+  const maxV = Math.max(o.minMax || 1, ...bars.map(b => b.v), o.target ? o.target.v : 0) * 1.12;
+  const y = v => padT + ih - v / maxV * ih;
+  const slot = iw / bars.length, bw = Math.min(24, slot * 0.6);
+  let g = "";
+  for (const t of niceTicks(0, maxV, 3)) {
+    g += `<line x1="${padL}" y1="${y(t)}" x2="${W - padR}" y2="${y(t)}" stroke="var(--sep)" stroke-width="1"/>`;
+    g += `<text x="${padL - 8}" y="${y(t) + 4}" text-anchor="end" font-size="11" fill="var(--label2)" style="font-variant-numeric:tabular-nums">${o.yFmt ? o.yFmt(t) : t}</text>`;
+  }
+  if (o.target) g += `<line x1="${padL}" y1="${y(o.target.v)}" x2="${W - padR}" y2="${y(o.target.v)}" stroke="var(--label3)" stroke-width="1.5" stroke-dasharray="4 4"/>` +
+    `<text x="${W - padR}" y="${y(o.target.v) - 5}" text-anchor="end" font-size="10.5" fill="var(--label2)">${o.target.label}</text>`;
+  bars.forEach((b, i) => {
+    const cx = padL + slot * i + slot / 2, h = Math.max(b.v > 0 ? 3 : 0, ih * b.v / maxV), r = Math.min(5, bw / 2);
+    if (h > 0) g += `<path d="M${(cx - bw / 2).toFixed(1)},${padT + ih} v${-(h - r)} q0,${-r} ${r},${-r} h${bw - 2 * r} q${r},0 ${r},${r} v${h - r} z" fill="${b.color || "var(--blue)"}"${b.faded ? ' fill-opacity="0.45"' : ""} class="hit" data-tip="${b.tip || ""}"/>`;
+    else g += `<rect x="${cx - bw / 2}" y="${padT}" width="${bw}" height="${ih}" fill="transparent" class="hit" data-tip="${b.tip || ""}"/>`;
+    if (o.valueLabels && b.v > 0 && (b.showValue ?? true)) g += `<text x="${cx}" y="${y(b.v) - 5}" text-anchor="middle" font-size="10.5" fill="var(--label2)" style="font-variant-numeric:tabular-nums">${o.valueLabels(b.v)}</text>`;
+    const every = slot >= 38 ? 1 : slot >= 20 ? 2 : 3;
+    if (b.label != null && (i % every === (bars.length - 1) % every)) g += `<text x="${cx}" y="${H - 7}" text-anchor="middle" font-size="10.5" fill="${b.faded ? "var(--label)" : "var(--label2)"}"${b.faded ? ' font-weight="600"' : ""}>${b.label}</text>`;
+  });
+  g += `<line x1="${padL}" y1="${padT + ih}" x2="${W - padR}" y2="${padT + ih}" stroke="var(--baseline)" stroke-width="1"/>`;
+  return svgTag(W, H, o.label || "bar chart") + g + "</svg>";
+}
+
+function sparkSVG(vals, color, W = 120, H = 34) {
+  const v = vals.filter(x => x != null); if (v.length < 2) return "";
+  const lo = Math.min(...v), hi = Math.max(...v), sp = hi - lo || 1;
+  const X = i => 3 + i / (v.length - 1) * (W - 6), Y = x => 4 + (1 - (x - lo) / sp) * (H - 8);
+  const d = v.map((x, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(x).toFixed(1)}`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:${W}px;height:${H}px;display:block" aria-hidden="true"><path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${X(v.length - 1)}" cy="${Y(v.at(-1))}" r="3" fill="${color}"/></svg>`;
+}
+
+function ringSVG(pct, color, size = 64, stroke = 8, text) {
+  const r = (size - stroke) / 2, c = 2 * Math.PI * r, p = clamp(pct, 0, 100) / 100;
+  return `<svg viewBox="0 0 ${size} ${size}" style="width:${size}px;height:${size}px;flex:0 0 auto" aria-hidden="true">
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--fill)" stroke-width="${stroke}"/>
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round"
+      stroke-dasharray="${(c * p).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})" style="transition:stroke-dasharray .6s ease"/>
+    ${text != null ? `<text x="50%" y="50%" dy="0.36em" text-anchor="middle" font-size="${size * 0.28}" font-weight="700" fill="var(--label)">${text}</text>` : ""}
+  </svg>`;
+}
+
+/* ---- tiny formatters for the new modules ---- */
+const fmtDate = (d, o) => (d instanceof Date ? d : parseISO(d)).toLocaleDateString("en-GB", o || { day: "numeric", month: "short" });
+const fmtP = s => s == null ? "–" : fmtPace(s).replace("/km", "");
+const signed = (v, d = 0, unit = "") => v == null ? "–" : `${v > 0 ? "+" : v < 0 ? "−" : "±"}${Math.abs(v).toFixed(d)}${unit}`;
+const agoWord = d => d == null ? "never" : d === 0 ? "today" : d === 1 ? "yesterday" : `${d} days ago`;
+
 function renderAll() {
   __planIdx = null;
   renderDashboard(); renderCalendar(); renderFitness(); renderSessions(); renderPlan(); renderRace(); renderFuel(); renderCoach(); renderZones();
 }
 
 /* ---------- rendering ---------- */
-const TABS = [["dashboard", "Dashboard"], ["calendar", "Calendar"], ["fitness", "Fitness profile"], ["sessions", "Sessions"], ["plan", "Plan"], ["race", "Race recipe"], ["fuel", "Fuel"], ["coach", "Coach"], ["zones", "Zones"]];
+/* ---------- navigation shell (sidebar · bottom tab bar · page header) ---------- */
+const TABS = [
+  { id: "dashboard", label: "Summary",  title: "Summary",         icon: "summary",  color: "var(--pink)" },
+  { id: "calendar",  label: "Calendar", title: "Calendar",        icon: "calendar", color: "var(--red)" },
+  { id: "fitness",   label: "Trends",   title: "Trends",          icon: "trends",   color: "var(--green)" },
+  { id: "sessions",  label: "Sessions", title: "Sessions",        icon: "sessions", color: "var(--blue)" },
+  { id: "plan",      label: "Plan",     title: "Plan",            icon: "plan",     color: "var(--indigo)" },
+  { id: "race",      label: "Race",     title: "Race recipe",     icon: "race",     color: "var(--orange)" },
+  { id: "fuel",      label: "Fuel",     title: "Fuel",            icon: "fuel",     color: "var(--teal)" },
+  { id: "coach",     label: "Coach",    title: "Coach's corner",  icon: "coach",    color: "var(--yellow)" },
+  { id: "zones",     label: "Zones",    title: "Zones",           icon: "zones",    color: "var(--purple)" },
+];
+const TAB_BY = Object.fromEntries(TABS.map(t => [t.id, t]));
+
+function tabSubtitle(id) {
+  const raceDay = parseISO(S.goal.raceDate), days = Math.max(0, Math.round((raceDay - new Date()) / dayMs));
+  const w = buildPlan()[0];
+  switch (id) {
+    case "dashboard": return `${new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}${w ? ` · Week ${w.idx} · ${w.phase} phase` : ""} · ${days} days to ${S.goal.raceName}`;
+    case "calendar":  return "Every planned day — tap one for the full briefing, why it exists and how to run it.";
+    case "fitness":   return "The trends the plan is built on: efficiency, ingredient freshness, 28-day bests and how your heart answers easy running.";
+    case "sessions":  return "Every synced run judged against what the plan asked for that day. Tap a run for the Coach's debrief.";
+    case "plan":      return `${S.goal.raceName} · ${raceDay.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · train for ${S.goal.targetTime.slice(0, 4)}, bank ${(S.goal.bankTime || "3:45:00").slice(0, 4)}, floor sub-4`;
+    case "race":      return "What today's evidence says you could run, and the gap the training still has to close.";
+    case "fuel":      return "Race-day and long-run fuelling, from the Vienna playbook.";
+    case "coach":     return `Strategies from The Coach — ${KB.sources?.length || 0} sources, applied to your plan.`;
+    case "zones":     return `Pace and pulse zones anchored to current fitness (max HR ${S.athlete.maxHr}). They move only when the data says so.`;
+  }
+  return "";
+}
 
 function renderNav() {
-  const nav = $("#nav");
-  nav.innerHTML = "";
-  for (const [id, label] of TABS) {
-    const b = document.createElement("button");
-    b.textContent = label;
-    b.onclick = () => activate(id);
-    b.dataset.tab = id;
-    nav.appendChild(b);
-  }
+  const side = $("#nav"), bar = $("#tabbar");
+  side.innerHTML = TABS.map(t => `<button class="navbtn" data-tab="${t.id}" style="--acc:${t.color}"><span class="ic">${icon(t.icon)}</span>${t.label}</button>`).join("");
+  bar.innerHTML = TABS.map(t => `<button class="tb" data-tab="${t.id}" style="--acc:${t.color}"><span class="ic">${icon(t.icon)}</span>${t.label}</button>`).join("");
+  document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => activate(b.dataset.tab));
+  renderThemeSeg();
 }
 function activate(id) {
-  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
-  document.querySelectorAll("section.tab").forEach(s => s.classList.toggle("active", s.id === "tab-" + id));
+  const t = TAB_BY[id] || TABS[0];
+  document.querySelectorAll("[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab === t.id));
+  document.querySelectorAll("section.tab").forEach(s => s.classList.toggle("active", s.id === "tab-" + t.id));
+  $("#ptitle").textContent = t.title;
+  $("#psub").textContent = tabSubtitle(t.id);
+  if (location.hash !== "#" + t.id) history.replaceState(null, "", "#" + t.id);
+  window.scrollTo(0, 0);
+  const active = $("#tabbar .tb.active"); if (active && active.scrollIntoView) active.scrollIntoView({ block: "nearest", inline: "center" });
 }
 
-/* --- weekly volume chart (SVG bars + planned line of sight) --- */
-function volumeChartSVG(weeks) {
-  const W = 960, H = 240, padL = 44, padR = 12, padT = 16, padB = 30;
-  const iw = W - padL - padR, ih = H - padT - padB;
-  const maxKm = Math.max(10, ...weeks.map(w => w.km)) * 1.15;
-  const bw = iw / weeks.length;
-  const y = (v) => padT + ih - (v / maxKm) * ih;
+/* appearance: follows the system, or pinned light/dark per device */
+const THEME_KEY = "rz_theme";
+function applyTheme(v) {
+  if (v === "light" || v === "dark") document.documentElement.dataset.theme = v; else delete document.documentElement.dataset.theme;
+  try { v === "auto" ? localStorage.removeItem(THEME_KEY) : localStorage.setItem(THEME_KEY, v); } catch (e) {}
+  renderThemeSeg();
+}
+function currentTheme() { try { return localStorage.getItem(THEME_KEY) || "auto"; } catch (e) { return "auto"; } }
+function themeSegHTML() {
+  const cur = currentTheme();
+  return `<div class="seg" role="group" aria-label="Appearance">${[["auto", "Auto"], ["light", "Light"], ["dark", "Dark"]].map(([v, l]) => `<button type="button" data-theme-pick="${v}" class="${cur === v ? "on" : ""}">${l}</button>`).join("")}</div>`;
+}
+function renderThemeSeg() {
+  document.querySelectorAll(".themeseg").forEach(h => { h.innerHTML = themeSegHTML(); h.querySelectorAll("[data-theme-pick]").forEach(b => b.onclick = () => applyTheme(b.dataset.themePick)); });
+}
 
-  let g = "";
-  const ticks = 4;
-  for (let i = 0; i <= ticks; i++) {
-    const v = maxKm / ticks * i, yy = y(v);
-    g += `<line x1="${padL}" y1="${yy}" x2="${W - padR}" y2="${yy}" stroke="var(--grid)" stroke-width="1"/>`;
-    g += `<text x="${padL - 8}" y="${yy + 4}" text-anchor="end" font-size="11" fill="var(--muted)" style="font-variant-numeric:tabular-nums">${Math.round(v)}</text>`;
-  }
-  let bars = "";
-  weeks.forEach((w, i) => {
-    const x = padL + i * bw + bw * 0.22, wd = bw * 0.56;
-    const h = Math.max(w.km > 0 ? 3 : 0, ih * (w.km / maxKm));
-    const fill = w.current ? "var(--series-2)" : "var(--series-1)";
-    bars += `<path d="M${x},${padT + ih} v${-(h - 4)} q0,-4 4,-4 h${wd - 8} q4,0 4,4 v${h - 4} z"
-      fill="${fill}" data-tip="Week of ${w.label}|${fmtKm(w.km)} km · ${w.count} run${w.count === 1 ? "" : "s"} · ${fmtDur(w.time)}" class="hit"/>`;
-    if (w.km > 0 && (w.current || w.km === Math.max(...weeks.map(q => q.km))))
-      bars += `<text x="${x + wd / 2}" y="${y(w.km) - 6}" text-anchor="middle" font-size="11" fill="var(--text-secondary)">${fmtKm(w.km)}</text>`;
-    bars += `<text x="${x + wd / 2}" y="${H - 10}" text-anchor="middle" font-size="10.5" fill="var(--muted)">${w.label}</text>`;
+/* --- weekly volume chart (Health-style bars) --- */
+function volumeChartSVG(weeks, o = {}) {
+  const maxKm = Math.max(...weeks.map(w => w.km));
+  return barChartSVG({
+    W: o.W || 600, H: o.H || 170, label: "Weekly running volume, kilometres per week",
+    bars: weeks.map(w => ({ label: w.label, v: w.km, faded: w.current, color: "var(--blue)", showValue: w.current || (w.km > 0 && w.km === maxKm),
+                            tip: `Week of ${w.label}|${fmtKm(w.km)} km · ${w.count} run${w.count === 1 ? "" : "s"} · ${fmtDur(w.time)}${w.current ? " · in progress" : ""}` })),
+    valueLabels: v => fmtKm(v), minMax: 10, target: o.target,
   });
-  g += `<line x1="${padL}" y1="${padT + ih}" x2="${W - padR}" y2="${padT + ih}" stroke="var(--baseline)" stroke-width="1"/>`;
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Weekly running volume, kilometres per week" style="width:100%;height:auto">${g}${bars}</svg>`;
+}
+
+/* shared card pieces */
+const hhead = (title, ic, when, chev = true) => `<div class="hhead"><span class="hic">${icon(ic)}</span>${title}<span class="hwhen">${when || ""}</span>${chev ? '<span class="chev">›</span>' : ""}</div>`;
+const sessionMeta = r => { const ing = ING_BY[ingredientOf(r)] || ING[0]; return ing; };
+const scorePill = s => s == null ? '<span class="pill">history</span>' : `<span class="pill ${s >= 85 ? "good" : s >= 70 ? "warn" : "bad"}"><span class="dot"></span>${s}</span>`;
+
+function runRowHTML(r) {
+  const ex = scoreExecution(r), ing = sessionMeta(r), c = coreStats(r);
+  return `<div class="row tap" data-run="${r.id}" style="--acc:${ing.color}">
+    <div class="ric">${icon(ing.icon)}</div>
+    <div><div class="rt">${r.name}</div><div class="rs">${fmtDate(r.date, { weekday: "short", day: "numeric", month: "short" })} · ${ex.target.label}${ex.notes.length && ex.score != null ? ` · ${ex.notes[0]}` : ""}</div></div>
+    <div class="rr"><b>${fmtKm(r.distanceKm)} km</b><span class="rrs">${fmtP(c.pace ?? r.paceSecPerKm)}${c.hr ? ` · ${c.hr} bpm` : ""}</span>${scorePill(ex.score)}</div>
+  </div>`;
+}
+
+function weekStripSVG(daily) {
+  const W = chartW(), H = 78, slot = W / 7, maxKm = Math.max(8, ...daily.map(d => Math.max(d.km, d.planned && d.planned.kind === "run" ? (String(d.planned.tag || "").match(/(\d+(?:\.\d+)?)\s*km/) || [0, 6])[1] * 1 : 0)));
+  let g = "";
+  daily.forEach((d, i) => {
+    const cx = slot * i + slot / 2, base = 52, ih = 40;
+    const kind = d.planned ? d.planned.kind : "rest";
+    const pl = d.planned && kind === "run" ? +((String(d.planned.tag || "").match(/(\d+(?:\.\d+)?)\s*km/) || [0, 6])[1]) : 0;
+    const dn = d.date.toLocaleDateString("en-GB", { weekday: "short" }).slice(0, 2);
+    if (pl > 0) { const h = ih * pl / maxKm; g += `<rect x="${cx - 11}" y="${base - h}" width="22" height="${h}" rx="5" fill="var(--fill)" class="hit" data-tip="${d.planned.title}|planned ≈ ${pl} km"/>`; }
+    if (d.km > 0) { const h = Math.max(4, ih * d.km / maxKm); g += `<rect x="${cx - 11}" y="${base - h}" width="22" height="${h}" rx="5" fill="var(--blue)" class="hit" data-tip="${fmtDate(d.date, { weekday: "long" })}|${fmtKm(d.km)} km run"/>`; }
+    if (kind === "gym") g += `<circle cx="${cx}" cy="${base - 6}" r="4" fill="var(--orange)" class="hit" data-tip="${d.planned.title}|gym day"/>`;
+    if (kind === "race") g += `<path d="M${cx},${base - 12} l5,5 -5,5 -5,-5z" fill="var(--red)"/>`;
+    g += `<text x="${cx}" y="${H - 6}" text-anchor="middle" font-size="11" font-weight="${d.isToday ? 700 : 500}" fill="${d.isToday ? "var(--blue)" : "var(--label2)"}">${dn}</text>`;
+    if (d.isToday) g += `<circle cx="${cx}" cy="${H - 20}" r="1.8" fill="var(--blue)"/>`;
+  });
+  g += `<line x1="0" y1="52.5" x2="${W}" y2="52.5" stroke="var(--sep)"/>`;
+  return svgTag(W, H, "This week, day by day") + g + "</svg>";
 }
 
 function renderDashboard() {
   const el = $("#tab-dashboard");
   const raceDay = parseISO(S.goal.raceDate);
   const days = Math.max(0, Math.round((raceDay - new Date()) / dayMs));
-  const weeks = weeklyAgg(12);
-  const thisWeek = weeks.at(-1);
+  const weeks = weeklyAgg(12), thisWeek = weeks.at(-1);
   const pred = racePrediction();
   const profile = fitnessProfile();
   const readiness = Math.round(profile.reduce((s, p) => s + p.score, 0) / profile.length);
-  const rs = runs();
-  const recent = rs.slice(-6).reverse();
+  const rs = runs(), recent = rs.slice(-6).reverse();
+  const wp = weekProjection(), ef = efficiencySeries(26), fresh = freshnessLedger(), p28 = profile28(), hrr = hrResponse(8);
+  const planStart = parseISO(S.plan.planStartDate || isoDate(new Date()));
+  const planPct = clamp((new Date() - planStart) / (raceDay - planStart) * 100, 0, 100);
+  const gp = goalPaceSec();
 
   $("#headSub").textContent = `${S.goal.raceName} · ${raceDay.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · train for ${S.goal.targetTime.slice(0, 4)}, bank ${(S.goal.bankTime || "3:45:00").slice(0, 4)}, floor sub-4`;
 
+  const projPill = wp.planned ? (wp.projected >= wp.planned * 0.95 ? '<span class="pill good"><span class="dot"></span>on plan</span>' : wp.projected >= wp.planned * 0.8 ? '<span class="pill warn"><span class="dot"></span>a little short</span>' : '<span class="pill bad"><span class="dot"></span>behind plan</span>') : "";
+  const vsLast = wp.lastAtPoint > 0 || wp.done > 0 ? `${signed(wp.done - wp.lastAtPoint, 1, " km")} vs the same point last week` : "first week with data";
+
+  const efTrend = ef.changePct == null ? "no 4-week comparison yet" : `${signed(ef.changePct, 1, "%")} vs 4 weeks ago`;
+  const efPill = ef.changePct == null ? "" : ef.changePct >= 1.5 ? '<span class="pill good"><span class="dot"></span>improving</span>' : ef.changePct <= -1.5 ? '<span class="pill bad"><span class="dot"></span>slipping</span>' : '<span class="pill info"><span class="dot"></span>stable</span>';
+
+  const staleN = fresh.filter(f => f.status === "stale" || f.status === "missing").length, fadingN = fresh.filter(f => f.status === "fading").length;
+  const hrWord = hrr.read ? ({ stable: "Stable", creeping: "Creeping up", improving: "Coming down" })[hrr.read.verdict] : "–";
+
   el.innerHTML = `
     ${ckBannerHTML()}
-    <div class="cards">
-      <div class="card"><div class="k">Days to race</div><div class="v">${days}</div><div class="d">${Math.floor(days / 7)} weeks</div></div>
-      <div class="card"><div class="k">Readiness</div><div class="v" style="color:${scoreColor(readiness)}">${readiness}<span class="unit">/100</span></div><div class="d">${scoreWord(readiness)} — avg of 8 systems</div></div>
-      <div class="card"><div class="k">This week</div><div class="v">${fmtKm(thisWeek.km)}<span class="unit"> km</span></div><div class="d">${thisWeek.count} run${thisWeek.count === 1 ? "" : "s"}</div></div>
-      <div class="card"><div class="k">Predicted marathon</div><div class="v">${pred ? fmtTime(pred.predictedS) : "–"}</div><div class="d">${pred ? "from " + fmtKm(pred.from.distanceKm) + " km @ " + fmtPace(pred.from.paceSecPerKm) : "need a run ≥ 8 km"}</div></div>
-      <div class="card"><div class="k">Goal pace</div><div class="v">${fmtPace(goalPaceSec()).replace("/km", "")}<span class="unit">/km</span></div><div class="d">for ${S.goal.targetTime}</div></div>
+    <div class="hgrid">
+      <div class="hcard tap" data-go="plan" style="--acc:var(--pink)">
+        ${hhead("Race countdown", "race", raceDay.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }))}
+        <div class="hval">${days}<span class="hunit">days</span></div>
+        <div class="hsub">${Math.floor(days / 7)} weeks · ${S.goal.raceName} · goal ${S.goal.targetTime.slice(0, 4)} (${fmtP(gp)}/km)</div>
+        <div class="hchart"><div style="height:8px;border-radius:4px;background:var(--fill);overflow:hidden"><div style="width:${planPct.toFixed(1)}%;height:100%;border-radius:4px;background:var(--pink)"></div></div></div>
+        <div class="hfoot"><b>${Math.round(planPct)}%</b> of the build done${wp.week ? ` · Week ${wp.week.idx} · ${wp.week.phase} phase` : ""}</div>
+      </div>
+      <div class="hcard tap" data-go="fitness" style="--acc:var(--green)">
+        ${hhead("Readiness", "gauge", "8 systems")}
+        <div style="display:flex;align-items:center;gap:16px">
+          ${ringSVG(readiness, scoreColor(readiness), 72, 9, readiness)}
+          <div><div class="hval" style="color:${scoreColor(readiness)}">${scoreWord(readiness)}</div><div class="hsub">average of the eight physiological systems</div></div>
+        </div>
+        <div class="hfoot">Weakest: <b>${profile.slice().sort((a, b) => a.score - b.score)[0].name}</b> · strongest: <b>${profile.slice().sort((a, b) => b.score - a.score)[0].name}</b></div>
+      </div>
+
+      <div class="hcard tap span2" data-go="calendar" style="--acc:var(--blue)">
+        ${hhead("This week", "run", "Mon – Sun")}
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><div class="hval">${fmtKm(wp.done)}<span class="hunit">km</span></div><div class="hsub">of ≈ ${wp.planned ? fmtKm(wp.planned) : "–"} km planned · ${wp.count} run${wp.count === 1 ? "" : "s"}</div>${projPill}</div>
+        <div class="hchart">${weekStripSVG(wp.daily)}</div>
+        <div class="hfoot">Projected <b>${fmtKm(wp.projected)} km</b> if the remaining sessions happen · ${vsLast}${wp.lastTotal ? ` · last week ${fmtKm(wp.lastTotal)} km` : ""}</div>
+      </div>
+
+      <div class="hcard span2" style="--acc:var(--blue)">
+        ${hhead("Weekly volume", "trends", "12 weeks", false)}
+        <div class="hchart">${volumeChartSVG(weeks, { W: chartW(), H: 210, target: wp.planned ? { v: wp.planned, label: `this week's plan ≈ ${fmtKm(wp.planned)} km` } : null })}</div>
+        <div class="legend"><span><i style="background:var(--blue)"></i>Completed weeks</span><span><i style="background:var(--blue);opacity:.45"></i>Current week</span><span><i style="background:var(--label3);height:2px"></i>Planned this week</span></div>
+      </div>
+
+      <div class="hcard tap" data-go="fitness" style="--acc:var(--mint)">
+        ${hhead("Aerobic efficiency", "pulse", ef.latest ? `week of ${ef.latest.start.getDate()}.${ef.latest.start.getMonth() + 1}.` : "")}
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <div><div class="hval">${ef.efNow ? fmtP(paceAtHr(ef.efNow, 140)) : "–"}<span class="hunit">/km at 140 bpm</span></div><div class="hsub">${efTrend} ${efPill}</div></div>
+          ${sparkSVG(ef.weeks.slice(-10).map(w => w.ef), "var(--mint)")}
+        </div>
+        <div class="hfoot">Speed per heartbeat on easy runs — the quiet number that rises as the base grows.</div>
+      </div>
+      <div class="hcard tap" data-go="race" style="--acc:var(--orange)">
+        ${hhead("Predicted marathon", "medal", pred ? fmtDate(pred.from.date) : "")}
+        <div class="hval">${pred ? fmtTime(Math.round(pred.predictedS)) : "–"}</div>
+        <div class="hsub">${pred ? `Riegel from ${fmtKm(pred.from.distanceKm)} km @ ${fmtP(pred.from.paceSecPerKm)}/km` : "need a run ≥ 8 km"}</div>
+        <div class="hfoot">${pred ? `Gap to ${S.goal.targetTime.slice(0, 4)}: <b>${pred.predictedS - gp * S.goal.distanceKm <= 0 ? "on track ✓" : fmtTime(Math.round(pred.predictedS - gp * S.goal.distanceKm))}</b> · ≈ ${Math.max(0, Math.round((pred.predictedS - gp * S.goal.distanceKm) / S.goal.distanceKm))}s/km of fitness to build` : ""}</div>
+      </div>
+
+      <div class="hcard tap" data-go="fitness" style="--acc:var(--purple)">
+        ${hhead("Ingredient freshness", "clock", `${fresh.length - staleN - fadingN} of ${fresh.length} fresh`)}
+        <div class="rows" style="margin-top:2px">${fresh.map(f => `
+          <div class="row" style="--acc:${f.color};padding:6px 0;grid-template-columns:26px minmax(0,1fr) auto">
+            <div class="ric" style="width:26px;height:26px;border-radius:8px">${icon(f.icon)}</div>
+            <div><div class="rt" style="font-size:13.5px">${f.name}</div><div class="rs">${f.last ? `last ${fmtDate(f.last.date, { weekday: "short", day: "numeric", month: "short" })} · ${agoWord(f.days)}` : "not yet in the log"}</div></div>
+            <span class="pill ${FRESH_PILL[f.status]}"><span class="dot"></span>${FRESH_WORD[f.status]}</span>
+          </div>`).join("")}</div>
+      </div>
+      <div class="hcard tap" data-go="fitness" style="--acc:var(--indigo)">
+        ${hhead("28-day bests", "medal", "recent proof")}
+        <div class="hstats" style="grid-template-columns:repeat(2,1fr)">${p28.map(it => `
+          <div><div class="k">${it.label}</div><div class="v">${it.cur ? (it.distM ? fmtEffort(it.timeS) : fmtP(it.cur.pace)) : "–"}</div>
+          <div class="rs" style="font-size:11.5px;color:var(--label2)">${it.cur ? (it.distM > 1000 ? `${fmtP(it.cur.pace)}/km · ` : it.distM ? "" : "sustained · ") + `${it.daysLeft} d left` : "no effort in 28 days"}</div></div>`).join("")}</div>
+        <div class="hfoot">HR on easy runs: <b>${hrWord}</b>${hrr.read ? ` · ${Math.round(hrr.read.recentHr)} bpm at ${fmtP(hrr.read.recentPace)}/km (last 2 weeks)` : ""}</div>
+      </div>
     </div>
-    <div class="panel">
-      <h2>Weekly volume</h2>
-      <div class="hint">Last 12 weeks of running. Hover a bar for detail.</div>
-      ${volumeChartSVG(weeks)}
-      <div class="legend"><span><i style="background:var(--series-1)"></i>Completed weeks</span><span><i style="background:var(--series-2)"></i>Current week</span></div>
-    </div>
+
     <div class="panel">
       <h2>Recent runs</h2>
-      <div class="hint">Latest activities with execution score (how well the run matched its intended session).</div>
-      <table>
-        <thead><tr><th>Date</th><th>Run</th><th>Session</th><th class="num">Km</th><th class="num">Pace</th><th class="num">HR</th><th class="num">Execution</th></tr></thead>
-        <tbody>${recent.map(r => {
-          const ex = scoreExecution(r);
-          return `<tr><td>${parseISO(r.date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</td>
-            <td>${r.name}</td><td><span class="chip">${ex.target.label}</span></td>
-            <td class="num">${fmtKm(r.distanceKm)}</td><td class="num">${fmtPace(r.paceSecPerKm)}</td>
-            <td class="num">${r.avgHr ?? "–"}${r.avgHr ? ` <span style="color:var(--muted)">Z${hrZoneOf(r.avgHr)}</span>` : ""}</td>
-            <td class="num"><span class="chip"><span class="dot" style="background:${scoreColor(ex.score)}"></span>${ex.score}</span></td></tr>`;
-        }).join("")}</tbody>
-      </table>
+      <div class="hint">Latest activities with their execution score — how well the core run matched the session on the plan. Tap for the Coach's debrief.</div>
+      <div class="rows">${recent.map(runRowHTML).join("")}</div>
+      <div class="note" style="text-align:center"><a href="#sessions" data-go="sessions" style="text-decoration:none;font-weight:600">All ${rs.length} sessions ›</a></div>
+    </div>
+    <div class="panel" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div><h2 style="margin:0">Appearance</h2><div class="hint" style="margin:0">Follows your system by default.</div></div>
+      <div class="themeseg"></div>
     </div>`;
+  el.onclick = (e) => {
+    const run = e.target.closest("[data-run]"); if (run) { openRunModal(run.dataset.run); return; }
+    const go = e.target.closest("[data-go]"); if (go) { e.preventDefault(); activate(go.dataset.go); }
+  };
+  renderThemeSeg();
 }
 
+/* ---------- Trends (fitness) ---------- */
+let __efRange = 12;
 function renderFitness() {
   const el = $("#tab-fitness");
   const profile = fitnessProfile();
+  const ef = efficiencySeries(__efRange || null), fresh = freshnessLedger(), p28 = profile28(), hrr = hrResponse(8), wp = weekProjection();
+  const gp = goalPaceSec();
+
+  const efChart = lineChartSVG({
+    W: chartW(), H: 220, color: "var(--mint)", area: true, label: "Aerobic efficiency by week",
+    pts: ef.weeks.map(w => ({ x: w.start, y: w.ef, tip: `Week of ${w.start.getDate()}.${w.start.getMonth() + 1}.|EF ${w.ef.toFixed(2)} m/min per bpm · ${fmtP(paceAtHr(w.ef, 140))}/km at 140 · ${w.n} run${w.n === 1 ? "" : "s"}, ${fmtKm(w.km)} km` })),
+    yFmt: v => v.toFixed(2), xLabel: p => `${p.x.getDate()}.${p.x.getMonth() + 1}.`,
+  });
+  const trendWord = ef.trendPct4w == null ? "–" : `${signed(ef.trendPct4w, 1, "%")} / 4 wk`;
+  const confPill = { high: '<span class="pill good"><span class="dot"></span>high confidence</span>', medium: '<span class="pill warn"><span class="dot"></span>medium confidence</span>', low: '<span class="pill"><span class="dot"></span>low confidence</span>' }[ef.conf];
+
+  const hrChart = lineChartSVG({
+    W: chartW(), H: 200, color: "var(--red)", label: "Weekly easy-run heart rate",
+    pts: hrr.weeks.filter(w => w.hr).map(w => ({ x: w.start, y: w.hr, tip: `Week of ${w.label}|${Math.round(w.hr)} bpm at ${fmtP(w.pace)}/km · ${w.n} easy-effort run${w.n === 1 ? "" : "s"}, ${fmtKm(w.km)} km` })),
+    yFmt: v => Math.round(v), xLabel: p => `${p.x.getDate()}.${p.x.getMonth() + 1}.`,
+    baseline: { y: S.hrZones[1].maxHr, label: `Z2 ceiling ${S.hrZones[1].maxHr}` },
+  });
+  const paceRow = hrr.weeks.filter(w => w.hr).map(w => `<span>${w.label}<b>${fmtP(w.pace)}</b></span>`).join("");
+  const readTxt = hrr.read ? ({
+    stable:    `Heart rate on easy running is <b>stable</b>: ${Math.round(hrr.read.recentHr)} bpm at ${fmtP(hrr.read.recentPace)}/km over the last two weeks vs ${Math.round(hrr.read.priorHr)} at ${fmtP(hrr.read.priorPace)} before. Adaptation is on track — keep the easy days easy.`,
+    creeping:  `Heart rate on easy running is <b>creeping up</b> (${signed(hrr.read.resid, 0, " bpm")} beyond what the pace change explains). Classic sign of accumulated fatigue, heat or a brewing cold — protect sleep, hold the volume, do not add intensity this week.`,
+    improving: `Heart rate on easy running is <b>coming down</b> (${signed(hrr.read.resid, 0, " bpm")} beyond what the pace change explains). The aerobic engine is adapting — exactly what base weeks are for.`,
+  })[hrr.read.verdict] : "Two weeks of easy-effort runs with HR are needed before this can be read.";
+
   el.innerHTML = `
+    <div class="hgrid">
+      <div class="hcard span2" style="--acc:var(--mint)">
+        <div class="hhead"><span class="hic">${icon("pulse")}</span>Aerobic efficiency<span class="hwhen"><span class="seg" id="efseg">${[[12, "12W"], [26, "26W"], [0, "All"]].map(([v, l]) => `<button type="button" data-range="${v}" class="${(__efRange || 0) === v ? "on" : ""}">${l}</button>`).join("")}</span></span></div>
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><div class="hval">${ef.efNow ? ef.efNow.toFixed(2) : "–"}<span class="hunit">m/min per bpm</span></div><div class="hsub">= ${ef.efNow ? fmtP(paceAtHr(ef.efNow, 140)) : "–"}/km at 140 bpm · ${ef.changePct == null ? "no 4-week comparison yet" : signed(ef.changePct, 1, "%") + " vs 4 weeks ago"}</div>${confPill}</div>
+        <div class="hchart">${efChart}</div>
+        <div class="hstats">
+          <div><div class="k">Trend</div><div class="v">${trendWord}</div></div>
+          <div><div class="k">Best week</div><div class="v">${ef.best ? ef.best.ef.toFixed(2) : "–"}</div></div>
+          <div><div class="k">Runs counted</div><div class="v">${ef.runs.length}</div></div>
+          <div><div class="k">Goal-pace check</div><div class="v">${ef.efNow ? `${Math.round(60000 / (gp * ef.efNow))} bpm` : "–"}</div></div>
+        </div>
+        <div class="hfoot">Speed divided by heart rate on easy-effort runs (core HR ${S.hrZones[1].minHr - 4}–${S.hrZones[1].maxHr + 2}, ≥ 4 km after trimming warm-up/cool-down), distance-weighted per week. Higher = more speed per heartbeat. <b>Goal-pace check</b>: the pulse today's efficiency implies at ${fmtP(gp)}/km — the plan's job is to bring it into Z3 (${S.hrZones[2].minHr}–${S.hrZones[2].maxHr}).</div>
+      </div>
+
+      <div class="hcard span2" style="--acc:var(--purple)">
+        ${hhead("Ingredient freshness", "clock", "the ledger", false)}
+        <div class="hsub">Fitness is a recipe: each ingredient decays if it is not touched. Fresh = inside its window, fading = due, stale = the adaptation is slipping. Last 8 weeks shown as squares.</div>
+        <div class="rows" style="margin-top:6px">${fresh.map(f => `
+          <div class="row" style="--acc:${f.color}">
+            <div class="ric">${icon(f.icon)}</div>
+            <div><div class="rt">${f.name} <span class="pill ${FRESH_PILL[f.status]}" style="margin-left:6px;vertical-align:middle"><span class="dot"></span>${FRESH_WORD[f.status]}</span></div>
+              <div class="rs">${f.last ? `Last: ${f.last.name} · ${fmtDate(f.last.date, { weekday: "short", day: "numeric", month: "short" })} (${agoWord(f.days)}) · ${f.n28} in 28 days` : "not yet in the log"}${f.next ? ` · next: <b>${f.next.title}</b> ${fmtDate(f.next.date, { weekday: "short", day: "numeric", month: "short" })}` : ""}</div></div>
+            <div class="rr"><div class="strip" style="--acc:${f.color}" title="last 8 weeks">${f.strip.map(on => `<i${on ? ' class="on"' : ""}></i>`).join("")}</div><span style="font-size:11px">window ${f.fresh} d</span></div>
+          </div>`).join("")}</div>
+      </div>
+
+      <div class="hcard span2" style="--acc:var(--indigo)">
+        ${hhead("28-day performance profile", "medal", "what is proven right now", false)}
+        <div class="hsub">Recent proof only — an effort expires after 28 days, so this shows what you could repeat today, not what you once did. All-time bests sit underneath for comparison.</div>
+        <div class="hstats" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:8px">${p28.map(it => {
+          const val = it.cur ? (it.distM ? fmtEffort(it.timeS) : fmtP(it.cur.pace) + "/km") : "–";
+          const pb = it.pbPace ? (it.distM ? fmtEffort(it.pbTime) : fmtP(it.pbPace) + "/km") : "–";
+          const isPB = it.cur && it.pbPace && Math.abs(it.cur.pace - it.pbPace) < 0.5;
+          const exp = it.daysLeft == null ? "" : it.daysLeft <= 5 ? `<span class="pill bad" style="margin-top:6px"><span class="dot"></span>expires in ${it.daysLeft} d</span>` : it.daysLeft <= 10 ? `<span class="pill warn" style="margin-top:6px"><span class="dot"></span>${it.daysLeft} d left</span>` : `<span class="pill good" style="margin-top:6px"><span class="dot"></span>${it.daysLeft} d left</span>`;
+          return `<div style="padding:10px 12px"><div class="k">${it.label}${it.distM ? "" : " sustained"}</div><div class="v" style="font-size:22px">${val}</div>
+            <div style="font-size:11.5px;color:var(--label2);margin-top:2px">${it.cur ? `${it.distM > 1000 ? fmtP(it.cur.pace) + "/km · " : ""}${fmtDate(it.cur.run.date)}` : "no effort in the window"}</div>
+            <div style="font-size:11.5px;color:var(--label2)">All-time ${pb}${isPB ? ' <span style="color:var(--good-text);font-weight:600">= PB</span>' : it.pbRun ? ` (${fmtDate(it.pbRun.date)})` : ""}</div>${exp}</div>`; }).join("")}</div>
+        <div class="hfoot">Fastest contiguous lap windows inside every synced run, so warm-ups and traffic lights do not hide them. A test race or time trial refreshes the whole row at once.</div>
+      </div>
+
+      <div class="hcard span2" style="--acc:var(--red)">
+        ${hhead("Weekly HR response", "heart", "easy-effort runs, 8 weeks", false)}
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><div class="hval">${hrr.read ? Math.round(hrr.read.recentHr) : "–"}<span class="hunit">bpm</span></div><div class="hsub">${hrr.read ? `at ${fmtP(hrr.read.recentPace)}/km · last two weeks` : ""}</div>${hrr.read ? `<span class="pill ${({ stable: "info", creeping: "bad", improving: "good" })[hrr.read.verdict]}"><span class="dot"></span>${({ stable: "stable", creeping: "creeping up", improving: "coming down" })[hrr.read.verdict]}</span>` : ""}</div>
+        <div class="hchart">${hrChart}</div>
+        <div class="legend" style="gap:12px">${paceRow ? `<span style="color:var(--label2)">avg easy pace:</span>${paceRow.replace(/<b>/g, ' <b style="margin-left:4px;color:var(--label)">')}` : ""}</div>
+        <div class="hfoot">${readTxt}</div>
+        <div class="hstats">
+          <div><div class="k">This week so far</div><div class="v">${fmtKm(wp.done)} km</div></div>
+          <div><div class="k">Projected</div><div class="v">${fmtKm(wp.projected)} km</div></div>
+          <div><div class="k">Same point last week</div><div class="v">${fmtKm(wp.lastAtPoint)} km</div></div>
+          <div><div class="k">Last week total</div><div class="v">${fmtKm(wp.lastTotal)} km</div></div>
+        </div>
+      </div>
+    </div>
+
     <div class="panel">
       <h2>Fitness profile — 8 systems</h2>
-      <div class="hint">Each system is scored 0–100 from your synced training history (last 8 weeks weigh most). Scores are computed by simple transparent formulas — the line under each system shows exactly why.</div>
+      <div class="hint">Each system is scored 0–100 from your synced training history (last 8 weeks weigh most). Transparent formulas — the line under each system shows exactly why.</div>
       ${profile.map(p => `
         <div class="sysrow">
           <div><div class="name">${p.name}</div><div class="why">${p.why}</div></div>
           <div class="sysbar"><div style="width:${p.score}%;background:${scoreColor(p.score)}"></div></div>
           <div class="score">${p.score}</div>
         </div>`).join("")}
-      <div class="note">With only a handful of runs synced, low scores mostly mean "not enough data yet" — they will move quickly once training is regular. Formulas live in index.html and are yours to tune.</div>
+      <div class="note">With only a handful of runs synced, low scores mostly mean "not enough data yet" — they move quickly once training is regular.</div>
     </div>`;
+  el.onclick = (e) => {
+    const b = e.target.closest("#efseg [data-range]"); if (!b) return;
+    __efRange = +b.dataset.range; renderFitness();
+  };
 }
 
 function renderSessions() {
   const el = $("#tab-sessions");
   const rs = runs().slice().reverse();
+  const months = [];
+  for (const r of rs) { const k = parseISO(r.date).toLocaleDateString("en-GB", { month: "long", year: "numeric" }); if (!months.length || months.at(-1).k !== k) months.push({ k, runs: [] }); months.at(-1).runs.push(r); }
   el.innerHTML = `
     <div class="panel">
       <h2>Session execution</h2>
-      <div class="hint">Each run is judged against the session that was on the plan for that day — the same band the calendar shows. Tap a run for the Coach's full debrief.</div>
-      <table>
-        <thead><tr><th>Date</th><th>Run</th><th>Session</th><th class="num">Km</th><th class="num">Pace</th><th>Prescribed</th><th class="num">Score</th><th>Notes</th></tr></thead>
-        <tbody>${rs.map(r => {
-          const ex = scoreExecution(r);
-          return `<tr onclick="openRunModal('${r.id}')" style="cursor:pointer">
-            <td>${parseISO(r.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}</td>
-            <td>${r.name}</td><td><span class="chip">${ex.planned ? "📋 " : ""}${ex.target.label}</span></td>
-            <td class="num">${fmtKm(r.distanceKm)}</td><td class="num">${fmtPace(ex.evalPace ?? r.paceSecPerKm)}</td>
-            <td>${fmtPace(ex.target.pace[0])}–${fmtPace(ex.target.pace[1])}</td>
-            <td class="num">${ex.score == null ? '<span class="chip">history</span>' : `<span class="chip"><span class="dot" style="background:${scoreColor(ex.score)}"></span>${ex.score} · ${scoreWord(ex.score)}</span>`}</td>
-            <td style="color:var(--text-secondary);font-size:12.5px">${ex.notes.join("; ") || "On target"}</td></tr>`;
-        }).join("")}</tbody>
-      </table>
+      <div class="hint">Each run is judged on its core (warm-up and cool-down trimmed) against the band the plan prescribed that day. 85+ excellent · 70+ good · below 70 needs a look. Tap a run for the Coach's full debrief and splits.</div>
+      ${months.map(m => `<div class="topic-h">${m.k} · ${m.runs.length} run${m.runs.length === 1 ? "" : "s"} · ${fmtKm(m.runs.reduce((s, r) => s + r.distanceKm, 0))} km</div>
+        <div class="rows">${m.runs.map(r => {
+          const ex = scoreExecution(r), ing = sessionMeta(r), c = coreStats(r);
+          return `<div class="row tap" data-run="${r.id}" style="--acc:${ing.color}">
+            <div class="ric">${icon(ing.icon)}</div>
+            <div><div class="rt">${r.name}</div>
+              <div class="rs">${fmtDate(r.date, { weekday: "short", day: "numeric", month: "short" })} · ${ex.planned ? "📋 " : ""}${ex.target.label} · prescribed ${fmtP(ex.target.pace[0])}–${fmtP(ex.target.pace[1])}${ex.score == null ? " · before the plan" : ex.notes.length ? " · " + ex.notes.join("; ") : " · on target"}</div></div>
+            <div class="rr"><b>${fmtKm(r.distanceKm)} km</b><span class="rrs">${fmtP(ex.evalPace ?? c.pace ?? r.paceSecPerKm)}${c.hr ? ` · ${c.hr} bpm` : ""}</span>${ex.score == null ? '<span class="pill">history</span>' : `<span class="pill ${ex.score >= 85 ? "good" : ex.score >= 70 ? "warn" : "bad"}"><span class="dot"></span>${ex.score} · ${scoreWord(ex.score)}</span>`}</div>
+          </div>`; }).join("")}</div>`).join("")}
     </div>`;
+  el.onclick = (e) => { const run = e.target.closest("[data-run]"); if (run) openRunModal(run.dataset.run); };
 }
 
 function renderPlan() {
@@ -3217,11 +3786,11 @@ function renderCalendar() {
   const plan = buildPlan();
   CAL = plan.map(w => ({ week: w, days: buildWeekDays(w) }));
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  const DETAIL_WEEKS = 6; // full detail for the next 6 weeks, compact after
+  const DETAIL_WEEKS = 2; // full detail for this week and next, compact after (tap any day for everything)
 
   const dayCard = (day, wi, di, compact, past) => {
     const isToday = day.date.getTime() === today.getTime();
-    const colors = { run: "var(--series-1)", gym: "var(--series-2)", race: "var(--critical)", rest: "var(--baseline)" };
+    const colors = { run: "var(--blue)", gym: "var(--orange)", race: "var(--red)", rest: "var(--gray)" };
     const badge = { run: "RUN", gym: "GYM", race: "RACE", rest: "REST" }[day.kind];
     return `<div class="daycard${isToday ? " today" : ""}${past ? " pastday" : ""}" data-w="${wi}" data-d="${di}" title="Click for full detail">
       <div class="dhead"><span class="dnum">${day.date.getDate()}.${day.date.getMonth() + 1}.</span>
@@ -3404,16 +3973,25 @@ function renderZones() {
 /* ---------- tooltip ---------- */
 function wireTooltip() {
   const tip = $("#tooltip");
-  document.addEventListener("mousemove", (e) => {
-    const t = e.target.closest?.("[data-tip]");
-    if (!t) { tip.style.display = "none"; return; }
+  let hideT = null;
+  const show = (t, x, y) => {
     const [l1, l2] = t.dataset.tip.split("|");
     tip.innerHTML = `<div class="t1">${l1}</div><div class="t2">${l2 || ""}</div>`;
     tip.style.display = "block";
-    const x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8);
-    tip.style.left = x + "px";
-    tip.style.top = (e.clientY + 16) + "px";
+    tip.style.left = Math.max(8, Math.min(x + 14, window.innerWidth - tip.offsetWidth - 8)) + "px";
+    tip.style.top = Math.min(y + 16, window.innerHeight - tip.offsetHeight - 8) + "px";
+  };
+  document.addEventListener("mousemove", (e) => {
+    const t = e.target.closest?.("[data-tip]");
+    if (!t) { if (!hideT) tip.style.display = "none"; return; }
+    show(t, e.clientX, e.clientY);
   });
+  /* touch: tap a bar or point to see its value for a moment */
+  document.addEventListener("touchstart", (e) => {
+    const t = e.target.closest?.("[data-tip]"); if (!t) { tip.style.display = "none"; return; }
+    const p = e.touches[0]; show(t, p.clientX - 60, p.clientY - 70);
+    clearTimeout(hideT); hideT = setTimeout(() => { tip.style.display = "none"; hideT = null; }, 1800);
+  }, { passive: true });
 }
 
 /* ---------- boot ---------- */
@@ -3440,7 +4018,9 @@ async function boot() {
   renderFuel();
   renderCoach();
   renderZones();
-  activate("dashboard");
+  activate((location.hash || "").slice(1) || "dashboard");
+  window.addEventListener("hashchange", () => activate((location.hash || "").slice(1) || "dashboard"));
+  watchChartWidth();
   wireTooltip();
   $("#modalWrap .backdrop").addEventListener("click", closeModal);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
