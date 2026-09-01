@@ -317,29 +317,22 @@
   },
   {
    "date": "2026-09-01",
-   "kind": "run",
-   "arch": "easy",
-   "exKey": "easy",
-   "title": "Knee TEST run 30-40 min (threshold moved to Thu)",
-   "tag": "30-40 min · Evo SL · flat route",
-   "steps": [
-    "Only job today: confirm the left knee stays silent after Sunday's abort (pain was gone next morning - this run is the confirmation, not a workout)",
-    "Evo SL, flat route, genuinely easy - pace and pulse don't matter",
-    "Any knee whisper (even mild): stop, walk home, bike week + book physio - one strike is already spent",
-    "Clean run = threshold happens Thursday as planned"
+   "append": [
+    "BACK IN ITS SLOT: threshold returns to Tuesday - knee has been silent since Sunday evening, so the pre-knee week runs as designed (Tue threshold, Thu steady, Sun long)",
+    "KNEE RE-ENTRY: the warm-up 3 km is the assessment. Any knee whisper that does not fade by km 2 = convert to 40 min easy and book physio (one strike already spent). Pain that grows or altered stride = stop, walk home",
+    "First rep at the BOTTOM of threshold (5:20-5:25) and judge the knee again before rep 2 - the session is the same dose as Aug 25 (3x10), not a step up",
+    "SB3 ok (short run, <50 min) - or Evo SL if you want the firmer platform on the first quality day after the knee",
+    "Threshold day = fuel-during day: DM320 or gel nibbles, 50 ml every ~10 min"
    ]
   },
   {
    "date": "2026-09-03",
-   "kind": "run",
-   "arch": "threshold",
-   "exKey": "threshold",
-   "title": "Threshold 3x10min (moved from Tue - only if Tuesday's test was clean)",
-   "tag": "SB3 ok (short run) · fuel during",
-   "steps": [
-    "Runs ONLY if Tuesday's knee test was completely silent - otherwise easy spin/bike and physio booking instead",
-    "3x10min at threshold (5:05-5:25), 2-3min jog recoveries - same session as Aug 25",
-    "Shin + hip-flexor gates apply as always; threshold days = fuel-during days"
+   "append": [
+    "COMPANY TRIP DAY - this stays a steady/easy day, NOT threshold. Run wherever you are: hotel treadmill (1% incline) or any flat loop is fine",
+    "Ideal: 1 km easy + 6 km steady at 5:55-6:15 + 1 km easy (8 km). If time or route is tight: 40 min easy at 6:15-6:45 counts fully - this day is aerobic time, not a test",
+    "Unknown roads: no pace chasing, run by feel and pulse (Z2, under 148); stop at 50 min regardless",
+    "SB3 is fine for this (short run, <50 min) - pack the Evo SL only if the trip runs into Sunday",
+    "Knee: two days after threshold on travel legs (sitting, driving) - do the 5-min activation before you start; any knee signal = easy jog or walk, no heroics away from home"
    ]
   },
   {
