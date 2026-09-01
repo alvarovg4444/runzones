@@ -1,6 +1,6 @@
 {
   "coach": "The Coach (an Olympic marathoner with a 2:09 PB)",
-  "extracted": "2026-08-07 (14 videos)",
+  "extracted": "2026-08-07, updated 2026-09-01",
   "sources": [
     {
       "id": "zones",
@@ -71,6 +71,11 @@
       "id": "trainfaster",
       "title": "Train Better & Run Faster (physiology, discipline, super shoes)",
       "url": "https://www.youtube.com/watch?v=wqk-bBoVvuM"
+    },
+    {
+      "id": "hrzones",
+      "title": "Do heart rate zones matter? Building a running Platform (Runzones review, Aug 2026)",
+      "url": "https://www.youtube.com/watch?v=RvpDs9SegQg"
     }
   ],
   "tips": [
@@ -519,6 +524,116 @@
       "title": "'Just Another Sunday' — race-day confidence is rehearsed",
       "insight": "His race-day philosophy: make the marathon feel like just another Sunday. Same breakfast, same fueling script, same warm-up, same controlled first kilometres you've done twenty times. Confidence doesn't come from hype — it comes from race day containing nothing new.",
       "apply": "Every Sunday long run in the Specific phase is a rehearsal of the same script. By April, race morning should feel almost boring — that's the goal."
+    },
+    {
+      "topic": "Zones from evidence, not formulas",
+      "tags": [
+        "general",
+        "threshold"
+      ],
+      "source": "hrzones",
+      "title": "Threshold is what you have proven for 45–60 min — never 220 minus age",
+      "insight": "His zone method: no formulas. Threshold HR is the intensity you have actually held for ~45–60 minutes in a race or time trial; every other zone hangs off that. He keeps it simple — easy/recovery, steady, threshold, hard — and says the labels (LT1, LT2, VO2) matter far less than knowing where YOU spent your time when you raced well. His own ladder: easy 130–145, steady 145–155, threshold ~158–170, hard 170+.",
+      "apply": "Your zones are anchored to a real 10.4 km @5:17 / HR 162 — exactly his method. They only move on new evidence (the checkpoint banner), never on a good feeling or a formula. A hard 5k/10k every few weeks is the price of accurate zones."
+    },
+    {
+      "topic": "Zones from evidence, not formulas",
+      "tags": [
+        "general"
+      ],
+      "source": "hrzones",
+      "title": "Clean the evidence — one bad strap day poisons the whole zone model",
+      "insight": "A single corrupt file (an easy 70-min run logged at 185 bpm average when it should read ~140) will drag every derived zone in the wrong direction. He reviews best 5/15/30/45/60-min efforts and races and deletes anomalies before trusting any zone maths — 'if your pulse zones are accurate, Runzones is beautiful'; if not, nothing downstream is.",
+      "apply": "Before accepting a checkpoint zone suggestion, look at the run behind it: a strap spike (HR ≥160 on an easy day, or a max well above your ~185) is a data error, not a fitness change. Dismiss it, don't apply it."
+    },
+    {
+      "topic": "The recipe",
+      "tags": [
+        "general",
+        "steady",
+        "threshold"
+      ],
+      "source": "hrzones",
+      "title": "Reverse-engineer your recipe from your best race",
+      "insight": "Most runners know their mileage but not the zone-minutes that produced their good races — 'the label doesn't matter', the distribution does. His 2:09–2:13 marathons all sat on roughly 90–120 min per WEEK at 158–170 bpm (his threshold band) on top of a big easy/steady base. That pattern is his recipe; when a block drifts away from it, results drift too.",
+      "apply": "Leopoldilauf (Nov 8) becomes your first reference recipe: after it, log the 8 weeks before it by zone-minutes and keep that shape as the template for the Winterlauf and Eisbärlauf builds. The app's zone-time chart is where that recipe lives."
+    },
+    {
+      "topic": "The recipe",
+      "tags": [
+        "general",
+        "easy",
+        "steady"
+      ],
+      "source": "hrzones",
+      "title": "Recovery spreads the pyramid; steady and threshold build its height",
+      "insight": "Correction to the pyramid picture: easy/recovery volume widens the base but cannot raise the peak — 'density' in the middle (steady aerobic and threshold, the meat-and-potatoes sessions) is what makes race results repeatable. A wide grey base with a thin middle produces one-off good days, not consistency. Density, not just volume, is the goal of a base phase.",
+      "apply": "Your 3-run template already puts one steady/threshold day and one long run in every week — those two are the density. Protect them before adding a fourth easy day; the bike pressure-valve keeps the base wide without stealing from the middle."
+    },
+    {
+      "topic": "The recipe",
+      "tags": [
+        "threshold",
+        "steady"
+      ],
+      "source": "hrzones",
+      "title": "Collect coins in the money zone — drift over it and the session is reclassified",
+      "insight": "'When I'm in that money zone, I'm collecting coins.' The adaptation of a threshold or steady session comes from time INSIDE the band; the minute effort drifts above it the session becomes aerobic power — a different stimulus, more fatigue, and the intended work is wasted. Seeing the run reclassified is the feedback that builds pacing discipline.",
+      "apply": "This is why the scorer docks 'too fast — don't race the training' and why the long-run HR cap is non-negotiable: km 4–7 of Aug 23 at 5:55 were coins spent in the wrong zone. Steady means steady; threshold means the band, not the top of it."
+    },
+    {
+      "topic": "Race-pace calibration",
+      "tags": [
+        "race"
+      ],
+      "source": "hrzones",
+      "title": "The 4-week readiness audit: never race a pace you haven't held for a shorter distance",
+      "insight": "Before any race, look at the last four weeks only: what is your fastest recent 3k, 5k, 10k? If the fastest 3k is slower than goal 10k pace, the goal is a wish, not a plan. Race pace must already exist in your recent training at a shorter distance — otherwise arrive planning to run what the evidence supports and 'go to races laughing, confident'.",
+      "apply": "Leopoldilauf target ≈1:52:30 (5:20/km): by late October your best recent 5k should be inside ~5:00–5:10/km and a 10k effort near 5:15. The app's bestEfforts (1k/5k/10k) are the audit — check them 3 weeks out and adjust the target, not the hope."
+    },
+    {
+      "topic": "Race-pace calibration",
+      "tags": [
+        "race",
+        "general"
+      ],
+      "source": "hrzones",
+      "title": "Fitness evidence expires in ~28 days — PBs are history, not current fitness",
+      "insight": "His profile only counts the best 1k (speed reserve), 3k (aerobic power), 5k (race evidence), 10k (threshold strength) and 15k (sustained strength) from the LAST FOUR WEEKS; each piece of evidence 'expires' after 28 days and the next-best recent effort takes over. All-time PBs are tracked separately as reference only. Short evidence shows the top end; 5k and 15k show how much of it you can sustain.",
+      "apply": "Read your own numbers the same way: Warsaw 5:28/km 'felt easy' is expired evidence, not current fitness. What counts for the December 10k is what you have shown since mid-November."
+    },
+    {
+      "topic": "Progression reality",
+      "tags": [
+        "general",
+        "steady"
+      ],
+      "source": "hrzones",
+      "title": "Test the direction every 2–3 weeks: pace at aerobic HR is the cleanest read",
+      "insight": "Every 2–3 weeks ask one question: is the pace you hold at your aerobic HR getting faster? If the aerobic-efficiency curve rises, training is working; if it is flat while volume climbs, gains are coming from load rather than better aerobic cost — 'validate with a controlled steady run' before changing anything. HR that stays stable across weeks at the same volume means no creeping fatigue.",
+      "apply": "Your Aug 23 read (HR 141 at 6:00–6:25/km vs 148 two weeks earlier) is exactly this metric. Repeat it on every cool-weather long run and log the pace-at-HR-140 number; that line, not any single session, tells you whether the block is working."
+    },
+    {
+      "topic": "Progression reality",
+      "tags": [
+        "general",
+        "easy"
+      ],
+      "source": "hrzones",
+      "title": "Daily HR variability is normal — pace is the anchor, HR is the guide",
+      "insight": "The same pace produces a different heart rate on different days: heat, humidity, poor sleep, fatigue and caffeine all move it by several beats. That is not a zone error and not a reason to rewrite zones; zones change on evidence every few weeks, execution flexes day to day. Over a block, actual pace achieved is stronger proof of fitness than any single HR reading.",
+      "apply": "Hot or humid day: allow the long-run HR cap about +2 bpm as an execution allowance (150 instead of 148) and run by HR, not pace — the zones themselves don't change. A sudden 10-beat jump at easy pace is a strap, illness or fatigue signal, not new fitness information."
+    },
+    {
+      "topic": "What a good week looks like",
+      "tags": [
+        "long",
+        "general"
+      ],
+      "source": "hrzones",
+      "title": "Every ingredient has a shelf life — track when each system was last proven",
+      "insight": "He audits a block by 'ingredient freshness': when was aerobic base, LT1, LT2, aerobic power, VO2 and the long run each last genuinely trained? A system unproven for 3–4 weeks is stale and will feel it on race day; the long run in particular is 'durability proof' and expires like everything else. The block that looks great on total km can still be stale in the one ingredient the race needs.",
+      "apply": "For your on-ramp the freshness list is short: threshold every 3–4 days, long run every 7–10 days, VO2 back when GATE 2 opens. A skipped or aborted long run (Aug 30) is a stale ingredient — the next one restores it; two in a row is a real hole before Leopoldilauf."
     }
   ]
 }
