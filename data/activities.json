@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-09-02T18:04:35Z",
+  "lastSync": "2026-09-06T14:22:51Z",
   "source": "intervals-icu-sync",
   "activities": [
     {
@@ -1634,6 +1634,47 @@
       "bestEfforts": {
         "1k": 332,
         "5k": 1840
+      }
+    },
+    {
+      "id": "icu-i183901802",
+      "date": "2026-09-06",
+      "name": "Vienna Running",
+      "type": "run",
+      "distanceKm": 3.64,
+      "movingTimeS": 1511,
+      "elapsedTimeS": 1733,
+      "avgHr": 119,
+      "maxHr": 130,
+      "ascentM": 30,
+      "source": "intervals.icu",
+      "paceSecPerKm": 415,
+      "bestKmSecPerKm": 399,
+      "best20minSecPerKm": 424,
+      "laps": [
+        [
+          1005,
+          460,
+          111
+        ],
+        [
+          1001,
+          416,
+          123
+        ],
+        [
+          997,
+          398,
+          125
+        ],
+        [
+          636,
+          253,
+          117
+        ]
+      ],
+      "bestEfforts": {
+        "1k": 398
       }
     }
   ]
