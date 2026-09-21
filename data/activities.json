@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-09-21T11:04:48Z",
+  "lastSync": "2026-09-21T17:10:43Z",
   "source": "intervals-icu-sync",
   "activities": [
     {
@@ -1769,6 +1769,19 @@
         "1k": 468,
         "5k": 2829
       }
+    },
+    {
+      "id": "icu-i188825226",
+      "date": "2026-09-21",
+      "name": "Elche Walking",
+      "type": "cross",
+      "distanceKm": 3.07,
+      "movingTimeS": 1984,
+      "elapsedTimeS": 2068,
+      "avgHr": 95,
+      "maxHr": 122,
+      "ascentM": 137,
+      "source": "intervals.icu"
     }
   ]
 }
