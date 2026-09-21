@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-09-17T15:17:38Z",
+  "lastSync": "2026-09-21T11:04:48Z",
   "source": "intervals-icu-sync",
   "activities": [
     {
@@ -1716,6 +1716,58 @@
       ],
       "bestEfforts": {
         "1k": 447
+      }
+    },
+    {
+      "id": "icu-i188758460",
+      "date": "2026-09-21",
+      "name": "Elche Running",
+      "type": "run",
+      "distanceKm": 5.79,
+      "movingTimeS": 3124,
+      "elapsedTimeS": 3312,
+      "avgHr": 108,
+      "maxHr": 132,
+      "ascentM": 47,
+      "source": "intervals.icu",
+      "paceSecPerKm": 540,
+      "bestKmSecPerKm": 479,
+      "best20minSecPerKm": 495,
+      "laps": [
+        [
+          1003,
+          495,
+          111
+        ],
+        [
+          1001,
+          480,
+          116
+        ],
+        [
+          1000,
+          512,
+          111
+        ],
+        [
+          998,
+          499,
+          121
+        ],
+        [
+          1001,
+          846,
+          98
+        ],
+        [
+          783,
+          481,
+          92
+        ]
+      ],
+      "bestEfforts": {
+        "1k": 468,
+        "5k": 2829
       }
     }
   ]
