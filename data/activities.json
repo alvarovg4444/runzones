@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-09-27T13:16:37Z",
+  "lastSync": "2026-09-30T20:59:07Z",
   "source": "intervals-icu-sync",
   "activities": [
     {
@@ -1809,6 +1809,42 @@
       "ascentM": 186,
       "source": "intervals.icu",
       "avgSpeedKph": 10.9
+    },
+    {
+      "id": "icu-i192027377",
+      "date": "2026-09-30",
+      "name": "Wien Laufen",
+      "type": "run",
+      "distanceKm": 2.55,
+      "movingTimeS": 1326,
+      "elapsedTimeS": 1463,
+      "avgHr": 100,
+      "maxHr": 118,
+      "ascentM": 24,
+      "source": "intervals.icu",
+      "paceSecPerKm": 520,
+      "bestKmSecPerKm": 508,
+      "best20minSecPerKm": 577,
+      "laps": [
+        [
+          991,
+          504,
+          103
+        ],
+        [
+          1001,
+          522,
+          104
+        ],
+        [
+          545,
+          437,
+          91
+        ]
+      ],
+      "bestEfforts": {
+        "1k": 492
+      }
     }
   ]
 }
