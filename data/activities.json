@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-10-13T12:08:30Z",
+  "lastSync": "2026-10-21T10:33:28Z",
   "source": "intervals-icu-sync",
   "activities": [
     {
@@ -1926,6 +1926,61 @@
       ],
       "bestEfforts": {
         "1k": 411
+      }
+    },
+    {
+      "id": "icu-i199862813",
+      "date": "2026-10-21",
+      "name": "Wien Radfahren",
+      "type": "ride",
+      "distanceKm": 4.91,
+      "movingTimeS": 982,
+      "elapsedTimeS": 1160,
+      "avgHr": 119,
+      "maxHr": 149,
+      "ascentM": 186,
+      "source": "intervals.icu",
+      "avgSpeedKph": 18.0
+    },
+    {
+      "id": "icu-i199838137",
+      "date": "2026-10-21",
+      "name": "Wien Laufen",
+      "type": "run",
+      "distanceKm": 3.67,
+      "movingTimeS": 1439,
+      "elapsedTimeS": 1645,
+      "avgHr": 138,
+      "maxHr": 155,
+      "ascentM": 39,
+      "source": "intervals.icu",
+      "paceSecPerKm": 392,
+      "bestKmSecPerKm": 380,
+      "best20minSecPerKm": 398,
+      "laps": [
+        [
+          1004,
+          416,
+          129
+        ],
+        [
+          1001,
+          401,
+          142
+        ],
+        [
+          1000,
+          380,
+          143
+        ],
+        [
+          668,
+          257,
+          140
+        ]
+      ],
+      "bestEfforts": {
+        "1k": 379
       }
     }
   ]
