@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-10-22T14:04:22Z",
+  "lastSync": "2026-10-22T18:46:12Z",
   "source": "intervals-icu-sync",
   "activities": [
     {
@@ -1996,6 +1996,20 @@
       "ascentM": 81,
       "source": "intervals.icu",
       "avgSpeedKph": 16.9
+    },
+    {
+      "id": "icu-i200429185",
+      "date": "2026-10-22",
+      "name": "Wien Radfahren",
+      "type": "ride",
+      "distanceKm": 4.5,
+      "movingTimeS": 882,
+      "elapsedTimeS": 996,
+      "avgHr": 115,
+      "maxHr": 147,
+      "ascentM": 105,
+      "source": "intervals.icu",
+      "avgSpeedKph": 18.4
     }
   ]
 }
