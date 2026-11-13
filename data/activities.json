@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-10-22T18:46:12Z",
+  "lastSync": "2026-11-13T09:56:52Z",
   "source": "intervals-icu-sync",
   "activities": [
     {
@@ -2010,6 +2010,159 @@
       "ascentM": 105,
       "source": "intervals.icu",
       "avgSpeedKph": 18.4
+    },
+    {
+      "id": "icu-i209406883",
+      "date": "2026-10-23",
+      "name": "Wien Laufen",
+      "type": "run",
+      "distanceKm": 5.0,
+      "movingTimeS": 2047,
+      "elapsedTimeS": 2458,
+      "avgHr": 135,
+      "maxHr": 164,
+      "ascentM": 48,
+      "source": "intervals.icu",
+      "paceSecPerKm": 409,
+      "bestKmSecPerKm": 370,
+      "best20minSecPerKm": 381,
+      "laps": [
+        [
+          1003,
+          389,
+          138
+        ],
+        [
+          1004,
+          388,
+          141
+        ],
+        [
+          1001,
+          388,
+          147
+        ],
+        [
+          998,
+          369,
+          150
+        ],
+        [
+          994,
+          892,
+          118
+        ]
+      ],
+      "bestEfforts": {
+        "1k": 359,
+        "5k": 2454
+      }
+    },
+    {
+      "id": "icu-i209406918",
+      "date": "2026-10-26",
+      "name": "Wien Laufen",
+      "type": "run",
+      "distanceKm": 5.06,
+      "movingTimeS": 2346,
+      "elapsedTimeS": 2396,
+      "avgHr": 113,
+      "maxHr": 135,
+      "ascentM": 50,
+      "source": "intervals.icu",
+      "paceSecPerKm": 464,
+      "bestKmSecPerKm": 450,
+      "best20minSecPerKm": 473,
+      "laps": [
+        [
+          1003,
+          451,
+          114
+        ],
+        [
+          999,
+          482,
+          114
+        ],
+        [
+          1002,
+          487,
+          112
+        ],
+        [
+          999,
+          479,
+          110
+        ],
+        [
+          1002,
+          473,
+          114
+        ]
+      ],
+      "bestEfforts": {
+        "1k": 427,
+        "5k": 2347
+      }
+    },
+    {
+      "id": "icu-i209406881",
+      "date": "2026-10-26",
+      "name": "Wien Laufen",
+      "type": "run",
+      "distanceKm": 0.0,
+      "movingTimeS": 2,
+      "elapsedTimeS": 3,
+      "avgHr": 76,
+      "maxHr": 76,
+      "ascentM": null,
+      "source": "intervals.icu"
+    },
+    {
+      "id": "icu-i209406968",
+      "date": "2026-11-11",
+      "name": "Wien Laufen",
+      "type": "run",
+      "distanceKm": 4.81,
+      "movingTimeS": 1832,
+      "elapsedTimeS": 1863,
+      "avgHr": 141,
+      "maxHr": 155,
+      "ascentM": 47,
+      "source": "intervals.icu",
+      "paceSecPerKm": 381,
+      "bestKmSecPerKm": 351,
+      "best20minSecPerKm": 375,
+      "laps": [
+        [
+          1003,
+          352,
+          136
+        ],
+        [
+          1000,
+          367,
+          148
+        ],
+        [
+          999,
+          406,
+          137
+        ],
+        [
+          1002,
+          371,
+          146
+        ],
+        [
+          807,
+          349,
+          133
+        ]
+      ],
+      "bestEfforts": {
+        "1k": 342
+      }
     }
   ]
 }
